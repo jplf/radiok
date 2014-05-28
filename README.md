@@ -1,5 +1,5 @@
 
-RadioK is an application used to manage a internet radio implemented
+RadioK is an application used to manage an internet radio implemented
 on a Raspberry Pi.
 
 It consists of a collection of shell scripts, a web server written with
