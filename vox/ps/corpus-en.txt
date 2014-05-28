@@ -1,0 +1,56 @@
+play
+run
+listen
+begin
+terminate
+radio
+music
+wake up
+shut up
+quiet
+silence
+sleep
+more
+less loud
+state
+shutdown
+goodbye
+hi
+hey
+okay
+yes
+yep
+sure
+absolutely
+no
+nope
+no way
+first
+last
+next
+previous
+stop
+start
+less
+weaker
+stronger
+louder
+good
+bad
+again
+zero
+one
+two
+three
+four
+five
+six
+seven
+height
+nine
+ten
+cancel
+halt
+plus
+minus
+lower
