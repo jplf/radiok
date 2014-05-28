@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="main-module">
+
+<head>
+  <meta charset="utf-8" />
+
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" href="/css/radiok.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Radio Box Kontrol</title>
+</head>
+
+<body>
+<div class="container-fluid main" ng-controller="MainCtrl">
+
+  <div class="navbar navbar-default">
+
+    <div class="navbar-header">
+      <span class="navbar-brand"><b>Fonteny</b></span>
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/state">State</a></li>
+        <li><a href="/trigger">Trigger</a></li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><b>Radio Kontroller</b></a></li>
+        <li><a href="#">{{version}}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div ng-view></div>
+
+  <div class="msg" ng-show="message">
+    <div class="label label-warning">
+      {{message}}
+    </div>
+  </div>
+
+</div>
+
+<script
+        src="http://code.jquery.com/jquery-2.0.3.min.js">
+</script>
+<script
+  src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js">
+</script>
+<script
+   src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js">
+</script>
+<script src="js/slider.js"></script>
+<script src="js/ui-bootstrap-custom-tpls-0.10.0.min.js"></script>
+<script src="js/main-module.js"></script>
+</body>
+</html>
