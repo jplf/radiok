@@ -29,7 +29,7 @@ else
 fi
 
 # These commands may fail gently.
-/bin/killall -q -u lefevre mplayer >>$log
+/bin/killall -q -u $USER mplayer >>$log
 /bin/rm -f $pidfile
 
 #______________________________________________________________________________
