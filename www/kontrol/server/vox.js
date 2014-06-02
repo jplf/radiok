@@ -43,7 +43,7 @@ module.exports = {
         logger.info('Vox Kontroller module initialization');
         onair = root + '/bin/onair.sh ';
         setVolume = root + '/bin/set_volume.sh ' + dvol + ' ';
-        say = '/usr/bin/aplay ' + root + '/lib/sounds/';
+        say = root + '/bin/say.sh ';
 
         var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
         var noList    = ['no', 'nope', 'no way'];
@@ -71,7 +71,7 @@ module.exports = {
              * Start playing the last selected radio.
              */
             if (workList.indexOf(word) >= 0) {
-                execSync(say + 'welcome_back.wav');
+                var rc = execSync(say + 'welcome_back.wav');
                 execSync(onair);
                 code = 'work';
             }
