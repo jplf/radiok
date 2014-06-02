@@ -77,7 +77,7 @@ function start {
     echo $cmd $opt "$url">>$log
     echo "Starting onair.sh $station on `date` ..." >>$log
 
-    $cmd $opt $url 1>mp.log 2>>$log &
+    $cmd $opt $url 1>$RADIOK_HOME/run/mp.log 2>>$log &
 
     # Store pid and station into files.
     echo $! > $pidfile
