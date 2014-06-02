@@ -17,22 +17,32 @@ if [ -z "NODE_PATH" ]; then
     exit 1
 fi
 
+if [ -z "MIXER_CTRL" ]; then
+    echo "export MIXER_CTRL="
+    exit 1
+fi
+
 # Check current time and compare it to timestamp.0
 touch $RADIOK_HOME/run/timestamp.1
 
-rm -f $RADIOK_HOME/run/screenlog.?
-mv -f $RADIOK_HOME/run/*.log $RADIOK_HOME/tmp
+rm -f $RADIOK_HOME/run/screenlog.? 2>/dev/null
+mv -f $RADIOK_HOME/run/*.log $RADIOK_HOME/tmp 2>/dev/null
 
 # Delete any remaining jobs in the at queue.
 $RADIOK_HOME/bin/atrmall.sh
 
-screen -L -d -m /usr/local/bin/node $RADIOK_HOME/www/control/app.js
+screen -L -d -m /usr/local/bin/node $RADIOK_HOME/www/kontrol/app.js
 
 # Make sure the server is ready.
 sleep 15
 
 # Initialize the volume on the server
-vol=`cat $RADIOK_HOME/run/volume`
+if [ -f $RADIOK_HOME/run/volume ]; then
+    vol=`cat $RADIOK_HOME/run/volume`
+else
+    vol="20"
+fi
+
 /usr/bin/curl http://localhost:18000/box/set_volume/$vol
 
 #______________________________________________________________________________
