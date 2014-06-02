@@ -24,6 +24,8 @@ var execSync = require('exec-sync');
 // The scripts to run.
 var onair;
 var setVolume;
+var say;
+
 // Delta volume
 var dvol = '20';
 
@@ -41,6 +43,7 @@ module.exports = {
         logger.info('Vox Kontroller module initialization');
         onair = root + '/bin/onair.sh ';
         setVolume = root + '/bin/set_volume.sh ' + dvol + ' ';
+        say = '/usr/bin/aplay ' + root + '/lib/sounds/';
 
         var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
         var noList    = ['no', 'nope', 'no way'];
@@ -68,6 +71,7 @@ module.exports = {
              * Start playing the last selected radio.
              */
             if (workList.indexOf(word) >= 0) {
+                execSync(say + 'welcome_back.wav');
                 execSync(onair);
                 code = 'work';
             }
@@ -76,6 +80,7 @@ module.exports = {
              */
             else if (stopList.indexOf(word) >= 0) {
                 execSync(onair + ' -k');
+                execSync(say + 'byebye.wav');
                 code = 'stop';
             }
             /**
@@ -104,7 +109,12 @@ module.exports = {
             else if ('again' === word) {
                 code = 'again';
             }
+            else if ('goodbye' === word) {
+                execSync(say + 'too_bad.wav');
+                code = 'bye';
+            }
             else {
+                execSync(say + 'notundersand.wav');
                 code = 'unknown';
             }
 
