@@ -7,7 +7,7 @@
 #______________________________________________________________________________
 
 export NODE_PATH=/usr/local/lib/node_modules
-export RADIOK_HOME=$HOME/work/radiok
+export RADIOK_HOME=$HOME/work/git/radiok
 export PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin:$RADIOK_HOME/bin
 
 cd $RADIOK_HOME/run
