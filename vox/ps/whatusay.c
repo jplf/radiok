@@ -74,7 +74,7 @@
 #include <pocketsphinx/pocketsphinx.h>
 
 #include <curl/curl.h>
-#define MAX_RESPONSE_LENGTH 1024
+#define MAX_RESPONSE_LENGTH 4096
 #define MAX_WORD_LENGTH 48
 
 static const arg_t cont_args_def[] = {
@@ -128,7 +128,8 @@ static size_t getVoxResponse(void *content, size_t size, size_t n, void *ptr)
   size_t realsize = size * n;
  
   if(realsize >= MAX_RESPONSE_LENGTH) {
-    fprintf(stderr, "Not enough memory to handle vox response !\n");
+    fprintf(stderr, "Not enough memory to handle vox response (%d/%d) !\n",
+            realsize, MAX_RESPONSE_LENGTH);
     return 0;
   }
 
