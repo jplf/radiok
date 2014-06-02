@@ -25,11 +25,11 @@ else
     exit 1
 fi
 
-amixer -c 0 set 'PCM' $1$s
+amixer -c 0 set $MIXER_CTRL $1$s
 
 # Keep track on the new value.
 
-get_volume.sh > $RADIOK_HOME/run/volume
+$RADIOK_HOME/bin/get_volume.sh > $RADIOK_HOME/run/volume
 
 #______________________________________________________________________________
 
