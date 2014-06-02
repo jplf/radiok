@@ -25,7 +25,7 @@ var execSync = require('exec-sync');
 var onair;
 var setVolume;
 // Delta volume
-var dvol = '10';
+var dvol = '20';
 
 var logger;
 
