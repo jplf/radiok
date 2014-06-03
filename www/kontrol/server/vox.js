@@ -71,7 +71,7 @@ module.exports = {
              * Start playing the last selected radio.
              */
             if (workList.indexOf(word) >= 0) {
-                var rc = execSync(say + 'welcome_back.wav');
+                execSync(say + 'welcome_back.wav');
                 execSync(onair);
                 code = 'work';
             }
@@ -87,10 +87,12 @@ module.exports = {
              * Increase or decrease volume.
              */
             else if (plusList.indexOf(word) >= 0) {
+                execSync(say + 'louder.wav');
                 execSync(setVolume + '+');
                 code = 'plus';
             }
             else if (minusList.indexOf(word) >= 0) {
+                execSync(say + 'softer.wav');
                 execSync(setVolume + '-');
                 code = 'minus';
             }
@@ -104,13 +106,15 @@ module.exports = {
                 code = 'digit';
             }
             else if ('shutdown' === word) {
+                execSync(say + 'confirm.wav');
                 code = 'shutdown';
             }
             else if ('again' === word) {
+                execSync(say + 'sure.wav');
                 code = 'again';
             }
             else if ('goodbye' === word) {
-                execSync(say + 'too_bad.wav');
+                execSync(say + 'cu_later.wav');
                 code = 'bye';
             }
             else {
