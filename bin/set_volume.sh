@@ -12,6 +12,11 @@
 #______________________________________________________________________________
 
 # Set the new value.
+if [ -z "$1" ]; then
+    vol=10
+else
+    vol=$1
+fi
 
 if [ -z "$2" ]; then
     s="%"
@@ -25,7 +30,7 @@ else
     exit 1
 fi
 
-amixer -c 0 set $MIXER_CTRL $1$s
+amixer -q set $MIXER_CTRL $vol$s
 
 # Keep track on the new value.
 

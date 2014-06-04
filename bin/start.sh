@@ -43,6 +43,6 @@ else
     vol="20"
 fi
 
-/usr/bin/curl http://localhost:18000/box/set_volume/$vol
+/usr/bin/curl http://localhost:18000/box/set_volume/$vol >/dev/null
 
 #______________________________________________________________________________
