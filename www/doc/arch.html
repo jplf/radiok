@@ -18,6 +18,52 @@
 
           <h2>L'architecture</h2>
 
+          <p>
+            Le programme <code>mplayer</code> est en général
+            disponible par défaut sur toutes les distributions
+            linux. Il est donc utilisable sur un Raspberry Pi. On peut
+            naturellement le lancer tel quel en spécifiant un fichier
+            audio ou l'url d'une radio. Mais pour faciliter les
+            opérations un certain nombre de scripts bash ont été
+            écrit. Ils permettent de lancer le programme pour une
+            sélection de radios prédéfinies, de l'arrêter facilement,
+            de régler le volume, etc. Ces scripts sont accessibles une
+            fois connecté sur le Rpi, soit directement soit par 
+            <code>ssh</code> depuis un autre ordinateur.
+          </p>
+          <p>
+            Pour éviter d'avoir à se connecter via <code>ssh</code> un
+            serveur http a donc été installé sur le Rpi. Il héberge
+            une petite application web qui lance elle-même les scripts
+            bash en fonction des requêtes http reçues par le
+            serveur. Ces requêtes peuvent être envoyées depuis un
+            navigateur comme Chrome, Firefox, Safari, IEx tournant sur
+            n'importe quel autre ordinateur ou tablette. On peut aussi
+            utiliser <code>curl(1)</code> ou <code>wget(1)</code> si
+            l'on préfère. Le serveur propose des pages web pour
+            sélectionner une station de radio, changer le volume,
+            spécifier une heure de démarrage. 
+          </p>
+          <p>
+            Le dernier moyen de contrôle de l'application est le
+            contrôle vocal basé sur 
+            <a href="http://cmusphinx.sourceforge.net/2014/04/jasper-personal-assistant-for-raspberry-pi/">Jasper</a>
+            développé à Carnegie Mellon University. Un des outils de
+            cette bibliothèque a été modifié pour accéder
+            au <code>mplayer</code> et lui envoyer des commandes en
+            prononçant à haute voix des mots instruction devant un
+            microphone. Ces mots, s'ils sont correctement décodés par
+            le programme d'analyse vocale, déclenchent l'envoi de
+            requêtes http par <code>curl(1)</code> au serveur web du
+            Rpi qui, à son tour, peut lancer les scripts bash. Le
+            contrôleur voix joue un rôle analogue aux browsers. Il
+            peut tourner sur le Rpi lui-même mais il peut être aussi
+            être sur une autre machine puisque la communication avec
+            le reste du système s'effectue via le réseau.
+
+
+          </p>
+
           <div class="center">
             <img src="arch.png" alt="architecture"
                  style="margin: 2em auto;"/>.
