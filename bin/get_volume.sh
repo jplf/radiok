@@ -11,7 +11,7 @@
 
 regex="Left.+ \[\K(\d+)"
 
-echo `amixer get $MIXER_CTRL | grep -oP "$regex"`
+echo `amixer get PCM | grep -oP "$regex"`
 
 #______________________________________________________________________________
 

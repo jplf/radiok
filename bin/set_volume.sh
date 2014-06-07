@@ -30,7 +30,7 @@ else
     exit 1
 fi
 
-amixer -q set $MIXER_CTRL $vol$s
+amixer -q set PCM $vol$s
 
 # Keep track on the new value.
 
