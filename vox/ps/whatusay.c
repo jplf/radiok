@@ -276,7 +276,7 @@ static void recognize_from_microphone()
         printf("%s: %s\n", uttid, hyp);
         fflush(stdout);
 
-        if (hyp) {
+        if (hyp && strlen(hyp) > 1) {
 
             strncpy(word, hyp, MAX_WORD_LENGTH - 1);
             strlwr(word);
