@@ -2,7 +2,8 @@
 #______________________________________________________________________________
 
 # Script listen.sh - Jean-Paul Le Fèvre June 2014
-# It listens to what is said by someone.
+# 
+# It listens to what is said by someone and sends a command to the webapp.
 # See also kontrol/server/vox.js
 #______________________________________________________________________________
 
