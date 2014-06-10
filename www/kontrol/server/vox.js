@@ -63,7 +63,7 @@ module.exports = {
         app.get('/vox/process/:word', function(req, res) {
 
             var word = req.params.word;
-            var code = undefined;
+            var code = 'undefined';
 
             logger.info('Word ' + word);
 
@@ -97,12 +97,19 @@ module.exports = {
                 code = 'minus';
             }
             else if (yesList.indexOf(word) >= 0) {
+                execSync(say + 'ok.wav');
+                code = 'ok';
+            }
+            else if (noList.indexOf(word) >= 0) {
+                execSync(say + 'too_bad.wav');
                 code = 'ok';
             }
             else if (indexList.indexOf(word) >= 0) {
+                execSync(say + 'sorry.wav');
                 code = 'index';
             }
             else if (digitList.indexOf(word) >= 0) {
+                execSync(say + 'sorry.wav');
                 code = 'digit';
             }
             else if ('shutdown' === word) {
