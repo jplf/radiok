@@ -48,7 +48,7 @@
             J'ajoute que l'ai profité de ce développement sur rpi
             pour me mettre
             à <a href="http://git-scm.com/">git</a>.
-            L'application <code>RadioK</code> n'est pas sous svn mais
+            L'application <em class="rk">RadioK</em> n'est pas sous svn mais
             sous git.
           </p>
           <p>
@@ -62,11 +62,63 @@
             <a href="http://www.mplayerhq.hu"><b>mplayer</b></a>. C'est ce
             programme qui est chargé de diffuser les flux radio. Il
             est disponible dans toutes les distributions linux.
+            <br>
+            Naturellement on peut également utiliser n'importe quel
+            programme capable de traiter des flux audio en continu.
           </p>
 
-        <div class="center" style="margin-top: 2em;">
-          <a class="btn btn-primary" href="index.html">Home</a>
-        </div>
+          <h2>Bash</h2>
+          <p>
+            Les commandes de base sont écrites
+            en <code>bash(1)</code>. Naturellement l'interpréteur est
+            disponible dans tous les linux, il n'y a donc rien à
+            installer, c'est l'avantage d'avoir choisi ce langage. Son
+            inconvénient étant qu'il est difficile d'écrire des
+            scripts robustes.
+          </p>
+
+          <h2>NodeJs</h2>
+          <p>
+            Le serveur web permettant de commander à distance la radio
+            a été construit avec les outils de l'écosystème
+            <a href="http://nodejs.org/">NodeJs</a>.<br>
+            
+            Depuis quelques temps je travaille dans cet environnement
+            javascript et je souhaitais continuer pour implémenter
+            rapidement et simplement l'application RadioK. Les
+            technologies javascript sont assez élégantes, les
+            bibliothèques sont nombreuses, la communauté très
+            active. Avec ce langage les développements sont très
+            rapides.<br>
+            En revanche écrire des programmes corrects est beaucoup
+            plus difficile qu'il n'y parait et la documentation
+            disponible est souvent médiocre.
+          </p>
+
+          <p>
+            De base <code>NodeJs</code> n'est pas installé sur une
+            machine linux. Il faut donc aller sur le site web,
+            télécharger le logiciel et l'installer.
+            <br>
+            Il y a ensuite toute une liste de modules à
+            installer. L'opération est assez simple
+            car <code>NodeJs</code> dispose d'une
+            commande, <code>npm</code>, qui permet de télécharger et
+            d'installer automatiquement ce qu'il faut. Sur la page
+            <a href="https://www.npmjs.org/">npmjs</a> on peut voir le
+            contenu de la grosse bibliothèque pour cette technologie.
+          </p>
+          <p>
+            Pour <em class="rk">RadioK</em> les modules nécessaire
+            sont les suivants:
+            <ul>
+              <li><code>express, http, path, fs, winston</code></li>
+              <li><code>exec-sync, moment, cron</code></li>
+            </ul>
+          </p> 
+          <div class="center" style="margin-top: 2em;">
+            <a class="btn btn-primary" href="index.html">Home</a>
+          </div>
 
         </div>
       </div>
