@@ -69,9 +69,9 @@ function start {
 
     # Mplayer demands this option for .m3u uri.
     if [[ $url =~ \.m3u$ ]]; then
-        opt="-playlist "
+        opt="-playlist -af volume=-10"
     else
-        opt=""
+        opt="-af volume=-10"
     fi
 
     echo $cmd $opt "$url">>$log
