@@ -23,6 +23,7 @@ var execSync = require('exec-sync');
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
 var fs       = require('fs');
+var vox      = require('./vox');
 
 // The program to execute on a regular basis
 var job;
@@ -188,6 +189,8 @@ module.exports = {
             else {
                 // Keep track of the selected station.
                 station = key;
+                // Let vox know the new station.
+                vox.setStationIdx(key);
                 logger.log('info', 'Starting station key %s', key);
             }
             
