@@ -27,10 +27,27 @@ var setVolume;
 var say;
 
 // Delta volume
-var dvol = '20';
+var dvol = '15';
 
 var logger;
 
+// The map of radio stations.
+var stationList;
+var stationIdx = 0;
+//__________________________________________________________________________
+/**
+ * Change the radio station.
+ * Parameter: index the index of the station in the list of known stations.
+ */
+var setStation = function(index) {
+
+    stationIdx = index;
+    // Feed back.
+    execSync(say + 'ok.wav');
+    // Stop the current then play the new station.
+    execSync(onair + '-k; ' + onair + stationList[index].key);
+    logger.info('Tuned to ' + stationList[index].key);
+};
 //__________________________________________________________________________
 
 module.exports = {
@@ -45,6 +62,10 @@ module.exports = {
         setVolume = root + '/bin/set_volume.sh ' + dvol + ' ';
         say = root + '/bin/say.sh ';
 
+        /**
+         * Words leading to the same action are grouped in list of
+         * synonims.
+         */
         var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
         var noList    = ['no', 'nope', 'no way'];
         var plusList  = ['more', 'louder', 'plus', 'higher'];
@@ -55,6 +76,14 @@ module.exports = {
                          'six', 'seven', 'height', 'nine', 'ten'];
         var indexList = ['first', 'previous', 'next', 'last'];
 
+        // The list of stations is fetched from the script 'onair.sh'
+        var str = execSync(onair + '-l');
+        stationList = JSON.parse(str);
+
+        for (var i=0; i <stationList.length; i++) {
+            logger.log('info', stationList[i].key + ': '
+                       + stationList[i].name);
+        }
 //__________________________________________________________________________
        /**
          * Processes a word request.
@@ -79,7 +108,7 @@ module.exports = {
              * Stop playing.
              */
             else if (stopList.indexOf(word) >= 0) {
-                execSync(onair + ' -k');
+                execSync(onair + '-k');
                 execSync(say + 'byebye.wav');
                 code = 'stop';
             }
@@ -87,12 +116,12 @@ module.exports = {
              * Increase or decrease volume.
              */
             else if (plusList.indexOf(word) >= 0) {
-                execSync(say + 'louder.wav');
+                execSync(say + 'loud.wav');
                 execSync(setVolume + '+');
                 code = 'plus';
             }
             else if (minusList.indexOf(word) >= 0) {
-                execSync(say + 'softer.wav');
+                execSync(say + 'soft.wav');
                 execSync(setVolume + '-');
                 code = 'minus';
             }
@@ -105,13 +134,64 @@ module.exports = {
                 code = 'ok';
             }
             else if (indexList.indexOf(word) >= 0) {
-                execSync(say + 'sorry.wav');
+                // Change the current station
+                var index = -1;
+
+                if (word === 'first') {
+                    index = 0;
+                }
+                else if (word === 'last') {
+                    index = stationList.length - 1;
+                }
+                else if (word === 'previous') {
+                    if (stationIdx > 0) {
+                        index = stationIdx - 1;
+                    }
+                    else {
+                      index = stationList.length - 1;  
+                    }
+                }
+                else if (word === 'next') {
+                    if (stationIdx < stationList.length - 1) {
+                        index = stationIdx + 1;
+                    }
+                    else {
+                      index = 0;  
+                    }
+                }
+                
+                if (index >= 0) {
+                    // The new index is correct
+                    setStation(index);
+                }
+                else {
+                    // No new correct index decoded.
+                    execSync(say + 'sorry.wav');
+                }
+
                 code = 'index';
             }
             else if (digitList.indexOf(word) >= 0) {
-                execSync(say + 'sorry.wav');
+
+                //  Select another station
+                var index = digitList.indexOf(word);
+
+                if (index >= 0 && index <= stationList.length - 1) {
+                    if (index != stationIdx) {
+                        setStation(index);
+                    }
+                    else {
+                        execSync(say + 'sure.wav');
+                    }
+                }
+                else {
+                    // No new correct index decoded.
+                    execSync(say + 'sorry.wav');
+                }
+
                 code = 'digit';
             }
+            // Other instructions are not yer implemented.
             else if ('shutdown' === word) {
                 execSync(say + 'confirm.wav');
                 code = 'shutdown';
@@ -131,6 +211,19 @@ module.exports = {
 
             res.send(code);
         });
+    },
 //__________________________________________________________________________
-    }
+     /**
+      * Saves the station index knowing the key.
+      */
+    setStationIdx: function(key) {
+
+        for (var i = 0; i < stationList.length; i++) {
+            if (stationList[i].key === key) {
+                stationIdx = i;
+                break;
+            }
+        }
+     }
+//__________________________________________________________________________
 }
