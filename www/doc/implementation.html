@@ -38,7 +38,8 @@
               </li>
               <li>
                 Le répertoire <code>vox</code> contient de code
-                d'analyse des commandes vocales.
+                d'analyse des commandes vocales. La version actuelle
+                est dans le sous-répertoire <code>ps</code>.
               </li>
               <li>
                 Le répertoire <code>bin</code> contient tous les
@@ -62,7 +63,107 @@
                 
             </ul>
           </p>
-        <div class="center" style="margin-top: 2em;">
+
+          <h2>Les scripts bash</h2>
+
+          <h3>onair.sh</h3>
+
+          C'est le principal script de l'application. Il encapsule
+          l'appel à <code>mplayer(1)</code>. Il accepte les options
+          suivantes:
+          <ul>
+            <li>
+              <code>-h</code> affiche les options possibles et
+              la liste des identifiants de stations de radio.
+            </li>
+            <li>
+              <code>-s</code> affiche le statut actuel du programme,
+              c'est-à-dire l'identifiant de la station et le pid du
+              process <code>mplayer</code>.
+            </li>
+            <li>
+              <code>-k</code> tue un process <code>mplayer</code> qui
+              tournerait.  Cette option lance le
+              script <code>offair.sh</code>.
+            </li>
+            <li>
+              <code>-l</code> donne la liste des stations de radio
+              gérées par l'application. La liste est une suite de
+              couples (clé, nom). La clé sert d'identifiant court, le
+              nom est plus explicite et peut être affiché sur une page web.
+            </li>
+            <li>
+              <code>-t</code> permet de définir une durée pour
+              l'écoute de la radio.
+              La durée expirée <code>mplayer</code> s'arrête.
+              Le temps doit être donné en minutes. 
+            </li>
+          </ul>
+
+          Le dernier argument doit être l'identifiant de la radio.
+          <p>
+            À l'origine ce script devait être simple. Il a grossi pour
+            tenter de répondre à des besoins de plus en plus nombreux mais il
+            aurait sans doute été plus judicieux de choisir un autre
+            langage pour son écriture. Une future version pourrait
+            être écrite en <i>python</i> par exemple.
+          </p>
+
+          <h3>offair.sh</h3>
+          Ce script tue les process <code>mplayer</code> qui
+          tournent et met à jour les fichiers qui doivent l'être.
+
+          <h3>atrmall.sh</h3>
+          Ce script de nettoyage supprime tous les jobs postés
+          par <code>at(1)</code> mais non encore exécutés.
+
+          <h3>get_volume.sh</h3>
+          Ce script permet de récupérer la valeur courante du volume son.
+          Il appelle <code>amixer(1)</code> et extrait le nombre en
+          pourcentage.
+
+          <h3>set_volume.sh</h3>
+          Ce script change la valeur du volume son.
+          Il appelle <code>amixer(1)</code> avec la nouvelle valeur
+          en pourcentage ou avec un increment ou un decrement en
+          dB. La nouvelle valeur du volume est sauvegardée dans le
+          fichier <code>run/volume</code>
+
+          <h3>get_state.sh</h3>
+          Ce script génère un fichier <code>json</code> contenant un
+          certain nombre de paramètres décrivant l'état de l'application.
+
+          <h3>say.sh</h3>
+          Ce script encapsule <code>aplay(1)</code> et génère un son
+          avec un fichier de feedback stocké dans <code>lib/sounds</code>.
+
+          <h3>listen.sh</h3>
+          Ce script encapsule le programme de contrôle vocal
+          <code>whatusay</code> avec les options qui vont bien.
+          Le programme est lancé via <code>screen(1)</code> ce qui
+          permet de récupérer en cas de besoin les messages envoyés
+          sur la sortie standard même si le terminal d'où est lancé le
+          script a disparu.
+
+          <h3>start.sh</h3>
+          Ce script démarre le serveur web permettant de contrôler
+          l'application à distance. Là aussi la
+          commande <code>screen(1)</code> est utilisée pour récupérer
+          le terminal dans la plupart des situations.
+
+          <h3>radiok.sh</h3>
+          Ce dernier script démarre tout ce qui est nécessaire. Il est
+          conçu pour être appelé dans un <code>cron(1)</code> au
+          reboot du raspberry avec la requête <code>@reboot</code>.
+          Comme le rpi n'a pas d'horloge sauvegardant le temps il est
+          nécessaire d'attendre un moment pour démarrer le serveur
+          web, sinon l'application prendra comme référence des temps le 1er
+          janvier 1970 ce qui est source de mauvaise surprise. En
+          attendant quelques minutes le démon <code>ntp</code> a le
+          temps de mettre à jour l'horloge avec la valeur
+          fournie par les serveurs de temps trouvés sur l'internet.
+
+        <div class="center" style="margin-top: 2em; margin-bottom: 2em;">
           <a class="btn btn-primary" href="index.html">Home</a>
         </div>
 
