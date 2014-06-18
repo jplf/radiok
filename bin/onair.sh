@@ -151,7 +151,7 @@ if [ ! -d "$dir" ]; then
     exit 1
 fi
 
-usage="Usage : $0 [-k][-s][-l] [-t time] [station]"
+usage="Usage : $0 [-h][-k][-s][-l] [-t time] [station]"
 log=$dir/onair.log
 
 # The file used to remember the station playing
