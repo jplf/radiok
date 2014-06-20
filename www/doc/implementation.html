@@ -66,6 +66,15 @@
 
           <h2>Les scripts bash</h2>
 
+          Au coeur du système il y a donc <code>mplayer</code> qui
+          diffuse les flux radio sélectionnés mais pour simplifier un
+          peu son utilisation un paquets de scripts a été
+          développé. Ces scripts stockent des variables
+          d'environnement, des paramètres de configuration, etc. Ils
+          peuvent être utilisés tels quels pour contrôler la radio
+          pourvu qu'on soit connecté sur le raspberry. Néanmoins ils
+          ont d'abord été conçus pour être interfacés avec le serveur http.
+
           <h3>onair.sh</h3>
 
           C'est le principal script de l'application. Il encapsule
@@ -163,9 +172,131 @@
           temps de mettre à jour l'horloge avec la valeur
           fournie par les serveurs de temps trouvés sur l'internet.
 
-        <div class="center" style="margin-top: 2em; margin-bottom: 2em;">
-          <a class="btn btn-primary" href="index.html">Home</a>
-        </div>
+          <h2>Le serveur http</h2>
+          <p>
+            Pour intéragir aisément avec le système une solution basée
+            sur le protocole http est toute indiquée. Une fois
+            implémentée on peut utiliser simplement un navigateur
+            internet pour démarrer, arrêter la radio, choisir une
+            station, mettre en service l'alarme. Il n'est plus
+            nécessaire de se connecter au raspberry
+            par <code>ssh</code>, on peut effectuer les opérations
+            depuis n'importe quel ordinateur relié au réseau.
+          </p>
+          <p>
+            Pour réaliser ce server web et l'installer sur le
+            raspberry la technologie
+            <a href="http://nodejs.org/">NodeJs</a>
+            a été choisie. Il y a maintenant un nombre très important de
+            bibliothèques et de modules utilitaires pour cet
+            environnement. La programmation se fait en javascript ce
+            qui permet d'avoir des résultats très rapidement.
+          </p>
+          <p>
+            Le choix de cette technologie a été motivé par plusieurs
+            raisons : c'est une technlogie qui a le vent en poupe, qui
+            dispose de bibliothèques très riches, qui s'interface très
+            facilement avec toute sorte d'environnement et qui est
+            très performante. En revanche beaucoup d'outils sont très
+            pauvrement documentés et il est nécessaire de faire
+            parfois pas mal d'essai pour comprendre comment les
+            utiliser correctement.
+          </p>
+          <p>
+            Naturellememt d'autres choix auraient été possibles pour
+            implémenter le serveur de contrôle : <code>apache</code>
+            et <code>php</code>, <code>tomcat</code> et <code>jsp</code>, etc.
+          </p>
+          <p>
+            Le code se trouve dans le répertoire
+            <code>www/kontrol</code>. Ce qui fait un peu fonction de
+            programme <code>main</code> est dans le
+            fichier <code>app.js</code>. Pour démarrer le serveur il
+            suffit de lancer : <code>node app.js</code>. En fait pour
+            avoir les bons chemins de fichier il est préférable
+            d'utiliser le script bash <code>start.sh</code> qui
+            vérifie les variables d'environnement avant de lancer
+            <code>node</code>. L'application web est gérée par le
+            framework <a href="http://expressjs.com/">express</a>. Ce
+            module fournit toutes les fonctions nécessaires à
+            l'implémentation d'une webapp. Malheureusement la
+            documentation en est particulièrement médiocre mais avec
+            de la patience on arrive à faire ce qu'on veut.<br>
+            Dans le sous-répertoire <code>server</code> on trouve les
+            deux fichiers qui contiennent les procédures traitant les
+            requêtes arrivant au serveur.
+          </p>
+ 
+          <h3>box.js</h3>
+
+          Ce fichier contient le code qui traite les requêtes envoyées
+          depuis un navigateur. Chaque requête se présente sous la
+          forme <code>/box/command/:parameter</code>.
+          <br>
+          Pour chaque commande
+          (<code>start</code>, <code>get_volume</code>,  &hellip;) une
+          fonction callback est définie. Cette fonction effectue le
+          traitement, généralement le lancement d'un script bash, puis
+          renvoie au client une réponse qui est le résultat du
+          traitement.
+          <p>
+            La procédure la plus complexe concerne la gestion de
+            l'alarme. Le but est de déclencher à un moment déterminé
+            la radio. Pour utiliser l'application comme réveil-matin
+            il suffit de mettre en route <code>mplayer</code> tous les
+            matins à une heure fixée. Ceci est réalisé grâce au module
+            <a href="https://www.npmjs.org/package/cron">cron</a> qui
+            encapsule la commande unix <code>cron(1)</code>
+          </p>
+
+          <h3>vox.js</h3>
+          <p>
+          Ce deuxième fichier de code serveur contient les procédures
+          de traitement des commandes vocales. Le programme d'analyse
+          vocale <code>whatusay</code> joue un rôle de client http
+          pour le serveur web. Il transmet les mots qu'il a compris
+          par une requête http préparée avec les fonctions de la bibliothèque
+          <a href="http://curl.haxx.se/">curl</a>.
+          </p>
+          <p>
+            Dans <code>vox.js</code> la requête
+            <code>/vox/process/:word</code> reçu
+            de <code>whatusay</code> est traitée en fonction du
+            paramètre <code>word</code> : un script est exécuté pour
+            lancer <code>mplayer</code>, régler le volume du son,
+            changer la station etc.<br>
+            Pour plus de souplesse les mots du vocabulaire de commande
+            ont été groupés en synonymes.
+            <br>
+            Compte-tenu des temps de réponses parfois un peu longs
+            (plusieurs dizaines de secondes), dûs essentiellement au
+            remplissage du cache de <code>mplayer</code> un retour
+            est donné à l'utilisateur sous forme de messages
+            enregistrés pour lui indiquer ce qui a été compris
+            correctement ou de travers !
+          </p>
+
+          <h2>Le client web</h2>
+          <p>
+            Outre les scripts bash et la commande vocale des pages web
+            sont disponibles pour contrôler l'application. En les
+            affichant dans un navigateur internet on peut également
+            démarrer la radio, l'éteindre, choisir son heure de
+            réveil, etc. en cliquant sur les boutons proposés.
+          </p>
+          <p>
+            Naturellement le code de cette interface se trouve dans le
+            sous-répertoire <code>www/kontrol/client</code>.<br>
+
+            Le style des pages html est défini dans le fichier
+            <code>radiok.less</code> qu'il faut transformer avec la
+            commande <a href="http://lesscss.org/">lessc</a> pour
+            créer la feuille de style <code>radiok.css</code>.
+          </p>
+
+          <div class="center" style="margin-top: 2em;">
+            <a class="btn btn-primary" href="index.html">Home</a>
+          </div>
 
         </div>
       </div>
