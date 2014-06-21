@@ -21,22 +21,23 @@
  */
 var execSync = require('exec-sync');
 
-// The scripts to run.
+// The scripts which can be called.
 var onair;
 var setVolume;
 var say;
 
-// Delta volume
-var dvol = '15';
+// Delta volume. Increment or decrement in dB. See amixer(1)
+var dvol = '12';
 
 var logger;
 
 // The map of radio stations.
 var stationList;
+// The index of the currently selected station.
 var stationIdx = 0;
 //__________________________________________________________________________
 /**
- * Change the radio station.
+ * Changes the radio station.
  * Parameter: index the index of the station in the list of known stations.
  */
 var setStation = function(index) {
@@ -44,7 +45,7 @@ var setStation = function(index) {
     stationIdx = index;
     // Feed back.
     execSync(say + 'ok.wav');
-    // Stop the current then play the new station.
+    // Stop the current station then play the new one.
     execSync(onair + '-k; ' + onair + stationList[index].key);
     logger.info('Tuned to ' + stationList[index].key);
 };
@@ -64,7 +65,7 @@ module.exports = {
 
         /**
          * Words leading to the same action are grouped in list of
-         * synonims.
+         * synonyms.
          */
         var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
         var noList    = ['no', 'nope', 'no way'];
@@ -76,7 +77,7 @@ module.exports = {
                          'six', 'seven', 'height', 'nine', 'ten'];
         var indexList = ['first', 'previous', 'next', 'last'];
 
-        // The list of stations is fetched from the script 'onair.sh'
+        // The list of stations is fetched thanks to the script 'onair.sh'
         var str = execSync(onair + '-l');
         stationList = JSON.parse(str);
 
@@ -116,22 +117,14 @@ module.exports = {
              * Increase or decrease volume.
              */
             else if (plusList.indexOf(word) >= 0) {
-                execSync(say + 'loud.wav');
+                execSync(say + 'louder.wav');
                 execSync(setVolume + '+');
                 code = 'plus';
             }
             else if (minusList.indexOf(word) >= 0) {
-                execSync(say + 'soft.wav');
+                execSync(say + 'softer.wav');
                 execSync(setVolume + '-');
                 code = 'minus';
-            }
-            else if (yesList.indexOf(word) >= 0) {
-                execSync(say + 'ok.wav');
-                code = 'ok';
-            }
-            else if (noList.indexOf(word) >= 0) {
-                execSync(say + 'too_bad.wav');
-                code = 'ok';
             }
             else if (indexList.indexOf(word) >= 0) {
                 // Change the current station
@@ -191,7 +184,17 @@ module.exports = {
 
                 code = 'digit';
             }
-            // Other instructions are not yer implemented.
+            // Other instructions are not yet implemented.
+            else if (yesList.indexOf(word) >= 0) {
+                // Actually does nothing
+                execSync(say + 'ok.wav');
+                code = 'ok';
+            }
+            else if (noList.indexOf(word) >= 0) {
+                // Actually does nothing
+                execSync(say + 'too_bad.wav');
+                code = 'ok';
+            }
             else if ('shutdown' === word) {
                 execSync(say + 'confirm.wav');
                 code = 'shutdown';
@@ -215,6 +218,7 @@ module.exports = {
 //__________________________________________________________________________
      /**
       * Saves the station index knowing the key.
+      * Called from box.js
       */
     setStationIdx: function(key) {
 
