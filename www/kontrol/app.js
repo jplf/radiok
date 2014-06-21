@@ -5,7 +5,7 @@
  * Usage: node app.js
 
  * It starts the http server on port 18000
- * The services are implemented in box.js
+ * The services are implemented in box.js and in vox.js for the vox control.
 
  * This software is governed by the
  * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
@@ -16,6 +16,11 @@
 //__________________________________________________________________________
 
 "use strict";
+/**
+ * The default port number used by this web application.
+ * The serveur will be available at http://localhost:18000
+ */
+var port = 18000;
 
 /**
  * Module dependencies. The http services are provided by these modules.
@@ -31,7 +36,6 @@ if (root === undefined) {
     console.log('Please export RADIOK_HOME=');
     process.kill();
 }
-
 /**
  * Logging initialization using winston.
  */
@@ -50,11 +54,16 @@ fs.exists(logfile, function (exists) {
  * Known winston log levels
  * silly=0(lowest), verbose=1, info=2, warn=3, debug=4, error=5(highest)
  */
+var stamp = function() {
+    var d = new Date();
+    return d.toLocaleTimeString();
+};
 var winston = require('winston');
 var logger  = new (winston.Logger)({
     transports: [
         new (winston.transports.File)({
-            timestamp: true,
+            timestamp: stamp,
+            json: false,
             filename: logfile})
    ]
 });
@@ -63,25 +72,11 @@ logger.log('info', 'Starting server %s', 'ok');
 
 var app = express();
 
-app.set('port', 18000);
-
-// Is this useful ?
-app.set('views', __dirname + '/client/ejs');
-app.set('view engine', 'ejs');
+app.set('port', port);
 
 app.use(express.favicon());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-/**
- * The session parameters.
- */
-var password = '+0169083458';
-app.use(express.cookieParser(password));
-app.use(express.session({
-    secret: password,
-    cookie: {secure: false},
-    maxAge: 300000
-}));
 
 /**
  * The Radio Box Kontrol server specific modules.
@@ -93,7 +88,7 @@ var vox = require('./server/vox');
 vox.init(app, logger, root);
 
 /**
- * Play every week day
+ * Play every week day by default.
  */
 if (! box.trigger(root + '/run/trigger')) {
     console.log('Invalid box trigger !');
