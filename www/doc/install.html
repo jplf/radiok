@@ -16,7 +16,8 @@
       <div class="row">
         <div class="col-md-12">
 
-          <h2>Linux</h2>
+          <h2>La boîte à outils</h2>
+          <h3>Linux</h3>
           <p>
             L'application fonctionne sur n'importe quelle machine
             tournant sous linux. On peut l'installer sur un PC de
@@ -60,7 +61,7 @@
             sur toutes les distributions linux.
           </p>
 
-          <h2>Mplayer</h2>
+          <h3>Mplayer</h3>
           <p>
             Au coeur de l'application il y a 
             <a href="http://www.mplayerhq.hu"><b>mplayer</b></a>. C'est ce
@@ -71,7 +72,7 @@
             programme capable de traiter des flux audio en continu.
           </p>
 
-          <h2>Bash</h2>
+          <h3>Bash</h3>
           <p>
             Les commandes de base sont écrites
             en <code>bash(1)</code>. Naturellement l'interpréteur est
@@ -81,7 +82,7 @@
             scripts robustes.
           </p>
 
-          <h2>NodeJs</h2>
+          <h3>NodeJs</h3>
           <p>
             Le serveur web permettant de commander à distance la radio
             a été construit avec les outils de l'écosystème
@@ -121,7 +122,7 @@
             </ul>
           </p> 
 
-          <h2>AngularJs</h2>
+          <h3>AngularJs</h3>
           <p>
             Ce framework est utilisé pour le codage des pages web. Il
             est disponible sur <a href="https://angularjs.org/">ce
@@ -139,7 +140,7 @@
             interactions.
           </p>
 
-          <h2>Style</h2>
+          <h3>Style</h3>
           <p>
             Les feuilles de style sont stockées dans le répertoire
             <code>css</code>. Les thèmes possibles sont pris sur le
@@ -153,9 +154,92 @@
             <code>radiok.less</code> qu'il faut traiter par le
             programme <a href="http://lesscss.org">lessc</a> pour créer le
             fichier <code>radiok.css</code>.
-       
           </p>
 
+          <h2>Mise en route</h2>
+          <p>
+            Répétons-le <em class="rk">RadioK</em> n'est pas livré
+            comme un produit clés-en-main. Il est destiné aux
+            bricoleurs, geeks et assimilés. Il nécessite un minimum de
+            connaissances en informatique pour être
+            opérationnel. Néanmoins il n'y a rien de très compliqué
+            pour le faire fonctionner correctement. Il faut procéder
+            méthodiquement, pas-à-pas, lors de l'installation.
+          </p>
+          <p>
+            La marche à suivre est la suivante:
+            <ul>
+              <li>
+                Télécharger le logiciel depuis
+                <a href="https://github.com/jplf/radiok">GitHub</a> et
+                copier les fichiers quelque part.
+              </li>
+              <li>
+                Définir la variable
+                d'environnement <code>RADIOK_HOME</code> comme le
+                chemin vers le répertoire où le logiciel a été
+                copié. On peut aussi
+                ajouter <code>$RADIOK_HOME/bin</code> dans son <code>PATH</code>.
+              </li> 
+              <li>
+                 Télécharger et installer les composants tiers
+                 mentionnés plus haut : <code>NodeJs</code>,
+                 <code>Bootstrap</code>, &hellip;
+              </li>
+              <li>
+                Tester <code>mplayer</code> avec une URL de radio
+                comme par exemple :<br>
+                <code>
+                  mplayer http://mp3lg.tdf-cdn.com/fip/all/fiphautdebit.mp3
+                </code>
+              </li>
+              <li>
+                Tester le script <code>onair.sh</code> comme par
+                exemple :<br>
+                <ol>
+                  <li><code>onair.sh -h</code></li>
+                  <li><code>onair.sh -l</code></li>
+                  <li><code>onair.sh a-fip</code></li>
+                  <li><code>onair.sh -k</code></li>
+                </ol>
+              </li>
+              <li>
+                Tester le serveur web en lançant d'abord :<br>
+                <code>/usr/local/bin/node
+                $RADIOK_HOME/www/kontrol/app.js</code>
+                en modifiant le chemin vers <code>node</code> si
+                besoin.<br>
+                Avec le navigateur aller à la page
+                <code>http://localhost:18000/</code> et cliquer sur
+                les différents liens.
+              </li>
+              <li>
+                En cas de soucis regarder les messages d'erreur du
+                serveur affichés sur le terminal à partir duquel le server
+                aura été démarré et également dans les fichiers log
+                dans le répertoire <code>run</code>
+                : <code>radiok.log</code> est écrit par le serveur
+                web tandis que <code>onair.log</code> est utilisé par
+                le script <code>onair.sh</code>.
+                <br>
+                Les éventuels problèmes peuvent également survenir
+                côté client. Il faut alors ouvrir la console du
+                navigateur, par exemple en tapant <code>Ctrl-J</code>
+                sur Chrome.
+              </li>
+              <li>
+                En cas de difficulté côté serveur, il faut corriger le
+                problème et redémarrer le serveur, si c'est du côté
+                client il faut recharger la page d'arrivée.
+              </li> 
+              <li>
+                Quand le serveur est au point on peut alors utiliser
+                le script plus complet <code>start.sh</code> pour
+                démarrer. Il est bon de revérifier les pages envoyées,
+                les fichiers log.
+              </li> 
+            </ul>
+          </p>
 
           <div class="center" style="margin-top: 2em;">
             <a class="btn btn-primary" href="index.html">Home</a>
