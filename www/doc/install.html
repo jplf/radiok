@@ -168,7 +168,7 @@
           </p>
           <p>
             La marche à suivre est la suivante:
-            <ul>
+            <ul class="proc">
               <li>
                 Télécharger le logiciel depuis
                 <a href="https://github.com/jplf/radiok">GitHub</a> et
@@ -195,8 +195,8 @@
               </li>
               <li>
                 Tester le script <code>onair.sh</code> comme par
-                exemple :<br>
-                <ol>
+                exemple avec les commandes suivantes :<br>
+                <ol class="proc">
                   <li><code>onair.sh -h</code></li>
                   <li><code>onair.sh -l</code></li>
                   <li><code>onair.sh a-fip</code></li>
@@ -218,7 +218,7 @@
                 serveur affichés sur le terminal à partir duquel le server
                 aura été démarré et également dans les fichiers log
                 dans le répertoire <code>run</code>
-                : <code>radiok.log</code> est écrit par le serveur
+                : le fichier <code>radiok.log</code> est écrit par le serveur
                 web tandis que <code>onair.log</code> est utilisé par
                 le script <code>onair.sh</code>.
                 <br>
@@ -237,9 +237,53 @@
                 le script plus complet <code>start.sh</code> pour
                 démarrer. Il est bon de revérifier les pages envoyées,
                 les fichiers log.
+              </li>
+              <li>
+                Le démarrage du contrôle vocal est décrit sur une
+                <a href="audio.html">page spécifique</a>.
+              </li>
+              <li>
+                Enfin quand tout est au point on peut utiliser le
+                script <code>radiok.sh</code> dans
+                une <code>crontab</code> pour relancer automatiquement
+                tous les morceaux de l'application au reboot avec une
+                ligne comme celle-ci :
+                <br>
+                <span style="margin-left:3em;">
+                <code>@reboot /home/moi/rpi/radiok/bin/radiok.sh</code>
+                </span>
+                <br>
+                Il est malgré tout prudent de vérifier que tout refonctionne
+                correctement après un redémarrage du rpi.
               </li> 
             </ul>
           </p>
+
+          <h2>Configuration</h2>
+          <p>
+            Malheureusement dans cette version de l'application les
+            paramètres de configuration sont dispersés dans plusieurs
+            fichiers. Il faut éditer les scripts ou les fichiers de
+            code javascript pour changer des valeurs. On essaiera de
+            regrouper ces paramètres dans un seul fichier dans une
+            éventuelle future version.
+          </p>
+          <h3>mplayer</h3>
+          <p>
+            Les options de <code>mplayer</code> qui n'ont pas de
+            raison de changer sont définies sur la ligne de commande
+            préparée par <code>onair.sh</code>. En revanche les
+            paramètres qui définissent le cache du programme sont à
+            laisser dans le fichier <code>~/.mplayer/config</code>. En
+            effet ils sont assez sensibles pour assurer un bon
+            fonctionnement de la radio. Le cache doit avoir une taille
+            suffisante pour avoir un flux continu si le débit du
+            réseau a des faiblesses mais cette taille doit rester
+            raisonnable pour avoir un démarrage du son dans un délai
+            acceptable. Il faut donc faire pas mal d'essais pour
+            trouver le bon compromis.
+          </p>
+          
 
           <div class="center" style="margin-top: 2em;">
             <a class="btn btn-primary" href="index.html">Home</a>

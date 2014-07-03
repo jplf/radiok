@@ -28,12 +28,12 @@
             écrit. Ils permettent de lancer le programme pour une
             sélection de radios prédéfinies, de l'arrêter facilement,
             de régler le volume, etc. Ces scripts sont accessibles une
-            fois connecté sur le Rpi, soit directement soit par 
+            fois connecté sur le rpi, soit directement soit par 
             <code>ssh</code> depuis un autre ordinateur.
           </p>
           <p>
             Pour éviter d'avoir à se connecter via <code>ssh</code> un
-            serveur http a donc été installé sur le Rpi. Il héberge
+            serveur http a donc été installé sur le rpi. Il héberge
             une petite application web qui lance elle-même les scripts
             bash en fonction des requêtes http reçues par le
             serveur. Ces requêtes peuvent être envoyées depuis un
@@ -55,9 +55,9 @@
             microphone. Ces mots, s'ils sont correctement décodés par
             le programme d'analyse vocale, déclenchent l'envoi de
             requêtes http par <code>curl(1)</code> au serveur web du
-            Rpi qui, à son tour, peut lancer les scripts bash. Le
+            rpi qui, à son tour, peut lancer les scripts bash. Le
             contrôleur voix joue un rôle analogue aux browsers. Il
-            peut tourner sur le Rpi lui-même mais il peut être aussi
+            peut tourner sur le rlui pi lui-même mais il peut être aussi
             être sur une autre machine puisque la communication avec
             le reste du système s'effectue via le réseau.
 
