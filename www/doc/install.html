@@ -283,8 +283,65 @@
             acceptable. Il faut donc faire pas mal d'essais pour
             trouver le bon compromis.
           </p>
-          
 
+          <h3>onair.sh</h3>
+          <p>
+            C'est dans ce script qu'est définie la liste des stations
+            de radio préférées. Cette liste est implémentée en 2
+            tables d'association clé-valeur. La clé est un identifiant
+            simple. L'utilisation d'un préfixe permet d'avoir
+            automatiquement la liste classée par ordre
+            alphabétique. La valeur stockée dans la
+            table <code>radios</code> est l'url utilisée pour accéder au flux
+            radio. En googlant un peu et en allant sur les sites web des
+            radios on trouve facilement ces url.
+            Dans l'autre table, <code>surnames</code>, la valeur est
+            la chaîne de caractères choisie pour l'affichage du nom
+            des stations sur les pages web.
+          </p>
+
+          <h3>start.sh</h3>
+          <p>
+            L'adresse du serveur est codée en dur dans ce fichier. Si
+            le numéro de port par défaut, 18000, est changé il faut
+            mettre à jour ce fichier.
+          </p>
+
+          <h3>app.js</h3>
+          <p>
+            Ce fichier contient le code de démarrage du serveur
+            http. Le numéro de port qui a été choisi est 18000 mais il
+            peut naturellement être changé.
+          </p>
+
+          <h3>box.js</h3>
+          <p>
+            Ce fichier javascript contient le code exécuté par le
+            serveur http. Il traite les requêtes envoyées depuis un
+            navigateur. On peut éditer les valeurs par défaut qui sont
+            définies en haut du fichier, en particulier la clé de la
+            radio et la durée de fonctionnement après déclenchement automatique.
+          </p>
+
+          <h3>radiok.less</h3>
+          <p>
+            Ce fichier définit le style d'affichage des pages web. Il
+            utilise un thème venant du site
+            <a href="http://bootswatch.com/">Bootswatch</a>. On peut
+            modifier comme on veut le style en n'oubliant pas de
+            refabriquer le fichier <code>radiok.css</code> à l'aide de
+            la commande <code>lessc</code>.
+          </p>
+
+          <h3>home.html</h3>
+          <p>
+            Ce fichier est le fragment de page qui présente la liste
+            des radios disponibles et le bouton de réglage du volume.
+            Ce <i>slider</i> peut avoir besoin d'être ajusté. On peut
+            changer sa géométrie et les valeurs min et max pour le rendre
+            plus facile à utiliser.
+          </p>
+ 
           <div class="center" style="margin-top: 2em;">
             <a class="btn btn-primary" href="index.html">Home</a>
           </div>
