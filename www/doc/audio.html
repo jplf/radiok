@@ -93,9 +93,85 @@ pcm.!default {
   slave.pcm "softvol"
 }
             </pre>
-
-
+            Le contenu de ce fichier est decrit sur
+            <a href=
+"http://alsa.opensrc.org/How_to_use_softvol_to_control_the_master_volume">
+              cette page</a>.
          </p>
+
+          <h2>L'implémentation</h2>
+          <p>
+            Le principe de fonctionnement est le suivant : une liste
+            de mots à reconnaître est préparée, une fois compilée elle
+            est fournie en paramètre du programme de reconnaissance
+            vocale. Celui-ci prend biensûr aussi en entrée le signal
+            provenant du micro. Il attend en continu les paroles
+            prononcées devant le micro et génère la transcription en chaîne de
+            caractères des mots reconnus. Ces mots sont transmis au
+            server http qui les utilisent pour commander la radio. Les
+            fichiers de cette implémentation sont dans le répertoire
+            <code>RADIOK_HOME/vox/ps</code>.
+          </p>
+          <p>
+            La liste des mots est stockée dans le fichier 
+            <code>corpus-en.txt</code>. La version actuelle du
+            programme travaille en anglais, il y aura peut-être par la
+            suite une version comprenant le français. La liste
+            proposée contient plus de mots que nécessaire mais ça
+            permet d'expérimenter et de choisir ensuite le vocabulaire
+            le plus efficace. La liste doit être compilée par le
+            progamme <a href=
+            "http://www.speech.cs.cmu.edu/tools/lmtool-new.html">
+              <code>lmtool</code></a>. Les fichiers produits portant des
+              noms comme <code>nnnn.lm</code> et <code>nnnn.dic</code>
+              sont fournis en paramètres du programme de
+              reconnaissance. À chaque fois que le corpus est modifié
+              il faut recompiler la liste.
+          </p>
+
+          <p>
+            Le programme de reconnaissance
+            s'appelle <code>whatusay</code> (<i>what you say
+            ?</i>). Le fichier source est <code>whatusay.c</code>. Il
+            s'agit tout simplement d'une version simplifiée de 
+            <a href="http://cmusphinx.sourceforge.net/">
+            <code>pocketsphinx</code></a>. Une grande partie du code
+            qui n'était pas pertinent
+            pour <em class="rk">RadioK</em> a été purement et
+            simplement supprimée. Inversement du code nécessaire à
+            la communication avec le server web a été ajouté. Ce
+            code s'appuie sur la bibliothèque
+            <a href="http://curl.haxx.se/"><code>curl</code></a>. Chaque
+            mot décodé est transmis par une requête http au server.
+          </p>
+          <p>
+            Pour refabriquer le programme il faut installer
+            <code>cmusphinx</code> et <code>curl</code> puis lancer
+            <code>make</code> dans le répertoire <code>RADIOK_HOME/vox/ps</code>.
+            Le <code>Makefile</code> a été gardé délibérèment très
+            simple. Il doit éventuellementêtre modifié en
+            fonction de la plateforme.
+          </p>
+          <p>
+            Pour tester le programme simplement sans communiquer avec
+            le serveur web afin de voir comment l'analyse vocale
+            fonctionne il suffit de le lancer avec comme url la chaîne
+            <code>'null'</code>. Le petit
+            script <code>trywords.sh</code> permet de faire des tests
+            simplement. Une fois lancé il suffit de parler devant le
+            micro. Les mots compris sont affichés sur la sortie
+            standard. Le taux de réussite est assez
+            statisfaisant. L'expérience montre qu'il dépend beaucoup
+            du volume reçu par le micro : en parlant à voix haute à
+            une distance comprise entre 10 et 60 cm la plupart des
+            mots sont compris et plus on s'éloigne du micro plus il
+            faut parler fort. Le taux de réussite dépend aussi des
+            mots : plus ils sont long mieux ils sont décodés, le
+            programme fonctionne mieux avec des mots de 3 syllabes
+            qu'avec les monosyllables. Dans l'autre sens le décodage
+            peut se déclencher sur les bruits s'ils sont forts : le
+            fait d'éternuer à 3 mètres du micro peut activer une commande.
+          </p>
 
           <p>
             la suite va venir !
