@@ -24,7 +24,7 @@
                "http://tuxradar.com/content/how-it-works-linux-audio-explained">
               très compliquée</a>. Cet aspect de
               l'application <em class="rk">RadioK</em> est celui qui
-              demande le plus d'effort pour obtenir un résultat
+              demande le plus d'efforts pour obtenir un résultat
               satisfaisant. La contrainte à respecter pour établir la
               configuration audio était de rester le plus simple
               possible tout en permettant de gérer des haut-parleurs
@@ -44,7 +44,7 @@
               <br>speaker-test -c2 -twav
               <br>mplayer un_fichier.mp3
             </div>
-            Si tout va bien on devrait entendre quelquechose. On peut
+            Si tout va bien on devrait entendre des sons. On peut
             (on doit ?) googler quelquechose comme <i>raspberry
             audio</i> pour trouver de la doc. Une des pages la moins inutile est
             <a href=
@@ -53,7 +53,7 @@
           <p>
             La solution pour avoir du son sur les haut-parleurs sans
             utiliser la sortie hdmi et pour pouvoir brancher un micro 
-            sur la rpi il est bon d'avoir une carte son comme la 
+            sur la rpi consiste à utiliser une carte son comme la 
             <a href="http://www.amazon.fr/gp/product/B0037AOUUQ">
               Logilink 250743</a>. L'installation ne pose
             guère de problème car le module driver est disponible dans
@@ -65,7 +65,7 @@
             du <i>control</i> pour modifier le volume de sortie et
             utiliser le même nom - <code>PCM</code> - sur différents
             matériels de manière à avoir les scripts pour trouver la
-            valeur du volume ou pour la changer identiques sur
+            valeur du volume ou pour la changer qui soient identiques sur
             différentes machines.<br>
             Ces scripts qui encapsulent <code>amixer get PCM</code> et
             <code>amixer set PCM</code> sont ainsi portables sans
@@ -74,7 +74,7 @@
             créer un fichier <code>~/.asoundrc</code> pour configurer
             la bibliothèque
             <a href="http://www.alsa-project.org/"><code>alsa</code></a>.
-            La syntaxe des fichiers de configuration est
+            La syntaxe des fichiers de configuration alsa est
             particulièrement imbittable. Ce fichier produit l'effet
             escompté :
             <pre style="width: 25%; margin-left: 3em; margin-bottom:  1em;">
@@ -149,7 +149,7 @@ pcm.!default {
             <code>cmusphinx</code> et <code>curl</code> puis lancer
             <code>make</code> dans le répertoire <code>RADIOK_HOME/vox/ps</code>.
             Le <code>Makefile</code> a été gardé délibérèment très
-            simple. Il doit éventuellementêtre modifié en
+            simple. Il doit éventuellement être modifié en
             fonction de la plateforme.
           </p>
           <p>
@@ -162,7 +162,8 @@ pcm.!default {
             micro. Les mots compris sont affichés sur la sortie
             standard. Le taux de réussite est assez
             statisfaisant. L'expérience montre qu'il dépend beaucoup
-            du volume reçu par le micro : en parlant à voix haute à
+            du volume reçu par le micro : en parlant à voix
+            suffisamment haute à
             une distance comprise entre 10 et 60 cm la plupart des
             mots sont compris et plus on s'éloigne du micro plus il
             faut parler fort. Le taux de réussite dépend aussi des
@@ -227,7 +228,8 @@ pcm.!default {
             il est présent puis exécute le shell script qui
             correspond. La reconnaissance vocale est loin d'être
             fiable à 100% aussi il est important de donner un feed
-            back pour informer si la commande a été comprise ou non.
+            back pour informer l'utilisateur si la commande a été
+            comprise ou non.
             Ce retour est lui aussi sous forme audio. Des phrases ont
             été enregistrées et sauvegardées dans des fichiers
             <code>.wav</code>. Elles sont jouées par la commande

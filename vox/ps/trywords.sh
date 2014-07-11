@@ -1,6 +1,7 @@
 #!/bin/sh
 #________________________________________________________________________________
-# This is simple test script to see what whatusay understands.
+
+# This is a simple test script to see what whatusay understands.
 # It does not communicate with the radiok webapp.
 
 # Usage: ./trywords.sh
@@ -12,7 +13,7 @@
 #________________________________________________________________________________
 
 corpus=9266
-opt="-adcdev plughw:0,0 -lm $corpus.lm -dict $corpus.dic"
+opt="-adcdev plughw:1,0 -lm $corpus.lm -dict $corpus.dic"
 whatusay $opt -url null -agc max -agcthresh 2.0
 
 #________________________________________________________________________________

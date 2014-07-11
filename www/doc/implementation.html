@@ -68,11 +68,11 @@
 
           Au coeur du système il y a donc <code>mplayer</code> qui
           diffuse les flux radio sélectionnés mais pour simplifier un
-          peu son utilisation un paquets de scripts a été
+          peu son utilisation un paquet de scripts a été
           développé. Ces scripts stockent des variables
           d'environnement, des paramètres de configuration, etc. Ils
           peuvent être utilisés tels quels pour contrôler la radio
-          pourvu qu'on soit connecté sur le raspberry. Néanmoins ils
+          pourvu qu'on soit connecté sur la raspberry. Néanmoins ils
           ont d'abord été conçus pour être interfacés avec le serveur http.
 
           <h3>onair.sh</h3>
@@ -163,7 +163,7 @@
           <h3>radiok.sh</h3>
           Ce dernier script démarre tout ce qui est nécessaire. Il est
           conçu pour être appelé dans un <code>cron(1)</code> au
-          reboot du raspberry avec la requête <code>@reboot</code>.
+          reboot de la raspberry avec la requête <code>@reboot</code>.
           Comme la rpi n'a pas d'horloge sauvegardant le temps il est
           nécessaire d'attendre un moment pour démarrer le serveur
           web, sinon l'application prendra comme référence des temps le 1er
@@ -179,12 +179,12 @@
             implémentée on peut utiliser simplement un navigateur
             internet pour démarrer, arrêter la radio, choisir une
             station, mettre en service l'alarme. Il n'est plus
-            nécessaire de se connecter au raspberry
+            nécessaire de se connecter à la raspberry
             par <code>ssh</code>, on peut effectuer les opérations
             depuis n'importe quel ordinateur relié au réseau.
           </p>
           <p>
-            Pour réaliser ce server web et l'installer sur le
+            Pour réaliser ce server web et l'installer sur la
             raspberry la technologie
             <a href="http://nodejs.org/">NodeJs</a>
             a été choisie. Il y a maintenant un nombre très important de
@@ -220,7 +220,7 @@
             framework <a href="http://expressjs.com/">express</a>. Ce
             module fournit toutes les fonctions nécessaires à
             l'implémentation d'une webapp. Malheureusement la
-            documentation en est particulièrement médiocre mais avec
+            documentation en est particulièrement nulle mais avec
             de la patience on arrive à faire ce qu'on veut.<br>
             Dans le sous-répertoire <code>server</code> on trouve les
             deux fichiers qui contiennent les procédures traitant les
@@ -273,7 +273,7 @@
             remplissage du cache de <code>mplayer</code> un retour
             est donné à l'utilisateur sous forme de messages
             enregistrés pour lui indiquer ce qui a été compris
-            correctement ou de travers !
+            correctement par le serveur ou compris de travers !
           </p>
 
           <h2>Le client web</h2>
@@ -285,7 +285,7 @@
             réveil, etc. en cliquant sur les boutons proposés.
           </p>
           <p>
-            Naturellement le code de cette interface se trouve dans le
+            Comme il se doit le code de cette interface se trouve dans le
             sous-répertoire <code>www/kontrol/client</code>.<br>
 
             Le style des pages html est défini dans le fichier

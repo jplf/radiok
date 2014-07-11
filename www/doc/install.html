@@ -21,11 +21,11 @@
           <p>
             L'application fonctionne sur n'importe quelle machine
             tournant sous linux. On peut l'installer sur un PC de
-            bureau ou sur un laptop et, bien entendu sur un raspberry.
+            bureau ou sur un laptop et, bien entendu sur une raspberry.
           <p>
-            Naturellement le raspberry tourne sous linux. J'ai
+            Naturellement la raspberry tourne sous linux. J'ai
             installé ma distribution favorite: la
-            <a href="http://www.slackware.com/">slacware</a>. Je
+            <a href="http://www.slackware.com/">slackware</a>. Je
             travaille avec depuis des années, je l'ai installée sur
             des dizaines de machines différentes sans difficulté
             majeure. Pour la rpi il y a un
@@ -75,11 +75,11 @@
           <h3>Bash</h3>
           <p>
             Les commandes de base sont écrites
-            en <code>bash(1)</code>. Naturellement l'interpréteur est
+            en <code>bash(1)</code>. Bien entendu l'interpréteur est
             disponible dans tous les linux, il n'y a donc rien à
             installer, c'est l'avantage d'avoir choisi ce langage. Son
             inconvénient étant qu'il est difficile d'écrire des
-            scripts robustes.
+            scripts robustes et que ses fonctionnalités sont limitées.
           </p>
 
           <h3>NodeJs</h3>
@@ -111,7 +111,7 @@
             commande, <code>npm</code>, qui permet de télécharger et
             d'installer automatiquement ce qu'il faut. Sur la page
             <a href="https://www.npmjs.org/">npmjs</a> on peut voir le
-            contenu de la grosse bibliothèque pour cette technologie.
+            contenu de la grosse bibliothèque disponible pour cette technologie.
           </p>
           <p>
             Pour <em class="rk">RadioK</em> les modules nécessaires
@@ -126,8 +126,8 @@
           <p>
             Ce framework est utilisé pour le codage des pages web. Il
             est disponible sur <a href="https://angularjs.org/">ce
-            site</a> mais il est référencé automatiquement, il y a
-            rien à installer localement. De la même façon la
+            site</a> mais il est référencé automatiquement, il n'y a
+            donc rien à installer localement. De la même façon la
             bibliothèque <a href="http://jquery.com/">jQuery</a> est
             référencée automatiquement. En revanche il faut
             télécharger le module
@@ -153,7 +153,10 @@
             Les définitions spécifiques sont dans le fichier
             <code>radiok.less</code> qu'il faut traiter par le
             programme <a href="http://lesscss.org">lessc</a> pour créer le
-            fichier <code>radiok.css</code>.
+            fichier <code>radiok.css</code>. Ce dernier fichier est le
+            résultat de la fusion des quelques définitions propres
+            à <em class="rk">RadioK</em> et des définitions générales
+            du thème sélectionné sur Bootswatch.
           </p>
 
           <h2>Mise en route</h2>
@@ -167,7 +170,7 @@
             méthodiquement, pas-à-pas, lors de l'installation.
           </p>
           <p>
-            La marche à suivre est la suivante:
+            La marche à suivre est la suivante :
             <ul class="proc">
               <li>
                 Télécharger le logiciel depuis
@@ -217,8 +220,8 @@
                 En cas de soucis regarder les messages d'erreur du
                 serveur affichés sur le terminal à partir duquel le server
                 aura été démarré et également dans les fichiers log
-                dans le répertoire <code>run</code>
-                : le fichier <code>radiok.log</code> est écrit par le serveur
+                dans le répertoire <code>run</code> :
+                le fichier <code>radiok.log</code> est écrit par le serveur
                 web tandis que <code>onair.log</code> est utilisé par
                 le script <code>onair.sh</code>.
                 <br>
@@ -302,7 +305,9 @@
             tables d'association clé-valeur. La clé est un identifiant
             simple. L'utilisation d'un préfixe permet d'avoir
             automatiquement la liste classée par ordre
-            alphabétique. La valeur stockée dans la
+            alphabétique. Ainsi la clé <code>a-fip</code> viendra
+            avant la clé  <code>z-rmb</code> lors des affichages.
+            La valeur stockée dans la
             table <code>radios</code> est l'url utilisée pour accéder au flux
             radio. En googlant un peu et en allant sur les sites web des
             radios on trouve facilement ces url.
@@ -332,6 +337,13 @@
             navigateur. On peut éditer les valeurs par défaut qui sont
             définies en haut du fichier, en particulier la clé de la
             radio et la durée de fonctionnement après déclenchement automatique.
+          </p>
+
+          <h3>vox.js</h3>
+          <p>
+            Ce fichier contient le code du traitement des requêtes
+            vocales. En se basant sur les indications fournies sur la
+            page <a href="audio.html">audio</a> on peut le modifier.
           </p>
 
           <h3>radiok.less</h3>
