@@ -172,9 +172,67 @@ pcm.!default {
             peut se déclencher sur les bruits s'ils sont forts : le
             fait d'éternuer à 3 mètres du micro peut activer une commande.
           </p>
+          <p>
+            Le programme <code>whatusay</code> peut communiquer avec
+            le serveur web qui gère les scripts de contrôle de la
+            radio. L'url du serveur est par default
+            <code>http://localhost:18000</code> mais peut être
+            spécifiée différemment sur la ligne de commande. On peut
+            donc contrôller l'application en faisant aussi tourner
+            <code>whatusay</code> sur une autre machine que la
+            raspberry. Le programme génère la requête 
+            <code>/vox/process/<i>mot</i></code> pour le serveur à
+            chaque traitement d'une parole, <code>mot</code> étant la
+            transcription de la parole comprise.
+          </p>
+          <p>
+            Le code du server pour traiter les requêtes de commandes
+            vocales se trouve dans le fichier <code>vox.js</code> dans
+            le sous-répertoire <code>www/kontrol/server</code>. Les
+            mots connus sont regroupés en liste de synonymes,
+            c'est-à-dire conduisant à la même opération. Cela donne
+            une certaine souplesse pour tester différentes
+            expressions. Certains mots sont mieux compris ou plus
+            faciles à prononcer pour un non-anglophone.
+          </p>
+          <p>
+            Les commandes sont les suivantes:
+            <ul>
+            <li>démarrer la radio :
+              <code><b>music, wake up, begin, radio</b>, play, run, start</code></li>
+
+            <li>arrêter la radio :
+              <code><b>terminate, shut up, silence</b>, cancel, halt,
+                stop, quiet, sleep</code></li>
+
+            <li>changer la station :
+              <code><b>first, last, next, previous</b></code></li>
+
+            <li>choisir la station :
+              <code><b>zero, one, two, three, four, five,
+                six, seven</b></code></li>
+
+            <li>augmenter le volume :
+              <code>more, louder, plus, higher</code></li>
+
+            <li>diminuer le volume : 
+              <code>less, softer, minus, lower</code></li>
+            </ul>
+            Les mots en gras sont les mieux compris et donc les plus utilisés.
+          </p>
 
           <p>
-            la suite va venir !
+            La méthode <code>app.get</code> extrait le paramètre
+            <code>word</code> et regarde dans quel groupe de synomymes
+            il est présent puis exécute le shell script qui
+            correspond. La reconnaissance vocale est loin d'être
+            fiable à 100% aussi il est important de donner un feed
+            back pour informer si la commande a été comprise ou non.
+            Ce retour est lui aussi sous forme audio. Des phrases ont
+            été enregistrées et sauvegardées dans des fichiers
+            <code>.wav</code>. Elles sont jouées par la commande
+            <code>aplay(1)</code> après la prise en compte des
+            requêtes vocales.
          </p>
 
         <div class="center" style="margin-top: 2em;">
