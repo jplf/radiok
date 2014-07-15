@@ -51,6 +51,17 @@
                "http://jeffskinnerbox.wordpress.com/2012/11/15/getting-audio-out-working-on-the-raspberry-pi/">celle-ci</a>.
          </p>
           <p>
+            Il faut également vérifier que l'entrée audio est
+            correctement prise en compte. Pour ce faire on peut
+            utiliser ce genre de commande :
+            <div class="code">
+              arecord -d 10 -t wav ma_voix.wav
+            </div>
+            En parlant pendant 10 secondes devant le micro on fabrique
+            ainsi un fichier <code>ma_voix.wav</code> que l'on doit
+            pourvoir écouter ensuite avec <code>aplay</code>.
+          </p>
+          <p>
             La solution pour avoir du son sur les haut-parleurs sans
             utiliser la sortie hdmi et pour pouvoir brancher un micro 
             sur la rpi consiste à utiliser une carte son comme la 
@@ -123,10 +134,15 @@ pcm.!default {
             progamme <a href=
             "http://www.speech.cs.cmu.edu/tools/lmtool-new.html">
               <code>lmtool</code></a>. Les fichiers produits portant des
-              noms comme <code>nnnn.lm</code> et <code>nnnn.dic</code>
-              sont fournis en paramètres du programme de
-              reconnaissance. À chaque fois que le corpus est modifié
-              il faut recompiler la liste.
+            noms comme <code>nnnn.lm</code> et <code>nnnn.dic</code>
+            sont fournis en paramètres du programme de
+            reconnaissance. À chaque fois que le corpus est modifié
+            il faut recompiler la liste. On obtient alors de
+            nouveaux fichiers <code>nnnn.*</code>.
+            Ce nom - <code>nnnn</code> - est assigné à la variable
+            <code>corpus</code>
+            dans les scripts <code>listen.sh</code> et
+            <code>trywords.sh</code> il faut donc les mettre à jour.
           </p>
 
           <p>
