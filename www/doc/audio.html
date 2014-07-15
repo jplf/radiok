@@ -251,7 +251,22 @@ pcm.!default {
             <code>.wav</code>. Elles sont jouées par la commande
             <code>aplay(1)</code> après la prise en compte des
             requêtes vocales.
-         </p>
+          </p>
+          <p>
+            Un des problèmes à résoudre pour la mise en place de cette
+            fonctionnalité est le réglage des volumes relatifs du son
+            produit par la radio via <code>mplayer</code> et du son de
+            feed back produit par <code>aplay</code>. Pour que ce feed
+            back serve à quelque chose son volume doit être légèrement
+            supérieur à celui de la radio afin d'être entendu
+            distinctement.  La solution
+            consiste à éditer les fichiers de feed back à l'aide du
+            programme <a href="http://audacity.sourceforge.net/">audacity</a>.
+            Ce programme est très fait et très complet. Il permet de
+            créer assez facilement les fichiers son dont on a besoin,
+            de les modifier à sa guise et de régler l'amplitude des
+            signaux enregistrés.
+          </p>
 
         <div class="center" style="margin-top: 2em;">
           <a class="btn btn-primary" href="index.html">Home</a>
