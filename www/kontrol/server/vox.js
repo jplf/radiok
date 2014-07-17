@@ -17,7 +17,7 @@
 
 /**
  * @module vox
- * It handles commands sent by the vox controller..
+ * It handles commands sent by the vox controller.
  */
 var execSync = require('exec-sync');
 
@@ -41,6 +41,14 @@ var stationIdx = 0;
  * Parameter: index the index of the station in the list of known stations.
  */
 var setStation = function(index) {
+
+    // Check if mplayer is running or not
+    var playing = execSync('/sbin/pidof -s mplayer');
+    if (playing == undefined) {
+        // Not playing so do nothing
+        execSync(say + 'wtf.wav');
+        return;
+    }
 
     stationIdx = index;
     // Feed back.
