@@ -24,6 +24,8 @@ LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
 todo	: $(PROG)
+clean	:
+	@$(RM) $(PROG) *~
 
 #______________________________________________________________________________
 
