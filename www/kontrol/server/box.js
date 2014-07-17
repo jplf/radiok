@@ -27,9 +27,12 @@ var vox      = require('./vox');
 
 // The program to execute on a regular basis
 var job;
+// The default trigger time
 var hour      = 22;
 var minute    =  0;
+// Not triggered by default
 var triggered = false;
+// Play France Inter for 30 minutes by default
 var duration  = 30;
 var station   = 'b-inter';
 
