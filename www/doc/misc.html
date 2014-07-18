@@ -32,15 +32,74 @@
             sauvagement et redémarrer.
           </p>
 
+          <h2>Les améliorations prévues</h2>
           <p>
-            
+            En fonction de mon courage et de mon temps disponible j'ai
+            le projet d'implémenter de nouvelles fonctions à la
+            version actuelle de <em class="rk">RadioK</em>.
+            <ul class="proc">
+              <li>
+                Traiter le cas du week-end. La version actuelle
+                suppose que le réveil n'est pas déclenché le samedi et
+                le dimanche matin même si l'option <code>set</code>
+                est activée. Néanmoins il se trouve qu'on a besoin
+                parfois de se lever à une heure précise en fin de
+                semaine. Donc cette possibilité devrait être implémentée.
+              </li>
+              <li>
+                Avoir la possibilité de choisir une station de radio
+                pour le réveil indépendamment de la dernière station
+                sélectionnée. Si
+                j'écoute Fip dans la journée et que je veux être
+                réveillé par les informations de France-inter le matin
+                je devrais pouvoir le faire sans avoir à penser
+                changer la station le soir avant de m'endormir.
+              </li>
+              <li>
+                L'implémentation actuelle utilise beaucoup des scripts
+                bash qui sont diffiles à maintenir correctement. Une
+                version Python des commandes de <code>mplayer</code>
+                serait plus adaptée.
+              </li>
+              <li>
+                Le contrôle vocal dans la version actuelle est basé
+                sur une liste de mots anglais. Il serait intéressant
+                de tester 
+                <a href=
+                 "http://code.google.com/p/voicecmdr/wiki/VoiceRecognitionFR">
+                  ce code</a> pour avoir une version française du
+                  langage de commande.
+              </li> 
+              <li>
+                On the other hand it would be nice to have an english
+                version of this documentation. At least
+                the <code>README</code> on
+                <a href="https://github.com/jplf/radiok">GtiHub</a>
+                should be augmented.
+              </li>
+            </ul>
           </p>
-
+ 
           <h2>Quelques références utiles</h2>
 
           <p>
-            &hellip; ça vient &hellip;
+            La référence la plus utile reste
+            <a href="http://www.google.com">google</a>. Pour chaque
+            question qu'on se pose il suffit la plupart du temps de
+            googler la question avec les quelques mots-clé qui vont
+            bien pour obtenir une réponse.
           </p>
+          <p>
+            Le <a href="http://www.themagpi.com/issue/issue-21/">numéro
+            21</a> du magazine
+            <a href="http://www.themagpi.com/">MagPi</a> contient un
+            article page 22 décrivant une implémentation d'une radio
+            internet similaire à <em class="rk">RadioK</em>. La
+            <a href="http://ziemann.web.cern.ch/ziemann/gadget/raspiradio/">
+              page</a> de Volker Ziemann donne également des détails
+              sur son application.
+          </p>
+
         <div class="center" style="margin-top: 2em;">
           <a class="btn btn-primary" href="index.html">Home</a>
         </div>
