@@ -25,7 +25,7 @@ LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 
 todo	: $(PROG)
 clean	:
-	@$(RM) $(PROG) *~
+	@$(RM) $(PROG) *~ screenlog.?
 
 #______________________________________________________________________________
 
