@@ -62,10 +62,19 @@
             pourvoir écouter ensuite avec <code>aplay</code>.
           </p>
           <p>
+            Pour régler les niveaux de sortie et d'entrée on peut
+            utiliser la commande <code>alsamixer(1)</code> depuis un
+            terminal <code>xterm</code>. L'interface est des plus
+            frustes mais elle permet de définir les volumes des
+            haut-parleurs et du micro.
+          </p>
+          
+          <p>
             La solution pour avoir du son sur les haut-parleurs sans
             utiliser la sortie hdmi et pour pouvoir brancher un micro 
             sur la rpi consiste à utiliser une carte son comme la 
-            <a href="http://www.amazon.fr/gp/product/B0037AOUUQ">
+            <a target="window.open('','matos')"
+               href="http://www.amazon.fr/gp/product/B0037AOUUQ">
               Logilink 250743</a>. L'installation ne pose
             guère de problème car le module driver est disponible dans
             les distributions linux.
@@ -104,7 +113,7 @@ pcm.!default {
   slave.pcm "softvol"
 }
             </pre>
-            Le contenu de ce fichier est decrit sur
+            Le contenu de ce fichier est décrit sur
             <a href=
 "http://alsa.opensrc.org/How_to_use_softvol_to_control_the_master_volume">
               cette page</a>.
@@ -161,10 +170,25 @@ pcm.!default {
             mot décodé est transmis par une requête http au server.
           </p>
           <p>
+            Le programme <code>whatusay</code> accepte un certain
+            nombre d'arguments dont les 2 principaux utilisés pour
+            <em class="rk">RadioK</em> sont <code>-adcdev</code> et
+            <code>-url</code>. Le premier <code>-adcdev</code> permet
+            de spécifier le nom du device d'entrée. Là aussi il faut
+            faire un effort pour comprendre quelle valeur
+            mettre. Normalement quelque chose comme <code>hw:n</code>
+            avec <code>n</code> égal à l'indice du device d'entrée (0 ou 1 ou
+            plus) doit marcher. Le deuxième argument, spécifique à 
+            <em class="rk">RadioK</em>, <code>-url</code> permet de
+            définir l'url du serveur auquel envoyer les commandes
+            interprétées par <code>whatusay</code>.
+          </p> 
+          <p>
             Pour refabriquer le programme il faut installer
             <code>cmusphinx</code> et <code>curl</code> puis lancer
-            <code>make</code> dans le répertoire <code>RADIOK_HOME/vox/ps</code>.
-            Le <code>Makefile</code> a été gardé délibérèment très
+            <code>make</code> dans le répertoire
+            <code>RADIOK_HOME/vox/ps</code>.
+            Le <code>Makefile</code> a été gardé délibérément très
             simple. Il doit éventuellement être modifié en
             fonction de la plateforme.
           </p>
@@ -262,10 +286,18 @@ pcm.!default {
             distinctement.  La solution
             consiste à éditer les fichiers de feed back à l'aide du
             programme <a href="http://audacity.sourceforge.net/">audacity</a>.
-            Ce programme est très fait et très complet. Il permet de
+            Ce programme est très bien fait et très complet. Il permet de
             créer assez facilement les fichiers son dont on a besoin,
             de les modifier à sa guise et de régler l'amplitude des
             signaux enregistrés.
+          </p>
+          <p>
+            Sur le GitHub de <em class="rk">RadioK</em> dans le
+            répertoire
+            <a href=
+               "https://github.com/jplf/radiok/tree/master/lib/sounds">
+              <code>sounds</code></a> on trouve les fichiers son
+              utilisés pour le feed back.
           </p>
 
         <div class="center" style="margin-top: 2em;">
