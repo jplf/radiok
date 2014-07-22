@@ -103,10 +103,34 @@ AngularJS framework.
 
 ### Installation
 
-Coming soon
+This application can run on any computer running the linux operating system.
+It is primarily intended to be installed on a raspberry pi box.
+
+The linux distribution must have the program *mplayer* available, a working
+audio configuration and an internet connection.
+
+The first step consists of launching the command line scripts to make sure
+that the basic commands work as expected.
+
+Then the web server has to be set up. The NodeJS library and the necessary
+modules must be downloaded and installed. The slider widget and the bootstrap
+components have also to be installed in order to have a web user interface
+correctly displayed. The style of the web pages is defined by a theme and
+the radiok customization. The css file has to be regenerated in case of
+a modification of the style.
+
+The server is started by the script start.sh. The log files are found in
+the *run* directory. In case of client-side errors a browser has the
+possibility to show error messages.
 
 ### Voice control
 
-Coming soon
+The list of words to be used as commands are kept in the file
+*corpus-en.tst*. This file has to be compiled by the program
+[*lmtool*](http://www.speech.cs.cmu.edu/tools/lmtool-new.html).
+
+The source of the recognition program is in the file *whatusay.c*. If needed
+the program can be regenerated using *make*. It is a good idea to see if it
+works correctly by running it with *null* as the server url option.
 
 
