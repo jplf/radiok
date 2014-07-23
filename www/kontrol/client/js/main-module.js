@@ -21,8 +21,8 @@ var mainModule = angular.module('main-module', ['ui.bootstrap', 'ui.slider']);
 
 angular.module('main-module')
     .constant('version',
-              {'release': '1.0',
-               'date':    '23 June 2014'
+              {'release': '1.1',
+               'date':    '23 July 2014'
               })
 /**
  * The routing configuration
