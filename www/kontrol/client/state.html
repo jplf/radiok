@@ -7,22 +7,29 @@
     <h2>Current state of the Radio Box</h2>
 
       <table class="table table-striped table-bordered table-hover"
-             style="width: 90%; margin: 2em auto;">
-        <tr>
-          <td tooltip="Server time & date">radiok</td><td>{{state.radiok}}</td>
-        </tr><tr>
-          <td tooltip="Onair.sh last message">onair</td><td>{{state.onair}}</td>
-        </tr><tr>
-          <td tooltip="Iwconfig wlan0">wifi</td><td>{{state.wifi}}</td>
-        </tr><tr>
-          <td tooltip="First line of crontab">crontab</td>
+             style="width: 80%; padding-left: 2em; margin: 2em auto;">
+        <tr tooltip-placement="left" tooltip="Server time & date">
+          <td>radiok</td><td>{{state.radiok}}</td>
+        </tr>
+        <tr tooltip-placement="left"
+                 tooltip="Onair.sh last message">
+          <td >onair</td><td>{{state.onair}}</td>
+        </tr>
+        <tr tooltip-placement="left" tooltip="Iwconfig wlan0">
+          <td>wifi</td><td>{{state.wifi}}</td>
+        </tr>
+        <tr tooltip-placement="left" tooltip="First line of crontab">
+          <td>crontab</td>
           <td>{{state.crontab}}</td>
-        </tr><tr>
-          <td tooltip="Trigger status">trigger</td><td>{{state.trigger}}</td>
-        </tr><tr>
-          <td tooltip="At queue">atq</td><td>{{state.atq}}</td>
-        </tr><tr>
-          <td tooltip="Mplayer command line">mplayer</td>
+        </tr>
+        <tr tooltip-placement="left" tooltip="Trigger status">
+          <td>trigger</td><td>{{state.trigger}}</td>
+        </tr>
+        <tr tooltip-placement="left" tooltip="At queue">
+          <td>atq</td><td>{{state.atq}}</td>
+        </tr>
+        <tr tooltip-placement="left" tooltip="Mplayer process">
+          <td>mplayer</td>
           <td>{{state.mplayer}}</td>
         </tr>
       </table>
