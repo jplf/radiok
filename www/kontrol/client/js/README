@@ -1,0 +1,6 @@
+File ui-bootstrap has been created in July 2014 from
+http://angular-ui.github.io/bootstrap/ with the following components:
+alert, buttons, position, progressbar, timepicker, tooltip
+
+License can be read in:
+https://github.com/angular-ui/bootstrap/blob/master/LICENSE
