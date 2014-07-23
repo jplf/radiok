@@ -12,6 +12,7 @@
         <tr>
           <td>
             <div ng-model="triggerTime"
+                 tooltip-placement="left" tooltip="Hour : Minute"
                  style="display:inline-block;width:10em; margin:1em">
               <timepicker hour-step="1" minute-step="1" show-meridian="false">
               </timepicker>
@@ -35,7 +36,7 @@
 
       <button type="button" class="btn btn-primary"
               style="margin-top:1em;margin-bottom:3em;"
-              tooltip="Press to validate changes on the server !"
+              tooltip="Send changes to the server !"
               ng-model="alarm" ng-click="validate()" value="running">
         Validate
       </button>

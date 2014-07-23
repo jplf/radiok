@@ -9,14 +9,14 @@
         <tr>
           <td style="font-weight: bold; font-size:larger;">
             <a href="#">
-              <span ng-class=
-                    "{true: 'on', false: 'off'}[running]">
+              <span ng-class= "{true: 'on', false: 'off'}[running]"
+                    tooltip="The selected radio station">
                 {{stationName}}
             </span></a>
           </td>
           <td>
             <button
-               tooltip="Press to switch on or off the radio !"
+               tooltip="Switch on or off the radio !"
                ng-model="button" ng-click="setOnOff()" value="running">
               {{onOff}}
             </button>
