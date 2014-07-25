@@ -18,6 +18,12 @@ http://www.fonteny.org/radiok
 The code is pretty well documented in english and
 below is a brief summary in english of what is detailed in the full web site.
 
+### Changelog
+
+| 21 July 2014 | This short README is online. Version 1.1 |
+| 20 July 2014 | Documentation available in french |
+| 15 June 2014 | First usable version 1.0 |
+
 ### Hardware
 
 A computer with a sound card, a loud speaker and an internet
@@ -71,7 +77,14 @@ performs the voice recognition.
 #### say.sh
 
 This script encapsulates the call to *aplay* used to provide audio
-feed back to the user.
+feed back to the user. It uses a collection of recorded sentences contrary
+to tell.sh which generates sounds from a string of characters.
+
+#### tell.sh
+
+This script encapsulates the google speech synthesis function and
+is also used to provide audio feed back to the user. It is an alternative
+to say.sh
 
 #### start.sh
 
