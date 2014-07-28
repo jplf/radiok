@@ -24,8 +24,12 @@ var execSync = require('exec-sync');
 // The scripts which can be called.
 var onair;
 var setVolume;
-var say;
 
+// Output recorded sounds
+var say;
+// Output synthetized sounds
+var tell;
+ 
 // Delta volume. Increment or decrement in dB. See amixer(1)
 var dvol = '12';
 
@@ -46,13 +50,14 @@ var setStation = function(index) {
     var playing = execSync('/sbin/pidof -s mplayer');
     if (playing == undefined) {
         // Not playing so do nothing
-        execSync(say + 'wtf.wav');
+        execSync(tell + "la radio n'est pas en ligne actuellement !");
         return;
     }
 
     stationIdx = index;
-    // Feed back.
-    execSync(say + 'ok.wav');
+    // Feed back. Tell the name of the station
+    execSync(tell + stationList[index].name);
+
     // Stop the current station then play the new one.
     execSync(onair + '-k; ' + onair + stationList[index].key);
     logger.info('Tuned to ' + stationList[index].key);
@@ -68,6 +73,7 @@ module.exports = {
         logger = msger;
         logger.info('Vox Kontroller module initialization');
         onair = root + '/bin/onair.sh ';
+        tell  = root + '/bin/tell.sh ';
         setVolume = root + '/bin/set_volume.sh ' + dvol + ' ';
         say = root + '/bin/say.sh ';
 
@@ -216,7 +222,7 @@ module.exports = {
                 code = 'bye';
             }
             else {
-                execSync(say + 'notundersand.wav');
+                execSync(tell + "Je n'ai pas compris");
                 code = 'unknown';
             }
 
