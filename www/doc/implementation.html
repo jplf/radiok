@@ -144,7 +144,18 @@
 
           <h3>say.sh</h3>
           Ce script encapsule <code>aplay(1)</code> et génère un son
-          avec un fichier de feedback stocké dans <code>lib/sounds</code>.
+          avec un fichier de feedback stocké
+          dans <code>lib/sounds</code>. Contrairement
+          à <code>tell.sh</code> les fichiers son doivent être
+          enregistrés à l'avance.
+        
+
+          <h3>tell.sh</h3>
+          Ce script encapsule l'utilisation de l'outil de synthèse
+          vocale mis en ligne par google. Il permet de fournir un feed
+          back et peut servir d'alternative à <code>say.sh</code> car
+          il est capable de générer du français correct à partir d'une
+          courte chaine de caractères.
 
           <h3>listen.sh</h3>
           Ce script encapsule le programme de contrôle vocal
