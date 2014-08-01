@@ -23,7 +23,7 @@ below is a brief summary in english of what is detailed in the full web site.
 |--------------|---------|
 | 21 July 2014 | This short README is online. Version 1.1 |
 | 20 July 2014 | Documentation available in french |
-| 15 June 2014 | First usable version 1.0 |
+| 15 July 2014 | First usable version 1.0 |
 
 ### Hardware
 
