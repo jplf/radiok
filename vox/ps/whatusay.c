@@ -157,6 +157,9 @@ static void recognize_from_microphone()
     char const *hyp;
     char const *uttid;
     cont_ad_t *cont;
+    /* Used to estimate the processing time */
+    struct timeval tv;
+    char start_time[128];
 
     /* For curl */
     int rc;
@@ -218,9 +221,22 @@ static void recognize_from_microphone()
          * NULL argument to uttproc_begin_utt =>
          * automatic generation of utterance-id.
          */
-        if (ps_start_utt(ps, NULL) < 0) {
+
+       if (ps_start_utt(ps, NULL) < 0) {
             E_FATAL("Failed to start utterance\n");
         }
+
+        /*
+         * Beginning of processing.
+         * Number of milliseconds since Epoch.
+         * This time is passed to the server which computes
+         * the duration.
+         */
+        gettimeofday(&tv, NULL);
+        sprintf(start_time, "%llu",
+                (unsigned long long)(tv.tv_sec) * 1000 +
+                (unsigned long long)(tv.tv_usec) / 1000);
+
         ps_process_raw(ps, adbuf, k, FALSE, FALSE);
         printf("\n");
 
@@ -273,7 +289,7 @@ static void recognize_from_microphone()
          */
         ps_end_utt(ps);
         hyp = ps_get_hyp(ps, NULL, &uttid);
-        printf("%s: %s\n", uttid, hyp);
+        printf("%s: %s %s\n", uttid, hyp, start_time);
         fflush(stdout);
 
         if (hyp && strlen(hyp) > 1) {
@@ -284,6 +300,8 @@ static void recognize_from_microphone()
             if (curl != NULL) {
               strcpy(command, url);
               strcat(command, word);
+              strcat(command, "/");
+              strcat(command, start_time);
               curl_easy_setopt(curl, CURLOPT_URL, command);
 
               rc = curl_easy_perform(curl);

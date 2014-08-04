@@ -102,14 +102,23 @@ module.exports = {
 //__________________________________________________________________________
        /**
          * Processes a word request.
+         * The number of milliseconds since 1/1/1970 is also passed by the
+         * voice recognition program. This number is measured each time
+         * a word is understood. It allows to figure out how long it takes
+         * process a command.
          * Returns the result of the processing.
          */
-        app.get('/vox/process/:word', function(req, res) {
+        app.get('/vox/process/:word/:time?', function(req, res) {
 
             var word = req.params.word;
             var code = 'undefined';
+            var time = req.params.time;
 
-            logger.info('Word ' + word);
+            logger.debug(req.originalUrl);
+            // Number of milliseconds now since Epoch.
+            var now = new Date();
+            var dt  = now.getTime() - time;
+            logger.info('Word: ' + word + ' dt: ' + dt);
 
             /**
              * Start playing the last selected radio.
@@ -188,6 +197,7 @@ module.exports = {
                         setStation(index);
                     }
                     else {
+                        execSync(tell + 'Index de station invalid ' + word);
                         execSync(say + 'sure.wav');
                     }
                 }
@@ -222,7 +232,8 @@ module.exports = {
                 code = 'bye';
             }
             else {
-                execSync(tell + "Je n'ai pas compris");
+                // Protect apostrophe.
+                execSync(tell + "\"Je n'ai pas compris\"");
                 code = 'unknown';
             }
 
