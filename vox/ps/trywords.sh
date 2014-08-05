@@ -12,7 +12,7 @@
 # Other possible options: -adcdev hw:n -samprate 44000 -samprate 44000 -nfft 2048
 #________________________________________________________________________________
 
-corpus=9266
+corpus=words
 opt="-adcdev plughw:1,0 -lm $corpus.lm -dict $corpus.dic"
 whatusay $opt -url null -agc max -agcthresh 2.0
 
