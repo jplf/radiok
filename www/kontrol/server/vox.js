@@ -50,7 +50,7 @@ var setStation = function(index) {
     var playing = execSync('/sbin/pidof -s mplayer');
     if (playing == undefined) {
         // Not playing so do nothing
-        execSync(tell + "la radio n'est pas en ligne actuellement !");
+        execSync(tell + "\"la radio n'est pas en ligne actuellement\"");
         return;
     }
 
