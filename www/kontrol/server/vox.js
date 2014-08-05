@@ -83,13 +83,14 @@ module.exports = {
          */
         var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
         var noList    = ['no', 'nope', 'no way'];
-        var plusList  = ['more', 'louder', 'plus', 'higher'];
-        var minusList = ['less', 'lower', 'minus'];
+        var plusList  = ['more', 'louder', 'plus', 'higher', 'loud'];
+        var minusList = ['less', 'lower', 'minus', 'weaker', 'soft', 'softer'];
         var workList  = ['play', 'run', 'begin', 'music', 'radio', 'wake up'];
         var stopList  = ['terminate', 'shut up', 'silence', 'sleep', 'quiet'];
         var digitList = ['zero', 'one', 'two', 'three', 'four', 'five',
                          'six', 'seven', 'height', 'nine', 'ten'];
         var indexList = ['first', 'previous', 'next', 'last'];
+        var whichList = ['which', 'current', 'selected', 'station'];
 
         // The list of stations is fetched thanks to the script 'onair.sh'
         var str = execSync(onair + '-l');
@@ -140,12 +141,12 @@ module.exports = {
              * Increase or decrease volume.
              */
             else if (plusList.indexOf(word) >= 0) {
-                execSync(say + 'louder.wav');
+                execSync(tell + 'Le volume va être augmenté');
                 execSync(setVolume + '+');
                 code = 'plus';
             }
             else if (minusList.indexOf(word) >= 0) {
-                execSync(say + 'softer.wav');
+                execSync(tell + 'Le volume va être diminué');
                 execSync(setVolume + '-');
                 code = 'minus';
             }
@@ -182,7 +183,7 @@ module.exports = {
                 }
                 else {
                     // No new correct index decoded.
-                    execSync(say + 'sorry.wav');
+                    execSync(tell + 'Index de station invalide ' + word);
                 }
 
                 code = 'index';
@@ -197,40 +198,17 @@ module.exports = {
                         setStation(index);
                     }
                     else {
-                        execSync(tell + 'Index de station invalid ' + word);
-                        execSync(say + 'sure.wav');
+                        execSync(tell + 'Même index de station  ' + word);
                     }
                 }
                 else {
                     // No new correct index decoded.
-                    execSync(say + 'sorry.wav');
+                    execSync(tell + 'Index de station invalide ' + word);
                 }
 
                 code = 'digit';
             }
             // Other instructions are not yet implemented.
-            else if (yesList.indexOf(word) >= 0) {
-                // Actually does nothing
-                execSync(say + 'ok.wav');
-                code = 'ok';
-            }
-            else if (noList.indexOf(word) >= 0) {
-                // Actually does nothing
-                execSync(say + 'too_bad.wav');
-                code = 'ok';
-            }
-            else if ('shutdown' === word) {
-                execSync(say + 'confirm.wav');
-                code = 'shutdown';
-            }
-            else if ('again' === word) {
-                execSync(say + 'sure.wav');
-                code = 'again';
-            }
-            else if ('goodbye' === word) {
-                execSync(say + 'cu_later.wav');
-                code = 'bye';
-            }
             else {
                 // Protect apostrophe.
                 execSync(tell + "\"Je n'ai pas compris\"");
