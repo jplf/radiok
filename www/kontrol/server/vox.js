@@ -117,8 +117,9 @@ module.exports = {
 
             logger.debug(req.originalUrl);
             // Number of milliseconds now since Epoch.
-            var now = new Date();
-            var dt  = now.getTime() - time;
+            var now  = (new Date()).getTime();
+            var dt   = now - time;
+            logger.info('Times: ' + time + ' ' + now);
             logger.info('Word: ' + word + ' dt: ' + dt);
 
             /**
@@ -128,6 +129,17 @@ module.exports = {
                 execSync(say + 'welcome_back.wav');
                 execSync(onair);
                 code = 'work';
+            }
+            /**
+             * Tell which radio is currently selected.
+             */
+            else if (whichList.indexOf(word) >= 0) {
+                var stationName = 'inconnue';
+                if (stationIdx >= 0 && stationIdx <= stationList.length - 1) {
+                    stationName = stationList[stationIdx].name;
+                }
+                execSync(tell + 'La station sélectionnée est ' + stationName)
+                code = 'which';
             }
             /**
              * Stop playing.

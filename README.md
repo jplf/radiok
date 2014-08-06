@@ -21,6 +21,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 06 August 2014 | Audio feedback improved. Version 1.2 |
 | 21 July 2014 | This short README is online. Version 1.1 |
 | 20 July 2014 | Documentation available in french |
 | 15 July 2014 | First usable version 1.0 |
