@@ -115,12 +115,12 @@ module.exports = {
             var code = 'undefined';
             var time = req.params.time;
 
-            logger.debug(req.originalUrl);
+            // logger.debug(req.originalUrl);
             // Number of milliseconds now since Epoch.
             var now  = (new Date()).getTime();
             var dt   = now - time;
-            logger.info('Times: ' + time + ' ' + now);
             logger.info('Word: ' + word + ' dt: ' + dt);
+            // logger.debug('Times: ' + time + ' ' + now);
 
             /**
              * Start playing the last selected radio.
