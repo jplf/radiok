@@ -96,6 +96,12 @@ module.exports = {
         var str = execSync(onair + '-l');
         stationList = JSON.parse(str);
 
+        // The current status of the player [key, pid]
+        str = execSync(onair + '-s');
+        var s = str.split(',');
+        this.setStationIdx(s[0]);
+        logger.info('Station key, index set to ' + s[0] + ', ' + stationIdx);
+
         for (var i=0; i <stationList.length; i++) {
             logger.log('info', stationList[i].key + ': '
                        + stationList[i].name);
