@@ -39,8 +39,11 @@ var station   = 'b-inter';
 // The script to run if triggered.
 var onair;
 var logger;
+
 // The name of the file storing the trigger state.
 var triggerStateFile;
+// The name of the triggered station which can be different from the current one.
+var triggeredStation = 'b-inter';
 
 //__________________________________________________________________________
     /**
@@ -85,7 +88,8 @@ var setTrigger = function(h, m, set) {
             logger.log('info', 'My radio goes off at '
                        + moment().format('HH:mm'));
 
-            var cmd = execSync(onair + '-t ' + duration + ' ' + station + ' &');
+            var cmd = execSync(onair + '-t ' + duration
+                               + ' ' + triggeredStation + ' &');
         },
         start: false
     });
@@ -104,7 +108,7 @@ var setTrigger = function(h, m, set) {
         minute:   minute,
         duration: duration,
         set:      triggered,
-        station:  station
+        station:  triggeredStation
     };
 
     fs.writeFile(triggerStateFile, JSON.stringify(triggerState, null, 4),
@@ -172,7 +176,8 @@ module.exports = {
                 output.trigger = 'Unset at ';
             }
             // It is appended to the output
-            output.trigger = output.trigger + hour + ':' + minute;
+            output.trigger = output.trigger + hour + ':' + minute
+            + ' on ' + triggeredStation;
 
             res.send(output);
         });
