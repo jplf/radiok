@@ -1,15 +1,7 @@
 /*___________________________________________________________________________*/
 /**
- * @file ecoute.c
- * @brief An other version for radiok.
- *
- * @doc This version use only the microphone to get the input stream.
- *      It strives to figure out which words were said.
- *      This program is used as a client for the radiok control server.
- *      The commands to the server are sent by http get calls.
- *      These calls are implemented usin libcurl.
- *      The url of the server is given by the command line option -url.
- *      If this url is 'none', 'null' no http connections are established.
+ * @file hark.c
+ * @brief An other version of the voice recognition program for radiok.
  *
  * @author Jean-Paul Le Fèvre
  */
@@ -47,44 +39,82 @@
  *
  * ====================================================================
  */
+/*
+ * This code has been modified by Jaypee starting from this this program:
+ * cont_adseg.c Continuously listen and segment input speech into utterances.
+ * Found in directory sphinxbase-0.8/src/sphinx_adtools
+ * 
+ * 27-Jun-96    M K Ravishankar at Carnegie Mellon University
+ */
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <getopt.h>
 
 #include <sphinxbase/prim_type.h>
 #include <sphinxbase/ad.h>
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
 
+typedef enum { false = 0, true = 1 } bool;
+
 /*
  * Segment raw A/D input data into utterances whenever silence
  * region of given duration is encountered.
  * Utterances are written to files named 0001.raw, 0002.raw, 0003.raw, etc.
  */
-int
-main(int32 argc, char **argv)
+int main(int32 argc, char **argv)
 {
     ad_rec_t *ad;
     cont_ad_t *cont;
-    int32 k, uttno, ts, uttlen, sps, endsilsamples;
-    float endsil;
+    int32 k, uttno, ts, uttlen, endsilsamples;
     int16 buf[4096];
     FILE *fp;
     char file[1024];
 
-    if ((argc != 3) ||
-        (sscanf(argv[1], "%d", &sps) != 1) ||
-        (sscanf(argv[2], "%f", &endsil) != 1) || (endsil <= 0.0)) {
-        E_FATAL("Usage: %s <sampling-rate> <utt-end-sil(sec)>\n", argv[0]);
+    extern char *optarg;
+    extern int   optind;
+    int opt;
+
+    int error = 0;
+    int sps = 44100;
+    float endsil = 1.0;
+    bool verbose = false;
+    char device[64];
+    strcpy(device, "plughw:1,0");
+
+    while((opt = getopt(argc, argv, "s:r:D:v")) != EOF) {
+
+      switch(opt) {
+      case 'v'	:
+        verbose = true;
+        break;
+
+      case 'r'	:
+        sps = atoi(optarg);
+        if(sps < 4000 || sps > 64000)
+          error++;
+        break;
+
+      default:
+        error++;
+      }
+    }
+
+    if (error) {
+        E_FATAL(
+        "Usage: %s [-v] [-r sampling-rate] [-s silence(sec)] -D device\n",
+        argv[0]);
     }
 
     /* Convert desired min. inter-utterance silence duration to #samples */
     endsilsamples = (int32) (endsil * sps);
 
-    if ((ad = ad_open_dev("plughw:1,0", sps)) == NULL) {
+    if ((ad = ad_open_dev(device, sps)) == NULL) {
         E_FATAL("Failed to open audio device\n");
     }
 
@@ -95,17 +125,23 @@ main(int32 argc, char **argv)
         E_FATAL("cont_ad_init failed\n");
 
     /* Calibrate continuous listening for background noise/silence level */
-    printf("Calibrating ...");
-    fflush(stdout);
+    if (verbose) {
+      printf("Calibrating ...");
+    }
+
     ad_start_rec(ad);
-    if (cont_ad_calib(cont) < 0)
-        printf(" failed\n");
-    else
+    if (cont_ad_calib(cont) < 0) {
+        printf(" calibration failed\n");
+    }
+    else if (verbose) {
         printf(" done\n");
+    }
 
     /* Forever listen for utterances */
-    printf("You may speak now\n");
-    fflush(stdout);
+    if (verbose) {
+      printf("You may speak now\n");
+    }
+
     uttno = 0;
     for (;;) {
         /* Wait for beginning of next utterance; for non-silence data */
@@ -115,12 +151,15 @@ main(int32 argc, char **argv)
 
         /* Non-silence data received; open and write to new logging file */
         uttno++;
-        sprintf(file, "%04d.raw", uttno);
+        sprintf(file, "%03d.raw", uttno);
         if ((fp = fopen(file, "wb")) == NULL)
             E_FATAL_SYSTEM("Failed to open '%s' for writing", file);
+
         fwrite(buf, sizeof(int16), k, fp);
         uttlen = k;
-        printf("Utterance %04d, logging to %s\n", uttno, file);
+        if (verbose) {
+          printf("Utterance %04d, logging to %s\n", uttno, file);
+        }
 
         /* Note current timestamp */
         ts = cont->read_ts;
@@ -151,13 +190,16 @@ main(int32 argc, char **argv)
         }
         fclose(fp);
 
-        printf("\tUtterance %04d = %d samples (%.1fsec)\n\n",
-               uttno, uttlen, (double) uttlen / (double) sps);
+        if (verbose) {
+          printf("\tUtterance %04d = %d samples (%.1fsec)\n\n",
+                 uttno, uttlen, (double) uttlen / (double) sps);
+        }
     }
 
     ad_stop_rec(ad);
     cont_ad_close(cont);
     ad_close(ad);
+
     return 0;
 }
 /*___________________________________________________________________________*/
