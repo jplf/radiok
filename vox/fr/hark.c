@@ -43,6 +43,8 @@
  * This code has been modified by Jaypee starting from this this program:
  * cont_adseg.c Continuously listen and segment input speech into utterances.
  * Found in directory sphinxbase-0.8/src/sphinx_adtools
+ *
+ * The original code was not very modern.
  * 
  * 27-Jun-96    M K Ravishankar at Carnegie Mellon University
  */
@@ -53,14 +55,21 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#include <getopt.h>
 
 #include <sphinxbase/prim_type.h>
 #include <sphinxbase/ad.h>
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
-
+/*
+ * To parse the command line arguments.
+ */
+#include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
+
+/*
+ * Prints syntax and exit.
+ */
+static void usage();
 
 /*
  * Segment raw A/D input data into utterances whenever silence
@@ -80,18 +89,32 @@ int main(int32 argc, char **argv)
     extern int   optind;
     int opt;
 
+    /*
+     * The main parameters and their default values.
+     */
     int error = 0;
     int sps = 44100;
     float endsil = 1.0;
     bool verbose = false;
     char device[64];
-    strcpy(device, "plughw:1,0");
 
-    while((opt = getopt(argc, argv, "s:r:D:v")) != EOF) {
+    char* s = getenv("AUDIODEV");
+    if (s == NULL) {
+      strcpy(device, "plughw:1,0");
+    }
+    else {
+      strcpy(device, s);
+    }
+
+    while((opt = getopt(argc, argv, "s:r:D:vh")) != EOF) {
 
       switch(opt) {
       case 'v'	:
         verbose = true;
+        break;
+
+      case 'h'	:
+        usage(argv[0]);
         break;
 
       case 'r'	:
@@ -100,15 +123,23 @@ int main(int32 argc, char **argv)
           error++;
         break;
 
+      case 's'	:
+        endsil = atof(optarg);
+        if(endsil < 0. || endsil > 10.)
+          error++;
+        break;
+
       default:
         error++;
       }
     }
 
+    if (verbose) {
+      printf("sample rate: %d\nsilence: %f\ndevice: %s\n", sps, endsil, device);
+    }
+
     if (error) {
-        E_FATAL(
-        "Usage: %s [-v] [-r sampling-rate] [-s silence(sec)] -D device\n",
-        argv[0]);
+      usage(argv[0]);
     }
 
     /* Convert desired min. inter-utterance silence duration to #samples */
@@ -142,15 +173,13 @@ int main(int32 argc, char **argv)
       printf("You may speak now\n");
     }
 
-    uttno = 0;
-    for (;;) {
+    for (uttno = 0; uttno < 999; uttno++) {
         /* Wait for beginning of next utterance; for non-silence data */
         while ((k = cont_ad_read(cont, buf, 4096)) == 0);
         if (k < 0)
             E_FATAL("cont_ad_read failed\n");
 
         /* Non-silence data received; open and write to new logging file */
-        uttno++;
         sprintf(file, "%03d.raw", uttno);
         if ((fp = fopen(file, "wb")) == NULL)
             E_FATAL_SYSTEM("Failed to open '%s' for writing", file);
@@ -201,5 +230,17 @@ int main(int32 argc, char **argv)
     ad_close(ad);
 
     return 0;
+}
+/*___________________________________________________________________________*/
+/*
+ * Prints usage and exit.
+ * Parameter prog the name of the program.
+ */
+static void usage(char* prog) {
+
+  printf("Usage: %s [-v] [-r sampling-rate] [-s silence(sec)] [-D device]\n",
+          prog);
+
+  exit(0);
 }
 /*___________________________________________________________________________*/
