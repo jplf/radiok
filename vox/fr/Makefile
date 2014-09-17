@@ -25,7 +25,10 @@ LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 
 todo	: $(PROG)
 clean	:
-	@$(RM) $(PROG) *~ screenlog.? ???.raw ???.flac
+	@$(RM) $(PROG) *~ encode screenlog.? ???.raw ???.flac
+
+encode :
+	@$(CC) -O2 -lFLAC -lm encode.c -o $@
 
 #______________________________________________________________________________
 
