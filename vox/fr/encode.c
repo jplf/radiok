@@ -34,7 +34,6 @@
 /*
  * This example shows how to use libFLAC to encode a WAVE file to a FLAC
  * file.  It only supports 16-bit stereo files in canonical WAVE format.
- * #include "compat.h"
  *
  * Complete API documentation can be found at:
  *   http://flac.sourceforge.net/api/
@@ -55,9 +54,9 @@ static void progress_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 b
 
 #define READSIZE 1024
 
-static unsigned total_samples = 0; /* can use a 32-bit number due to WAVE size limitations */
-static FLAC__byte buffer[READSIZE/*samples*/ * 2/*bytes_per_sample*/ * 1/*channels*/]; /* we read the WAVE data into here */
-static FLAC__int32 pcm[READSIZE/*samples*/ * 1/*channels*/];
+static unsigned total_samples = 0;
+static FLAC__byte buffer[READSIZE * 2]; 
+static FLAC__int32 pcm[READSIZE];
 
 int main(int argc, char *argv[])
 {
@@ -187,7 +186,5 @@ int main(int argc, char *argv[])
 
 void progress_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 bytes_written, FLAC__uint64 samples_written, unsigned frames_written, unsigned total_frames_estimate, void *client_data)
 {
-	(void)encoder, (void)client_data;
 
-	fprintf(stderr, "wrote %" PRIu64 " bytes, %" PRIu64 "/%u samples, %u/%u frames\n", bytes_written, samples_written, total_samples, frames_written, total_frames_estimate);
 }
