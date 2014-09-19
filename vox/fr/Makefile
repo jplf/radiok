@@ -23,12 +23,16 @@ CFLAGS  := -O2
 LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
-todo	: $(PROG)
-clean	:
-	@$(RM) $(PROG) *~ encode screenlog.? ???.raw ???.flac
+todo	: encode hark
 
-encode :
-	@$(CC) -O2 -lFLAC -lm encode.c -o $@
+encode  : encode.c
+	$(CC) -O2 -lFLAC -lm $< -o $@
+
+clean	:
+	@$(RM) $(PROG) *~ encode hark screenlog.?
+
+cleanall : clean
+	@$(RM) *.flac
 
 #______________________________________________________________________________
 

@@ -1,3 +1,17 @@
+/*___________________________________________________________________________*/
+/**
+ * @file encode.c
+ * @brief An experimental program used to learn how to convert a raw audio
+ * file into a flac one.
+ *
+ * The code was copied from the original version found in the Flac library,
+ * then it was adapted, simplified and cleaned up.
+ *
+ * @author Jean-Paul Le Fèvre
+ * @date September 2014
+ */
+/*___________________________________________________________________________*/
+
 /* example_c_encode_file - Simple FLAC file encoder using libFLAC
  * Copyright (C) 2007-2009  Josh Coalson
  * Copyright (C) 2011-2013  Xiph.Org Foundation
@@ -33,6 +47,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "FLAC/metadata.h"
 #include "FLAC/stream_encoder.h"
 
@@ -41,8 +56,8 @@ static void progress_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 b
 #define READSIZE 1024
 
 static unsigned total_samples = 0; /* can use a 32-bit number due to WAVE size limitations */
-static FLAC__byte buffer[READSIZE/*samples*/ * 2/*bytes_per_sample*/ * 2/*channels*/]; /* we read the WAVE data into here */
-static FLAC__int32 pcm[READSIZE/*samples*/ * 2/*channels*/];
+static FLAC__byte buffer[READSIZE/*samples*/ * 2/*bytes_per_sample*/ * 1/*channels*/]; /* we read the WAVE data into here */
+static FLAC__int32 pcm[READSIZE/*samples*/ * 1/*channels*/];
 
 int main(int argc, char *argv[])
 {
@@ -53,34 +68,40 @@ int main(int argc, char *argv[])
 	FLAC__StreamMetadata_VorbisComment_Entry entry;
 	FILE *fin;
 	unsigned sample_rate = 0;
-	unsigned channels = 0;
+	unsigned channels = 1;
 	unsigned bps = 0;
+        char input[32];
+        char output[32];
+        struct stat info;
 
-	if(argc != 3) {
-		fprintf(stderr, "usage: %s infile.wav outfile.flac\n", argv[0]);
+	if(argc != 2) {
+		fprintf(stderr, "usage: %s file", argv[0]);
 		return 1;
 	}
 
-	if((fin = fopen(argv[1], "rb")) == NULL) {
-		fprintf(stderr, "ERROR: opening %s for output\n", argv[1]);
-		return 1;
-	}
+        strcpy(input,  argv[1]);
+        strcpy(output, argv[1]);
+        strcat(input,  ".raw");
+        strcat(output,  ".flac");
+        fprintf(stdout, "Flacing %s -> %s\n", input, output);
 
-	/* read wav header and validate it */
-	if(
-		fread(buffer, 1, 44, fin) != 44 ||
-		memcmp(buffer, "RIFF", 4) ||
-		memcmp(buffer+8, "WAVEfmt \020\000\000\000\001\000\002\000", 16) ||
-		memcmp(buffer+32, "\004\000\020\000data", 8)
-	) {
-		fprintf(stderr, "ERROR: invalid/unsupported WAVE file, only 16bps stereo WAVE in canonical form allowed\n");
-		fclose(fin);
-		return 1;
+	if((fin = fopen(input, "rb")) == NULL) {
+          fprintf(stderr, "Can't open %s for input\n", input);
+          return 1;
 	}
-	sample_rate = ((((((unsigned)buffer[27] << 8) | buffer[26]) << 8) | buffer[25]) << 8) | buffer[24];
-	channels = 2;
+        fprintf(stdout, "Opened %s\n", input);
+
+        if (fstat(fileno(fin), &info) < 0) {
+          fprintf(stderr, "Can't stat %s for info\n", input);
+          return 1;
+        }
+        fprintf(stdout, "Stated %s\n", input);
+
+	sample_rate = 44100;
+	channels = 1;
 	bps = 16;
-	total_samples = (((((((unsigned)buffer[43] << 8) | buffer[42]) << 8) | buffer[41]) << 8) | buffer[40]) / 4;
+	total_samples = info.st_size / 2;
+        fprintf(stdout, "File %s: %d samples\n", input, total_samples);
 
 	/* allocate the encoder */
 	if((encoder = FLAC__stream_encoder_new()) == NULL) {
@@ -118,7 +139,8 @@ int main(int argc, char *argv[])
 
 	/* initialize encoder */
 	if(ok) {
-		init_status = FLAC__stream_encoder_init_file(encoder, argv[2], progress_callback, /*client_data=*/NULL);
+		init_status = FLAC__stream_encoder_init_file(
+                               encoder, output, progress_callback, /*client_data=*/NULL);
 		if(init_status != FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
 			fprintf(stderr, "ERROR: initializing encoder: %s\n", FLAC__StreamEncoderInitStatusString[init_status]);
 			ok = false;
@@ -131,7 +153,7 @@ int main(int argc, char *argv[])
 		while(ok && left) {
 			size_t need = (left>READSIZE? (size_t)READSIZE : (size_t)left);
 			if(fread(buffer, channels*(bps/8), need, fin) != need) {
-				fprintf(stderr, "ERROR: reading from WAVE file\n");
+				fprintf(stderr, "ERROR: reading from raw file\n");
 				ok = false;
 			}
 			else {

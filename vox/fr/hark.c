@@ -4,6 +4,7 @@
  * @brief An other version of the voice recognition program for radiok.
  *
  * @author Jean-Paul Le Fèvre
+ * @date September 2014
  */
 /* ====================================================================
  * Copyright (c) 1999-2001 Carnegie Mellon University.  All rights
@@ -95,7 +96,7 @@ int main(int32 argc, char **argv)
     int error = 0;
     int sps = 44100;
     float endsil = 1.0;
-    bool verbose = false;
+    bool verbose = true;
     char device[64];
 
     char* s = getenv("AUDIODEV");
