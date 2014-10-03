@@ -1,4 +1,3 @@
-
 #______________________________________________________________________________
 
 # Makefile : 		radiok vox tool for the french language
@@ -23,7 +22,10 @@ CFLAGS  := -O2
 LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
-todo	: encode hark
+todo	: parse encode hark
+
+parse  : parse.c
+	$(CC) -I$(ORGROOT)/include -O2 $< -L$(ORGROOT)/lib -ljsonparser -lm -o $@
 
 encode  : encode.c
 	$(CC) -O2 -lFLAC -lm $< -o $@
