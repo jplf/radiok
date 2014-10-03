@@ -6,8 +6,12 @@ Ask google to recognize what has been said.
 It is meant to see how it is possible to use python and the google api
 for voice recognition.
 
-Usage: quoi.py
+Usage: quoi.py [-o]
 Environment variable GOOGLE_KEY must store your google developer key.
+
+If option -o is given, google's reply is stored in file n.txt where
+n is the loop index. It is meant to later test json parsing with a language C
+library.
 
 Just say 'stop' to exit the loop.
 
@@ -27,9 +31,12 @@ def usage():
     sys.exit(1)
 
 def main(argv):
+
+    # Do we keep in a file the google results ?
+    keep = False
     
     try:                                
-        opts, args = getopt.getopt(argv, 'h', ['help'])
+        opts, args = getopt.getopt(argv, 'ho', ['help', 'out'])
         
     except getopt.GetoptError:          
         usage()                         
@@ -37,6 +44,8 @@ def main(argv):
     for opt, val in opts:
         if opt in ('-h', '--help'):
             usage()
+        elif opt in ('-o', '--out'):
+            keep = True
 
     google_key = os.getenv('GOOGLE_KEY')
     if google_key is None:
@@ -66,6 +75,9 @@ def main(argv):
     c.setopt(c.POST, 1)
     c.setopt(c.HTTPHEADER, ['Content-type: audio/x-flac; rate=44100;'])
     c.setopt(c.USERAGENT, 'Mozilla/5.0')
+
+    # The loop index
+    index = 0
     
     while True:
 
@@ -73,7 +85,7 @@ def main(argv):
         # Word understood by sox will be in variable output
         p = subprocess.Popen(rec, stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()
-        print "Popen code: ", p.returncode, "size: ", sys.getsizeof(output)
+        print "Popen code: ", p.returncode, "size: ", sys.getsizeof(output), "index:", index
 
         # The buffer will store the google's answer
         buf = cStringIO.StringIO()
@@ -95,6 +107,12 @@ def main(argv):
             print "Not enough lines got from google"
             continue
 
+        if keep:
+            filename = 'google-' + str(index) + '.json'
+            handle = open(filename, 'w')
+            handle.write(buf.getvalue())
+            handle.close()
+            
         result = json.loads(out[1]);
         found  = result['result'][0]['alternative']
         stop   = False
@@ -108,6 +126,7 @@ def main(argv):
             stop = stop or (word == 'stop')
 
         buf.close()
+        index += 1
 
         if stop:
             break
