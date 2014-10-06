@@ -31,7 +31,7 @@ encode  : encode.c
 	$(CC) -O2 -lFLAC -lm $< -o $@
 
 clean	:
-	@$(RM) $(PROG) *~ encode hark screenlog.?
+	@$(RM) $(PROG) *~ encode hark parse screenlog.?
 
 cleanall : clean
 	@$(RM) *.flac
