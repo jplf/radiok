@@ -6,9 +6,6 @@
 
 ORGROOT := /usr/local
 
-PROG	:= hark
-SRC.c	:= hark.c
-
 INC	:= -I$(ORGROOT)/include/sphinxbase \
 	   -I$(ORGROOT)/include/pocketsphinx
 
@@ -22,16 +19,22 @@ CFLAGS  := -O2
 LDFLAGS	:= -L$(ORGROOT)/lib -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
-todo	: parse encode hark
+todo	: parse enflac split hark
+
+hark 	: hark.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@
+
+split	: split.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@
 
 parse  : parse.c
-	$(CC) -I$(ORGROOT)/include -O2 $< -L$(ORGROOT)/lib -ljsonparser -lm -o $@
+	$(CC) -I$(ORGROOT)/include $(CFLAGS) $< -L$(ORGROOT)/lib -ljsonparser -lm -o $@
 
-encode  : encode.c
-	$(CC) -O2 -lFLAC -lm $< -o $@
+enflac  : enflac.c
+	$(CC) $(CFLAGS) -lFLAC -lm $< -o $@
 
 clean	:
-	@$(RM) $(PROG) *~ encode hark parse screenlog.?
+	@$(RM) $(PROG) *~ enflac hark parse screenlog.?
 
 cleanall : clean
 	@$(RM) *.flac

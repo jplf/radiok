@@ -1,4 +1,7 @@
 *.flac
 *.raw
-encode
+*.json
+enflac
 hark
+parse
+split
