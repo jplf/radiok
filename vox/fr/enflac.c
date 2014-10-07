@@ -1,10 +1,10 @@
 /*___________________________________________________________________________*/
 /**
- * @file encode.c
+ * @file enflac.c
  * @brief An experimental program used to learn how to convert a raw audio
  * file into a flac one.
  *
- * Usage: encode filename  (to process filename.raw; no suffix must be given)
+ * Usage: enflac filename  (to process filename.raw; no suffix must be given)
  *
  * The code was copied from the original version found in the Flac library,
  * then it was adapted, simplified and cleaned up.
