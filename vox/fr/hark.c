@@ -61,16 +61,25 @@
 #include <sphinxbase/ad.h>
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
+
+
 /*
  * To parse the command line arguments.
  */
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
 
+#include <FLAC/stream_encoder.h>
+
 /**
  * Prints syntax and exit.
  */
 static void usage();
+/**
+ * Flac stuff.
+ */
+static int make_flac_encoder();
+static FLAC__StreamEncoder* encoder = NULL;
 
 /**
  * Segment raw A/D input data into utterances whenever silence
@@ -131,6 +140,10 @@ int main(int32 argc, char **argv)
         error++;
       break;
 
+    case 'D'	:
+      strcpy(device, optarg);
+      break;
+
     case 's'	:
       endsil = atof(optarg);
       if(endsil < 0. || endsil > 10.)
@@ -156,7 +169,7 @@ int main(int32 argc, char **argv)
   endsilsamples = (int32)(endsil * sps);
 
   if ((ad = ad_open_dev(device, sps)) == NULL) {
-    fprintf(stderr, "Failed to open audio device\n");
+    fprintf(stderr, "Failed to open audio device %s\n", device);
     return 1;
   }
 
@@ -264,9 +277,40 @@ int main(int32 argc, char **argv)
     }
   }
 
+  FLAC__stream_encoder_delete(encoder);
+
   ad_stop_rec(ad);
   cont_ad_close(cont);
   ad_close(ad);
+
+  return 0;
+}
+/*___________________________________________________________________________*/
+/**
+ * Initializes the Flac encoder.
+ */
+static int make_flac_encoder(int sample_rate) {
+
+  if((encoder = FLAC__stream_encoder_new()) == NULL) {
+    fprintf(stderr, "Can't allocate the flac encoder !");
+    return -1;
+  }
+
+  FLAC__bool ok = true;
+  int channels  = 1;
+  int bps       = 16;
+
+  ok &= FLAC__stream_encoder_set_verify(encoder, true);
+  ok &= FLAC__stream_encoder_set_compression_level(encoder, 5);
+  ok &= FLAC__stream_encoder_set_channels(encoder, channels);
+  ok &= FLAC__stream_encoder_set_bits_per_sample(encoder, bps);
+  ok &= FLAC__stream_encoder_set_sample_rate(encoder, sample_rate);
+  ok &= FLAC__stream_encoder_set_total_samples_estimate(encoder, 0);
+
+  if (!ok) {
+    fprintf(stderr, "Can't set the flac encoder options !");
+    return -1;
+  }
 
   return 0;
 }

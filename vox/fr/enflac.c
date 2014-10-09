@@ -51,7 +51,7 @@
 #include <sys/stat.h>
 #include "FLAC/stream_encoder.h"
 
-#define READSIZE 1024
+#define READSIZE 1024000
 
 static unsigned total_samples = 0;
 static FLAC__byte buffer[READSIZE * 2]; 
@@ -110,54 +110,48 @@ int main(int argc, char *argv[])
   ok &= FLAC__stream_encoder_set_channels(encoder, channels);
   ok &= FLAC__stream_encoder_set_bits_per_sample(encoder, bps);
   ok &= FLAC__stream_encoder_set_sample_rate(encoder, sample_rate);
-  ok &= FLAC__stream_encoder_set_total_samples_estimate(encoder, total_samples);
+  ok &= FLAC__stream_encoder_set_total_samples_estimate(encoder, 0);
 
-/* initialize encoder */
-if(ok) {
   init_status = FLAC__stream_encoder_init_file(encoder, output, NULL, NULL);
 
   if(init_status != FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
     fprintf(stderr, "ERROR: initializing encoder: %s\n",
             FLAC__StreamEncoderInitStatusString[init_status]);
     ok = false;
+    return 1;
   }
- }
-
-if(ok) {
-  size_t left = (size_t)total_samples;
-  while(ok && left) {
-    size_t need = (left>READSIZE? (size_t)READSIZE : (size_t)left);
-    if(fread(buffer, channels*(bps/8), need, fin) != need) {
-      fprintf(stderr, "ERROR: reading from raw file\n");
-      ok = false;
-    }
-    else {
-      /*
-       * convert the packed little-endian 16-bit PCM samples
-       * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
-       */
-      size_t i;
-      for(i = 0; i < need*channels; i++) {
-        /* 
-         * inefficient but simple and works on
-         * big- or little-endian machines
-         */
-        pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)buffer[2*i+1] << 8) | (FLAC__int16)buffer[2*i]);
-      }
-      /* feed samples to encoder */
-      ok = FLAC__stream_encoder_process_interleaved(encoder, pcm, need);
-    }
-    left -= need;
+  
+  int n;
+  if((n = fread(buffer, 1, info.st_size, fin)) != info.st_size) {
+    fprintf(stderr, "Error reading from raw file %d / %u\n", n, info.st_size);
+    ok = false;
+    return 1;
   }
- }
 
- ok &= FLAC__stream_encoder_finish(encoder);
+  /*
+   * Convert the packed little-endian 16-bit PCM samples
+   * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
+   */
+  size_t i;
+  for(i = 0; i < total_samples; i++) {
+    /* 
+     * Inefficient but simple and works on
+     * big- or little-endian machines
+     */
+    pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)buffer[2*i+1] << 8)
+           | (FLAC__int16)buffer[2*i]);
+  }
 
- fprintf(stderr, "encoding: %s\n", ok? "succeeded" : "FAILED");
+  /* feed samples to encoder */
+  ok = FLAC__stream_encoder_process_interleaved(encoder, pcm, total_samples);
 
- FLAC__stream_encoder_delete(encoder);
- fclose(fin);
+  ok &= FLAC__stream_encoder_finish(encoder);
 
- return 0;
+  fprintf(stderr, "encoding: %s\n", ok? "succeeded" : "FAILED");
+
+  FLAC__stream_encoder_delete(encoder);
+  fclose(fin);
+
+  return 0;
 }
 /*___________________________________________________________________________*/
