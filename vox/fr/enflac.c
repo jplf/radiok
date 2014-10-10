@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
    * Convert the packed little-endian 16-bit PCM samples
    * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
    */
-  FLAC__int32* pcm = malloc(total_samples * sizeof( FLAC__int32));
+  FLAC__int32* pcm = malloc(total_samples * sizeof(FLAC__int32));
   printf("Number of bytes allocated: %d\n", total_samples);
 
   if (pcm == NULL) {
