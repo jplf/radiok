@@ -62,12 +62,13 @@
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
 
-
 /*
  * To parse the command line arguments.
  */
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
+
+#define MAX_SAMPLES 4096
 
 #include <FLAC/stream_encoder.h>
 
@@ -78,8 +79,14 @@ static void usage();
 /**
  * Flac stuff.
  */
+typedef struct {
+  int n;
+} Utt_info;
+
+static int start_flac_encoding();
 static int make_flac_encoder();
 static FLAC__StreamEncoder* encoder = NULL;
+static FLAC__StreamEncoderWriteStatus write_callback();
 
 /**
  * Segment raw A/D input data into utterances whenever silence
@@ -90,9 +97,7 @@ int main(int32 argc, char **argv)
 {
   ad_rec_t *ad;
   cont_ad_t *cont;
-  int32 uttno, ts, uttlen, endsilsamples;
-  int16 buf[4096];
-  FILE *fp;
+  int32 ts, uttlen, endsilsamples;
   char file[1024];
 
   extern char *optarg;
@@ -103,7 +108,7 @@ int main(int32 argc, char **argv)
    * The main parameters and their default values.
    */
   int error = 0;
-  int sps = 44100;
+  int sample_rate = 44100;
   float endsil = 1.0;
   bool verbose = true;
   bool debug = false;
@@ -135,8 +140,8 @@ int main(int32 argc, char **argv)
       break;
 
     case 'r'	:
-      sps = atoi(optarg);
-      if(sps < 4000 || sps > 64000)
+      sample_rate = atoi(optarg);
+      if(sample_rate < 4000 || sample_rate > 64000)
         error++;
       break;
 
@@ -156,7 +161,8 @@ int main(int32 argc, char **argv)
   }
 
   if (verbose) {
-    printf("sample rate: %d\nsilence: %f\ndevice: %s\n", sps, endsil, device);
+    printf("Sample rate: %d\nsilence: %f\ndevice: %s\n", sample_rate,
+           endsil, device);
   }
 
   if (error) {
@@ -166,9 +172,9 @@ int main(int32 argc, char **argv)
   /**
    * Convert desired min. inter-utterance silence duration to #samples
    */
-  endsilsamples = (int32)(endsil * sps);
+  endsilsamples = (int32)(endsil * sample_rate);
 
-  if ((ad = ad_open_dev(device, sps)) == NULL) {
+  if ((ad = ad_open_dev(device, sample_rate)) == NULL) {
     fprintf(stderr, "Failed to open audio device %s\n", device);
     return 1;
   }
@@ -197,6 +203,11 @@ int main(int32 argc, char **argv)
     printf(" done\n");
   }
 
+  if (make_flac_encoder(sample_rate) <0) {
+    fprintf(stderr, "Can't make the flac encoder !\n");
+    return 1;
+  }
+
   /**
    * Forever listen for utterances
    */
@@ -205,6 +216,7 @@ int main(int32 argc, char **argv)
   }
 
   int forever = 1;
+  int uttno;
   for (uttno = 0; forever; uttno++) {
 
     int32 nbread;
@@ -212,13 +224,16 @@ int main(int32 argc, char **argv)
     /**
      * Wait for beginning of next utterance; for non-silence data
      */
-    while ((nbread = cont_ad_read(cont, buf, 4096)) == 0);
+    int16 buffer[MAX_SAMPLES];
+    
+    while ((nbread = cont_ad_read(cont, buffer, 4096)) == 0);
     if (nbread < 0) {
-      fprintf(stderr, "cont_ad_read failed\n");
+      fprintf(stderr, "Function cont_ad_read failed\n");
       forever = 0;
       continue;
     }
 
+    FILE *fp;
     if (debug) {
       /* Non-silence data received; open and write to new logging file */
       sprintf(file, "%03d.raw", uttno);
@@ -227,7 +242,7 @@ int main(int32 argc, char **argv)
         continue;
       }
 
-      fwrite(buf, sizeof(int16), nbread, fp);
+      fwrite(buffer, sizeof(int16), nbread, fp);
       printf("Utterance %04d, logging to %s\n", uttno, file);
     }
 
@@ -235,12 +250,24 @@ int main(int32 argc, char **argv)
 
     /* Note current timestamp */
     ts = cont->read_ts;
+    Utt_info info;
+    info.n = uttno;
+
+    FLAC__StreamEncoderInitStatus status =
+      FLAC__stream_encoder_init_stream(encoder, write_callback,
+                                       NULL, NULL, NULL, &info);
+
+    if(status != FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
+      fprintf(stderr, "Encoder initialization failed: %s\n",
+              FLAC__StreamEncoderInitStatusString[status]);
+      continue;
+    }
 
     /* Read utterance data until a gap is observed */
     for (;;) {
 
-      if ((nbread = cont_ad_read(cont, buf, 4096)) < 0) {
-        fprintf(stderr, "cont_ad_read failed\n");
+      if ((nbread = cont_ad_read(cont, buffer, MAX_SAMPLES)) < 0) {
+        fprintf(stderr, "Call to cont_ad_read failed\n");
         continue;
       }
 
@@ -262,9 +289,18 @@ int main(int32 argc, char **argv)
         uttlen += nbread;
 
         if (debug) {
-          fwrite(buf, sizeof(int16), nbread, fp);
+          fwrite(buffer, sizeof(int16), nbread, fp);
         }
       }
+    }
+
+    int total_samples = uttlen;
+    if (start_flac_encoding(buffer, total_samples) < 0) {
+      fprintf(stderr, "Can' start encoding process !\n");
+    }
+
+    if (! FLAC__stream_encoder_finish(encoder)) {
+      fprintf(stderr, "Encoder finalization failed\n");
     }
 
     if (debug) {
@@ -273,17 +309,59 @@ int main(int32 argc, char **argv)
 
     if (verbose) {
       printf("\tUtterance %04d = %d samples (%.1fsec)\n\n",
-             uttno, uttlen, (double) uttlen / (double) sps);
+             uttno, uttlen, (double) uttlen / (double) sample_rate);
     }
   }
 
-  FLAC__stream_encoder_delete(encoder);
+  if (encoder != NULL) {
+    FLAC__stream_encoder_delete(encoder);
+  }
 
   ad_stop_rec(ad);
   cont_ad_close(cont);
   ad_close(ad);
 
   return 0;
+}
+/*___________________________________________________________________________*/
+/**
+ * Encodes a buffer.
+ */
+static FLAC__StreamEncoderWriteStatus write_callback(
+             const FLAC__StreamEncoder *encoder,
+             const FLAC__byte buffer[], size_t bytes,
+             unsigned samples, unsigned current_frame, void *client_data) {
+
+  return true;
+}
+/*___________________________________________________________________________*/
+/**
+ * Begins to encode a buffer.
+ */
+static int start_flac_encoding(int16* buffer, int total_samples) {
+  /*
+   * Convert the packed little-endian 16-bit PCM samples
+   * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
+   */
+  FLAC__int32 pcm[MAX_SAMPLES];
+
+  size_t i;
+
+  for(i = 0; i < total_samples; i++) {
+    /**
+     * Inefficient but simple and works on
+     * big- or little-endian machines
+     */
+    pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)buffer[2*i+1] << 8)
+                           | (FLAC__int16)buffer[2*i]);
+  }
+  /**
+   * Feed samples to encoder
+   */
+  FLAC__bool ok =
+  FLAC__stream_encoder_process_interleaved(encoder, pcm, total_samples);
+
+  return ok ? 0 : -1;
 }
 /*___________________________________________________________________________*/
 /**
