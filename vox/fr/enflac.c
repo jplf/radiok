@@ -51,11 +51,7 @@
 #include <sys/stat.h>
 #include "FLAC/stream_encoder.h"
 
-#define READSIZE 1024000
-
 static unsigned total_samples = 0;
-static FLAC__byte buffer[READSIZE * 2]; 
-static FLAC__int32 pcm[READSIZE];
 
 int main(int argc, char *argv[])
 {
@@ -93,7 +89,6 @@ int main(int argc, char *argv[])
   }
 
   sample_rate = 44100;
-  channels = 1;
   bps = 16;
   total_samples = info.st_size / 2;
   fprintf(stdout, "File %s: %d samples\n", input, total_samples);
@@ -120,6 +115,12 @@ int main(int argc, char *argv[])
     ok = false;
     return 1;
   }
+
+  FLAC__byte* buffer = malloc(info.st_size);
+  if (buffer == NULL) {
+    fprintf(stderr, "Can't allocate buffer of %d bytes !\n", info.st_size);
+    return 1;
+  }
   
   int n;
   if((n = fread(buffer, 1, info.st_size, fin)) != info.st_size) {
@@ -128,13 +129,25 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  printf("Number of bytes read: %d\n", n);
+  fclose(fin);
+
   /*
    * Convert the packed little-endian 16-bit PCM samples
    * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
    */
+  FLAC__int32* pcm = malloc(total_samples * sizeof( FLAC__int32));
+  printf("Number of bytes allocated: %d\n", total_samples);
+
+  if (pcm == NULL) {
+    fprintf(stderr, "Can't allocate pcm for %d samples !\n", total_samples);
+    return 1;
+  }
+
   size_t i;
+
   for(i = 0; i < total_samples; i++) {
-    /* 
+    /**
      * Inefficient but simple and works on
      * big- or little-endian machines
      */
@@ -142,15 +155,16 @@ int main(int argc, char *argv[])
            | (FLAC__int16)buffer[2*i]);
   }
 
-  /* feed samples to encoder */
+  /**
+   * Feed samples to encoder
+   */
   ok = FLAC__stream_encoder_process_interleaved(encoder, pcm, total_samples);
 
   ok &= FLAC__stream_encoder_finish(encoder);
 
-  fprintf(stderr, "encoding: %s\n", ok? "succeeded" : "FAILED");
+  fprintf(stderr, "Enflacing: %s\n", ok? "succeeded" : "FAILED");
 
   FLAC__stream_encoder_delete(encoder);
-  fclose(fin);
 
   return 0;
 }
