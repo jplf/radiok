@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
    * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
    */
   FLAC__int32* pcm = malloc(total_samples * sizeof(FLAC__int32));
-  printf("Number of bytes allocated: %d\n", total_samples);
+  printf("Number of samples allocated: %d\n", total_samples);
 
   if (pcm == NULL) {
     fprintf(stderr, "Can't allocate pcm for %d samples !\n", total_samples);
