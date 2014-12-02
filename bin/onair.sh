@@ -127,11 +127,8 @@ surnames["b-inter"]="France Inter"
 radios["d-culture"]="http://mp3lg.tdf-cdn.com/franceculture/all/franceculturehautdebit.mp3";
 surnames["d-culture"]="France Culture"
 
-radios["r-nostalgie"]="http://95.81.146.7/3718/nrj_3718.mp3";
-surnames["r-nostalgie"]="Radio Nostalgie"
-
-radios["r-jazz"]="http://live.m2stream.fr/m2jazz-128.mp3";
-surnames["r-jazz"]="Radio Jazz"
+radios["r-chantefr"]="http://stream.chantefrance.com/stream_chante_france.mp3";
+surnames["r-chantefr"]="Chante France"
 
 radios["r-tsf"]="http://broadcast.infomaniak.net/tsfjazz-high.mp3";
 surnames["r-tsf"]="TSF Jazz"
