@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   strcpy(input,  argv[1]);
   strcpy(output, argv[1]);
-  strcat(input,  ".raw");
+  strcat(input,   ".raw");
   strcat(output,  ".flac");
   fprintf(stdout, "Flacing %s -> %s\n", input, output);
 
