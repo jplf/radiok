@@ -41,7 +41,7 @@
  * ====================================================================
  */
 /**
- * This code has been modified by Jaypee starting from this this program:
+ * This code has been modified by Jaypee starting from this program:
  * cont_adseg.c Continuously listen and segment input speech into utterances.
  * Found in directory sphinxbase-0.8/src/sphinx_adtools
  *
@@ -68,7 +68,8 @@
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
 
-#define MAX_SAMPLES 4096
+#define NBR_SAMPLES 4096
+#define MAX_SAMPLES 100000
 
 #include <FLAC/stream_encoder.h>
 
@@ -99,8 +100,8 @@ int main(int32 argc, char **argv)
 {
   ad_rec_t *ad;
   cont_ad_t *cont;
-  int32 ts, uttlen, endsilsamples;
-  char file[1024];
+  int32 ts, total_samples, endsilsamples;
+  char filename[24];
 
   /**
    * The main parameters and their default values.
@@ -196,11 +197,11 @@ int main(int32 argc, char **argv)
 
   ad_start_rec(ad);
   if (cont_ad_calib(cont) < 0) {
-    printf(" calibration failed\n");
+    printf(" calibration failed !\n");
     return 1;
   }
   else if (verbose) {
-    printf(" done\n");
+    printf(" done !\n");
   }
 
   if (make_flac_encoder(sample_rate) <0) {
@@ -216,14 +217,17 @@ int main(int32 argc, char **argv)
   }
 
   int forever = 1;
-  /**
-   * Current number of caught words.
-   */
 
   Utt_info info;
-  FLAC__StreamEncoderInitStatus status =
-  FLAC__stream_encoder_init_stream(encoder, write_callback,
+  FLAC__StreamEncoderInitStatus status;
+
+#if 0
+  status = FLAC__stream_encoder_init_stream(encoder, write_callback,
                                      NULL, NULL, NULL, &info);
+#else
+
+  status = FLAC__stream_encoder_init_file(encoder, "temp.flac", NULL, NULL);
+#endif
 
   if(status != FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
     fprintf(stderr, "Encoder initialization failed: %s\n",
@@ -231,8 +235,11 @@ int main(int32 argc, char **argv)
     return 1;
   }
 
+  /**
+   * Current number of caught words.
+   */
   int uttno;
-  for (uttno = 0; uttno < 4; uttno++) {
+  for (uttno = 0; uttno < 1; uttno++) {
 
     /**
      * Number of samples read in the audio stream.
@@ -242,11 +249,11 @@ int main(int32 argc, char **argv)
 
     /**
      * Wait for beginning of next utterance; for non-silence data
-     * Read at most MAX_SAMPLES samples.
+     * Read at most NBR_SAMPLES samples.
      */
-    int16 buffer[MAX_SAMPLES];
+    int16 buffer[NBR_SAMPLES * 2];
     
-    while ((nbread = cont_ad_read(cont, buffer, MAX_SAMPLES)) == 0);
+    while ((nbread = cont_ad_read(cont, buffer, NBR_SAMPLES)) == 0);
 
     if (nbread < 0) {
       fprintf(stderr, "Function cont_ad_read failed\n");
@@ -258,17 +265,18 @@ int main(int32 argc, char **argv)
 
     if (debug) {
       /* Non-silence data received; open and write to new logging file */
-      sprintf(file, "%03d.raw", uttno);
-      if ((fp = fopen(file, "wb")) == NULL) {
-        fprintf(stderr, "Failed to open '%s' for writing", file);
+      sprintf(filename, "%03d.raw", uttno);
+      if ((fp = fopen(filename, "wb")) == NULL) {
+        fprintf(stderr, "Failed to open '%s' for writing", filename);
         continue;
       }
+      printf("Utterance %04d, logging to %s\n", uttno, filename);
 
       fwrite(buffer, sizeof(int16), nbread, fp);
-      printf("Utterance %04d, logging to %s\n", uttno, file);
     }
 
-    uttlen = nbread;
+    total_samples = nbread;
+    printf("\nSamples %d (%d) ", total_samples, nbread);
 
     /* Note current timestamp */
     ts = cont->read_ts;
@@ -277,7 +285,7 @@ int main(int32 argc, char **argv)
     /* Read utterance data until a gap is observed */
     while (true) {
 
-      if ((nbread = cont_ad_read(cont, buffer, MAX_SAMPLES)) < 0) {
+      if ((nbread = cont_ad_read(cont, buffer, NBR_SAMPLES)) < 0) {
         fprintf(stderr, "Call to cont_ad_read failed\n");
         continue;
       }
@@ -298,7 +306,8 @@ int main(int32 argc, char **argv)
          * read speech data
          */
         ts = cont->read_ts;
-        uttlen += nbread;
+        total_samples += nbread;
+        printf("%d (%d) ", total_samples, nbread);
 
         if (debug) {
           fwrite(buffer, sizeof(int16), nbread, fp);
@@ -306,10 +315,25 @@ int main(int32 argc, char **argv)
       }
     }
 
-    int total_samples = uttlen;
+    if (debug) {
+        fclose(fp);
+    }
+
+    if (verbose) {
+      printf("\nUtterance %04d = %d samples (%.1fsec)\n\n",
+             uttno, total_samples,
+             (double)total_samples / (double)sample_rate);
+    }
+
+    FLAC__byte* stream = malloc(total_samples * sizeof(int16));
+    fp = fopen(filename, "rb");
+    int nr = fread(stream, sizeof(int16), total_samples, fp);
+    printf("Number of bytes read: %d\n", nr * sizeof(int16));
+    fclose(fp);
+
     printf("Start encoding process !\n");
 
-    if (start_flac_encoding(buffer, total_samples) < 0) {
+    if (start_flac_encoding(stream, total_samples) < 0) {
       fprintf(stderr, "Can' start encoding process !\n");
     }
 
@@ -319,14 +343,6 @@ int main(int32 argc, char **argv)
       fprintf(stderr, "Encoder finalization failed\n");
     }
 
-    if (debug) {
-      fclose(fp);
-    }
-
-    if (verbose) {
-      printf("\tUtterance %04d = %d samples (%.1fsec)\n\n",
-             uttno, uttlen, (double) uttlen / (double) sample_rate);
-    }
   }
 
   if (encoder != NULL) {
@@ -350,13 +366,13 @@ static FLAC__StreamEncoderWriteStatus write_callback(
              const FLAC__byte buffer[], size_t bytes,
              unsigned samples, unsigned current_frame, void *client_data) {
 
-  printf("write called back !");
+  printf("Called back:");
 
   Utt_info* info = (Utt_info*)client_data;
 
   if (verbose) {
     int n = (info == NULL) ? -1 : info->n; 
-    printf("\tUtterance %04d: %d bytes %d samples\n", n, bytes, samples);
+    printf(" u %04d buf size: %05d nb samples: %d\n", n, bytes, samples);
   }
 
   return FLAC__STREAM_ENCODER_INIT_STATUS_OK;
@@ -365,37 +381,34 @@ static FLAC__StreamEncoderWriteStatus write_callback(
 /**
  * Begins to encode a buffer.
  */
-static int start_flac_encoding(int16* buffer, int total_samples) {
+static int start_flac_encoding(FLAC__byte* stream, int nb_samples) {
   /*
    * Convert the packed little-endian 16-bit PCM samples
    * from the audio stream into an interleaved FLAC__int32 buffer for libFLAC
    */
-  FLAC__int32* pcm = (FLAC__int32*)malloc(total_samples * sizeof(FLAC__int32));
-  printf("Number of samples allocated: %d\n", total_samples);
+  FLAC__int32* pcm = (FLAC__int32*)malloc((nb_samples) * sizeof(FLAC__int32));
+  printf("Number of samples allocated: %d\n", nb_samples);
 
   size_t i;
 
-  for(i = 0; i < total_samples; i++) {
+  for(i = 0; i < nb_samples; i++) {
     /**
      * Inefficient but simple and works on
      * big- or little-endian machines
      */
-    pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)buffer[2*i+1] << 8)
-                           | (FLAC__int16)buffer[2*i]);
-    if (i >4900)
-      printf("%d ", i);
-
+    pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)stream[2*i+1] << 8)
+                           | (FLAC__int16)stream[2*i]);
   }
+  printf("Number of samples ready: %d\n", i);
+
   /**
    * Feed samples to encoder
+   * free(pcm);
    */
-  printf("\nPCM full !\n");
-
   FLAC__bool ok =
-  FLAC__stream_encoder_process_interleaved(encoder, pcm, total_samples);
-
-  free(pcm);
-
+  FLAC__stream_encoder_process_interleaved(encoder, pcm, nb_samples);
+  printf("Encode samples\n");
+  
   return ok ? 0 : -1;
 }
 /*___________________________________________________________________________*/
