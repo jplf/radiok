@@ -69,7 +69,6 @@
 typedef enum { false = 0, true = 1 } bool;
 
 #define NBR_SAMPLES 4096
-#define MAX_SAMPLES 100000
 
 #include <FLAC/stream_encoder.h>
 
@@ -95,6 +94,8 @@ static bool debug = false;
  * Segment raw A/D input data into utterances whenever silence
  * region of given duration is encountered.
  * Utterances are written to files named 0001.raw, 0002.raw, 0003.raw, etc.
+ *
+ * Then convert the raw data to flac format.
  */
 int main(int32 argc, char **argv)
 {
@@ -184,7 +185,7 @@ int main(int32 argc, char **argv)
    * Associate new continuous listening module with opened raw A/D device
    */
   if ((cont = cont_ad_init(ad, ad_read)) == NULL) {
-    fprintf(stderr, "cont_ad_init failed\n");
+    fprintf(stderr, "Function cont_ad_init failed\n");
     return 1;
   }
 
@@ -225,7 +226,6 @@ int main(int32 argc, char **argv)
   status = FLAC__stream_encoder_init_stream(encoder, write_callback,
                                      NULL, NULL, NULL, &info);
 #else
-
   status = FLAC__stream_encoder_init_file(encoder, "temp.flac", NULL, NULL);
 #endif
 
@@ -249,9 +249,9 @@ int main(int32 argc, char **argv)
 
     /**
      * Wait for beginning of next utterance; for non-silence data
-     * Read at most NBR_SAMPLES samples.
+     * read at most NBR_SAMPLES samples.
      */
-    int16 buffer[NBR_SAMPLES * 2];
+    int16 buffer[NBR_SAMPLES];
     
     while ((nbread = cont_ad_read(cont, buffer, NBR_SAMPLES)) == 0);
 
@@ -276,7 +276,9 @@ int main(int32 argc, char **argv)
     }
 
     total_samples = nbread;
-    printf("\nSamples %d (%d) ", total_samples, nbread);
+    if (debug) {
+      printf("\nSamples %d (%d) ", total_samples, nbread);
+    }
 
     /* Note current timestamp */
     ts = cont->read_ts;
@@ -331,13 +333,17 @@ int main(int32 argc, char **argv)
     printf("Number of bytes read: %d\n", nr * sizeof(int16));
     fclose(fp);
 
-    printf("Start encoding process !\n");
+    if (verbose) {
+      printf("Start encoding process !\n");
+    }
 
     if (start_flac_encoding(stream, total_samples) < 0) {
       fprintf(stderr, "Can' start encoding process !\n");
     }
 
-    printf("Finish encoding process !\n");
+    if (verbose) {
+      printf("Finish encoding process !\n");
+    }
 
     if (! FLAC__stream_encoder_finish(encoder)) {
       fprintf(stderr, "Encoder finalization failed\n");
@@ -399,7 +405,10 @@ static int start_flac_encoding(FLAC__byte* stream, int nb_samples) {
     pcm[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)stream[2*i+1] << 8)
                            | (FLAC__int16)stream[2*i]);
   }
-  printf("Number of samples ready: %d\n", i);
+
+  if (debug) {
+    printf("Number of samples ready: %d\n", i);
+  }
 
   /**
    * Feed samples to encoder
@@ -407,7 +416,6 @@ static int start_flac_encoding(FLAC__byte* stream, int nb_samples) {
    */
   FLAC__bool ok =
   FLAC__stream_encoder_process_interleaved(encoder, pcm, nb_samples);
-  printf("Encode samples\n");
   
   return ok ? 0 : -1;
 }

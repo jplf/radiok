@@ -16,7 +16,7 @@ CPPFLAGS := -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 \
 	    -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DHAVE_LONG_LONG=1 \
 	    -DSIZEOF_LONG_LONG=8 -DHAVE_DUP2=1 $(INC)
 
-CFLAGS  := -g
+CFLAGS  :=
 LDFLAGS	:= -L$(ORGROOT)/lib -logg \
 	   -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
