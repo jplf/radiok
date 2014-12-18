@@ -199,11 +199,6 @@ int main(int32 argc, char **argv)
     return 1;
   }
 
-  if (make_flac_encoder(sample_rate) <0) {
-    fprintf(stderr, "Can't make the flac encoder !\n");
-    return 1;
-  }
-
   /**
    * Forever listen for utterances
    */
@@ -211,13 +206,11 @@ int main(int32 argc, char **argv)
     printf("You may speak now\n");
   }
 
-  int forever = 1;
-
   /**
    * Current number of caught words.
    */
   int utter_nbr;
-  for (utter_nbr = 0; utter_nbr < 1; utter_nbr++) {
+  for (utter_nbr = 0; utter_nbr < 4; utter_nbr++) {
 
     char rawfile[12];
     sprintf(rawfile, "%02d.raw", utter_nbr);
@@ -228,6 +221,11 @@ int main(int32 argc, char **argv)
              total_samples,(double)total_samples / (double)sample_rate);
     }
 
+    if (make_flac_encoder(sample_rate) <0) {
+      fprintf(stderr, "Can't make the flac encoder !\n");
+      return 1;
+    }
+
     char flacfile[12];
     sprintf(flacfile, "%02d.flac", utter_nbr);
 
@@ -235,10 +233,10 @@ int main(int32 argc, char **argv)
       fprintf(stderr, "Can't enflac file %s !\n", rawfile);
       break;
     }
-  }
 
-  if (encoder != NULL) {
-    FLAC__stream_encoder_delete(encoder);
+    if (encoder != NULL) {
+      FLAC__stream_encoder_delete(encoder);
+    }
   }
 
   ad_stop_rec(ad);
@@ -256,7 +254,9 @@ static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
    * Convert the packed little-endian 16-bit PCM samples
    * from the audio stream into an interleaved FLAC__int32 buffer for libFLAC
    */
-  FLAC__int32* pcm = (FLAC__int32*)malloc((nb_samples) * sizeof(FLAC__int32));
+  static FLAC__int32* pcm = NULL;
+
+  pcm = (FLAC__int32*)realloc(pcm, nb_samples * sizeof(FLAC__int32));
   printf("Number of samples allocated: %d\n", nb_samples);
 
   size_t i;
@@ -271,7 +271,6 @@ static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
   }
   /**
    * Feed samples to encoder
-   * free(pcm);
    */
   FLAC__bool ok =
   FLAC__stream_encoder_process_interleaved(encoder, pcm, nb_samples);
@@ -380,7 +379,7 @@ static int write_utterance(char* rawfile) {
     fwrite(buffer, sizeof(int16), nbread, fp);
 
     int total_samples = nbread;
-    if (debug) {
+    if (false) {
       printf("\nSamples %d (%d) ", total_samples, nbread);
     }
 
@@ -412,7 +411,9 @@ static int write_utterance(char* rawfile) {
          */
         ts = cont->read_ts;
         total_samples += nbread;
-        printf("%d (%d) ", total_samples, nbread);
+        if (false) {
+          printf("%d (%d) ", total_samples, nbread);
+        }
 
         fwrite(buffer, sizeof(int16), nbread, fp);
       }
@@ -422,7 +423,6 @@ static int write_utterance(char* rawfile) {
 
     return total_samples;
 }
-
 /*___________________________________________________________________________*/
 /**
  * Prints usage and exit.
