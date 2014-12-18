@@ -39,7 +39,7 @@ enflac  : enflac.c
 clean	:
 	@$(RM) $(PROG) *~ enflac hark split parse screenlog.?
 
-cleanall : clean
+cleanflac :
 	@$(RM) *.flac *.raw
 
 #______________________________________________________________________________
