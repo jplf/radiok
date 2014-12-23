@@ -21,7 +21,7 @@ LDFLAGS	:= -L$(ORGROOT)/lib -logg \
 	   -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
-todo	: parse enflac split hark
+todo	: parse enflac split hark interpret
 
 # Note than a static link leads to a segfault. Dunno why !
 hark 	: hark.c
@@ -35,6 +35,9 @@ parse  : parse.c
 
 enflac  : enflac.c
 	$(CC) $(CFLAGS) -I/opt/Flac/include -L/opt/Flac/lib -lFLAC -lm $< -o $@
+
+interpret  : interpret.c
+	$(CC) $(CFLAGS) $< -L$(ORGROOT)/lib -ljsonparser -lcurl -lm -o $@
 
 clean	:
 	@$(RM) $(PROG) *~ enflac hark split parse screenlog.?
