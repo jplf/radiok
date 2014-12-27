@@ -21,8 +21,8 @@
 #include <json-parser/json.h>
 #include <curl/curl.h>
 
-#define MAX_SIZE 1024
-#define MAX_RESPONSE_LENGTH 4096
+#define MAX_SIZE 300000
+#define MAX_RESPONSE_LENGTH 10000
 #define MAX_WORD_LENGTH 48
 
 static char*    type_name(json_type t);
@@ -32,6 +32,9 @@ static int      parse_content(char* content);
 
 static CURL* curl = NULL;
 static int debug  = 1;
+static char error[CURL_ERROR_SIZE];
+static char response[MAX_RESPONSE_LENGTH];
+
 /*___________________________________________________________________________*/
 
 int main(int argc, char *argv[]) {
@@ -61,21 +64,27 @@ int main(int argc, char *argv[]) {
   strcat(url, key);
 
   struct curl_slist *slist = NULL;
+  slist = curl_slist_append(slist, "Expect: 100-continue");
   slist = curl_slist_append(slist, "Content-type: audio/x-flac; rate=44100;");
 
   if(debug) {
-    printf("%s (%d=\n", url, strlen(url));
+    printf("URL: %s (size: %d)\n", url, strlen(url));
   }
 
-  char response[MAX_RESPONSE_LENGTH];
+  int r = 0;
+  for (r = 0; r < sizeof(response); r++) {
+    response[r] = 0;
+  }
+
   curl = curl_easy_init( );
-  curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_response);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)response);
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_setopt(curl, CURLOPT_POST, 1);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist);
+  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error);
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
   int i;
   for (i = 1; i < argc; i++) {
@@ -100,7 +109,7 @@ static int interpret_flac(char* flacfile) {
   FILE* file;
   char buffer[MAX_SIZE];
 
-  if ((file = fopen(flacfile, "r")) == NULL) {
+  if ((file = fopen(flacfile, "rb")) == NULL) {
     fprintf(stderr, "Can't open %s for input\n", flacfile);
     return -1;
   }
@@ -109,14 +118,28 @@ static int interpret_flac(char* flacfile) {
   buffer[s] = 0;
 
   if (debug) {
-    fprintf(stdout, "Read size %d\n", s);
+    fprintf(stdout, "Read %d bytes from %s\n", s, flacfile);
   }
 
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, s);
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, buffer);
 
-  if (curl_easy_perform(curl) != 0) {
-    fprintf(stderr, "Can't perform %s\n", flacfile);
+  CURLcode rc;
+
+  if ((rc = curl_easy_perform(curl)) != 0) {
+    fprintf(stderr, "Can't perform %s rc: %s\n", flacfile,
+            curl_easy_strerror(rc));
+    fprintf(stderr, "Error: %s\n", error);
+
     return -1;
+  }
+
+
+  printf("Response: %s\n", response);
+
+  if (parse_content(response) < 0) {
+    fprintf(stderr, "Can't parse response: %s !\n", response);
+    return 0;
   }
 
   return 0;
@@ -135,15 +158,13 @@ static size_t get_response(void *output, size_t size, size_t n, void *ptr) {
     return 0;
   }
 
+  if (debug) {
+    fprintf(stdout, "Got %d bytes from google\n", realsize);
+  }
+
   char* content = (char*)ptr;
 
-  strncpy(content, (char*)output, realsize);
-  content[realsize] = 0;
-
-  if (parse_content(content) < 0) {
-    fprintf(stderr, "Can't parse content: %s !\n", content);
-    return 0;
-  }
+  strncat(content, (char*)output, realsize);
 
   return realsize;
 }
@@ -157,21 +178,27 @@ static int parse_content(char* content) {
     fprintf(stderr, "No content to parse !\n");
     return -1;
   }
+  printf("\nContent to parse:\n%s\n", content);
 
   /**
    * Get rid of the first line which should only contain {"result":[]}
    * Then get the second line.
    */
   char * line = strtok(content, "\n");
+
   line = strtok(NULL, "\n");
+  if (line == NULL) {
+    fprintf(stderr, "No second line to parse !\n");
+    return -1;
+  }
 
   /**
    * Then parse the content which should be a json formatted string.
    * json_array array  = (json_value)(*value);
    */
-  json_value* value = json_parse(line, strlen(content));
+  json_value* value = json_parse(line, strlen(line));
   if (value == NULL) {
-    fprintf(stderr, "Can't parse content !\n");
+    fprintf(stderr, "Can't parse line %s !\n", line);
     return -1;
   }
 
