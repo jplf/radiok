@@ -6,7 +6,7 @@ Ask google to recognize what has been said.
 It is meant to see how it is possible to use python and the google api
 for voice recognition.
 
-Usage: quoi.py [-o]
+Usage: speech.py [-o]
 Environment variable GOOGLE_KEY must store your google developer key.
 
 If option -o is given, google's reply is stored in file n.txt where
