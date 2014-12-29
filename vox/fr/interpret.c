@@ -227,6 +227,7 @@ static int parse_content(char* content) {
 
     if (strcmp("result", entry.name) != 0) {
       fprintf(stderr, "Wrong name %s / %s\n", entry.name, "result");
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -235,6 +236,7 @@ static int parse_content(char* content) {
     if (v->type != json_array) {
       fprintf(stderr, "Wrong type %s / %s\n",
               type_name(v->type), type_name(json_array));
+      fprintf(stderr, "%s\n", line);
       return 1;
     }
 
@@ -242,6 +244,7 @@ static int parse_content(char* content) {
     if (v->type != json_object) {
       fprintf(stderr, "Wrong type %s / %s\n",
               type_name(v->type), type_name(json_object));
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -249,6 +252,7 @@ static int parse_content(char* content) {
 
     if (strcmp("alternative", entry.name) != 0) {
       fprintf(stderr, "Wrong name %s / %s\n", entry.name, "alternative");
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -256,6 +260,7 @@ static int parse_content(char* content) {
     if (v->type != json_array) {
       fprintf(stderr, "Wrong type %s / %s\n",
               type_name(v->type), type_name(json_array));
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -263,12 +268,14 @@ static int parse_content(char* content) {
     if (v->type != json_object) {
       fprintf(stderr, "Wrong type %s / %s\n",
               type_name(v->type), type_name(json_object));
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
     n = (v->u).object.length;
     if (n != 2) {
       fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -278,6 +285,7 @@ static int parse_content(char* content) {
     if (strcmp("transcript", entry.name) != 0 || v_word->type != json_string) {
       fprintf(stderr, "Wrong entry %s / %s\n",
               entry.name, type_name(v_word->type));
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 
@@ -286,9 +294,10 @@ static int parse_content(char* content) {
     entry = (v->u).object.values[1];
     json_value* v_level = entry.value;
 
-    if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double) {
+    if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
       fprintf(stderr, "Wrong entry %s / %s\n",
               entry.name, type_name(v_level->type));
+      fprintf(stderr, "%s\n", line);
       return -1;
     }
 

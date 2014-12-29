@@ -2,7 +2,9 @@
 /**
  * @file hark.c
  * @brief Usage : hark [-vd] [-r sampling-rate] [-s silence(sec)] [-D device]
- * @brief An other version of the voice recognition program for radiok.
+ *
+ * A test program meant to learn how to use the flac api of a stream of sound
+ * split by sphinx.
  *
  * @author Jean-Paul Le Fèvre
  * @date October 2014
@@ -42,7 +44,7 @@
  * ====================================================================
  */
 /**
- * This code has been modified by Jaypee starting from this program:
+ * This code has been modified by me starting from this program:
  * cont_adseg.c Continuously listen and segment input speech into utterances.
  * Found in directory sphinxbase-0.8/src/sphinx_adtools
  *
@@ -90,11 +92,10 @@ static cont_ad_t* cont;
 static int32 silence_samples;
 
 /**
- * Segment raw A/D input data into utterances whenever silence
+ * Segments raw A/D input data into utterances whenever silence
  * region of given duration is encountered.
- * When debug mode is enabled utterances are written to files
- * named 0001.raw, 0002.raw, 0003.raw, etc.
  *
+ * Encodes results using the flac format.
  */
 int main(int32 argc, char **argv)
 {
@@ -229,7 +230,7 @@ int main(int32 argc, char **argv)
     char flacfile[12];
     sprintf(flacfile, "%02d.flac", utter_nbr);
 
-    if (enflac_utterance(total_samples, rawfile, flacfile) <0 ) {
+    if (enflac_utterance(total_samples, rawfile, flacfile) < 0) {
       fprintf(stderr, "Can't enflac file %s !\n", rawfile);
       break;
     }
@@ -308,8 +309,10 @@ static int make_flac_encoder(int sample_rate) {
 }
 /*___________________________________________________________________________*/
 /**
- * Convert the input raw file into a flac compressed file.
- * Return the number of samples or -1.
+ * Converts the input raw file into a flac compressed file.
+ * It was really hard to figure out how to use correctly the flac api.
+ * I could not manage to avoid files written and read.
+ * Returns the number of samples or -1.
  */
 static int enflac_utterance(int total_samples, char* rawfile, char* flacfile) {
 
@@ -341,12 +344,12 @@ static int enflac_utterance(int total_samples, char* rawfile, char* flacfile) {
     fprintf(stderr, "Encoder finalization failed\n");
   }
 
-  return 1;
+  return 0;
 }
 /*___________________________________________________________________________*/
 /**
  * Detects and writes down an utterance.
- * Return the number of samples or -1.
+ * Returns the number of samples or -1.
  */
 static int write_utterance(char* rawfile) {
     /**
