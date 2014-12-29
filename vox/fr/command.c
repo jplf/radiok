@@ -60,13 +60,21 @@
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
 
+#include <json-parser/json.h>
+#include <curl/curl.h>
+
 /*
  * To parse the command line arguments.
  */
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
 
-#define MAX_SAMPLES 4096
+#define NBR_SAMPLES  4096
+#define MAX_SAMPLES 80000
+
+#define MAX_FILE_SIZE 300000
+#define MAX_RESPONSE_LENGTH 10000
+#define MAX_WORD_LENGTH 48
 
 #include <FLAC/stream_encoder.h>
 
@@ -75,10 +83,15 @@ typedef enum { false = 0, true = 1 } bool;
  */
 static void usage();
 
-static int start_flac_encoding();
-static int make_flac_encoder();
+static int start_flac_encoding(FLAC__byte*, int);
+static int make_flac_encoder(int);
 static int get_utterance(int16*);
 static int enflac_utterance(int, int16*);
+
+static char*    type_name(json_type t);
+static size_t   get_response(void *content, size_t size, size_t n, void *ptr);
+static int      interpret_flac();
+static int      parse_content(char*);
 
 static FLAC__StreamEncoder* encoder = NULL;
 static bool verbose = true;
@@ -88,6 +101,10 @@ static int32 silence_samples;
 
 static char* flacfile = "utterance.flac";
 static char* rawfile  = "utterance.raw";
+
+static CURL* googurl = NULL;
+static char error[CURL_ERROR_SIZE];
+static char response[MAX_RESPONSE_LENGTH];
 
 /**
  * Starts the processing loop.
@@ -111,6 +128,12 @@ int main(int32 argc, char **argv)
   }
   else {
     strcpy(device, s);
+  }
+
+  char* key = getenv("GOOGLE_KEY");
+  if (key == NULL) {
+    fprintf(stderr, "GOOGLE_KEY undefined\n");
+    return 1;
   }
 
   extern char *optarg;
@@ -164,6 +187,34 @@ int main(int32 argc, char **argv)
     usage(argv[0]);
   }
 
+  static char* google = "https://www.google.com/speech-api/v2/recognize";
+  static char* output = "json";
+  static char* lang   = "fr-fr";
+
+  char url[256];
+  strcpy(url, google);
+  strcat(url, "?output="); strcat(url, output);
+  strcat(url, "&lang="); strcat(url, lang);
+  strcat(url, "&key="); strcat(url, key);
+
+  struct curl_slist *slist = NULL;
+  slist = curl_slist_append(slist, "Expect: 100-continue");
+  slist = curl_slist_append(slist, "Content-type: audio/x-flac; rate=44100;");
+
+  if(debug) {
+    printf("URL: %s (size: %d)\n", url, strlen(url));
+  }
+
+  googurl = curl_easy_init( );
+  curl_easy_setopt(googurl, CURLOPT_WRITEFUNCTION, get_response);
+  curl_easy_setopt(googurl, CURLOPT_WRITEDATA, (void *)response);
+  curl_easy_setopt(googurl, CURLOPT_URL, url);
+  curl_easy_setopt(googurl, CURLOPT_POST, 1);
+  curl_easy_setopt(googurl, CURLOPT_USERAGENT, "Mozilla/5.0");
+  curl_easy_setopt(googurl, CURLOPT_HTTPHEADER, slist);
+  curl_easy_setopt(googurl, CURLOPT_ERRORBUFFER, error);
+  curl_easy_setopt(googurl, CURLOPT_VERBOSE, 0L);
+
   /**
    * Convert desired min. inter-utterance silence duration to #samples
    */
@@ -210,6 +261,7 @@ int main(int32 argc, char **argv)
 
   while (forever) {
 
+    // This buffer gets the raw output.
     int16 utterance[MAX_SAMPLES];
 
     int total_samples = get_utterance(utterance);
@@ -228,13 +280,19 @@ int main(int32 argc, char **argv)
       FLAC__stream_encoder_delete(encoder);
     }
 
+    if (interpret_flac() < 0) {
+      fprintf(stderr, "Can't interpret utterance %d\n", utter_nbr);
+      forever = false;
+    }
+
     utter_nbr++;
-    forever = false;
   }
 
   ad_stop_rec(ad);
   cont_ad_close(cont);
   ad_close(ad);
+
+  curl_easy_cleanup(googurl);
 
   return 0;
 }
@@ -265,7 +323,7 @@ static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
                            | (FLAC__int16)buffer[2*i]);
   }
   /**
-   * Feed samples to encoder
+   * Feed samples to the encoder
    */
   FLAC__bool ok =
   FLAC__stream_encoder_process_interleaved(encoder, pcm, nb_samples);
@@ -274,7 +332,7 @@ static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
 }
 /*___________________________________________________________________________*/
 /**
- * Initializes the Flac encoder.
+ * Initializes the flac encoder.
  */
 static int make_flac_encoder(int sample_rate) {
 
@@ -327,16 +385,8 @@ static int enflac_utterance(int total_samples, int16* utterance) {
   }
 
   FLAC__byte* buffer = (FLAC__byte*) malloc(nb);
-  if (debug) {
-    printf("Buffer %d (%d) bytes !\n", sizeof(buffer), nb);
-  }
 
-  FILE* fq = fopen(rawfile, "rb");
-  int nr = fread(buffer, sizeof(int16), total_samples, fq);
-  printf("Number of bytes read: %d\n", nr * sizeof(int16));
-  fclose(fq);
-
-  //memcpy((void*)buffer, (void*)utterance, nb);
+  memcpy((void*)buffer, (void*)utterance, nb);
 
   if (debug) {
     printf("Start encoding process !\n");
@@ -362,7 +412,7 @@ static int enflac_utterance(int total_samples, int16* utterance) {
  * Fills up the buffer
  * Returns the number of samples or -1.
  */
-static int get_utterance(int16* buffer) {
+static int get_utterance(int16* utterance) {
     /**
      * Number of samples read in the audio stream.
      * A sample is a 16 bits integer.
@@ -373,21 +423,28 @@ static int get_utterance(int16* buffer) {
      * Wait for beginning of next utterance; for non-silence data
      * read at most MAX_SAMPLES samples.
      */
+
+    int16 buffer[NBR_SAMPLES];
     
-    while ((nbread = cont_ad_read(cont, buffer, MAX_SAMPLES)) == 0);
+    while ((nbread = cont_ad_read(cont, buffer, NBR_SAMPLES)) == 0);
 
     if (nbread < 0) {
       fprintf(stderr, "Function cont_ad_read failed\n");
       return -1;
     }
 
+#if 0
     FILE *fp;
-
     if ((fp = fopen(rawfile, "wb")) == NULL) {
       fprintf(stderr, "Failed to open '%s' for writing", rawfile);
       return -1;
     }
     fwrite(buffer, sizeof(int16), nbread, fp);
+#endif
+
+    int16* dest = utterance;
+    memcpy(dest, buffer, nbread * sizeof(int16));
+    dest += nbread;
 
     int total_samples = nbread;
 
@@ -397,7 +454,7 @@ static int get_utterance(int16* buffer) {
     /* Read utterance data until a gap is observed */
     while (true) {
 
-      if ((nbread = cont_ad_read(cont, buffer, MAX_SAMPLES)) < 0) {
+      if ((nbread = cont_ad_read(cont, buffer, NBR_SAMPLES)) < 0) {
         fprintf(stderr, "Call to cont_ad_read failed\n");
         continue;
       }
@@ -419,14 +476,260 @@ static int get_utterance(int16* buffer) {
          */
         ts = cont->read_ts;
         total_samples += nbread;
+        if (total_samples >= MAX_SAMPLES) {
+          fprintf(stderr, "Too many samples read %d !\n", total_samples);
+          return -1;
+        }
       }
 
+#if 0
       fwrite(buffer, sizeof(int16), nbread, fp);
+#endif
+
+      memcpy(dest, buffer, nbread * sizeof(int16));
+      dest += nbread;
     }
 
+#if 0
     fclose(fp);
+#endif
 
     return total_samples;
+}
+/*___________________________________________________________________________*/
+/**
+ * The code used to communicate with google to interpret what was said.
+ */
+/*___________________________________________________________________________*/
+/**
+ * Makes the flac file interpreted by google.
+ */
+static int interpret_flac() {
+
+  FILE* file;
+  // The buffer is not dynamically allocated to avoid a malloc(3)
+  // Make sure that MAX_FILE_SIZE is big enough.
+  char buffer[MAX_FILE_SIZE]; 
+
+  if ((file = fopen(flacfile, "rb")) == NULL) {
+    fprintf(stderr, "Can't open %s for input\n", flacfile);
+    return -1;
+  }
+
+  size_t s = fread(buffer, 1, MAX_FILE_SIZE, file);
+  buffer[s] = 0;
+
+  if (debug) {
+    fprintf(stdout, "Read %d bytes from %s\n", s, flacfile);
+  }
+
+  curl_easy_setopt(googurl, CURLOPT_POSTFIELDSIZE, s);
+  curl_easy_setopt(googurl, CURLOPT_POSTFIELDS, buffer);
+
+  // Reset the response buffer.
+  memset(response, 0, sizeof(response));
+
+  CURLcode rc;
+
+  if ((rc = curl_easy_perform(googurl)) != 0) {
+    fprintf(stderr, "Can't perform %s rc: %s\n", flacfile,
+            curl_easy_strerror(rc));
+    fprintf(stderr, "Error: %s\n", error);
+
+    return -1;
+  }
+
+  if (parse_content(response) < 0) {
+    fprintf(stderr, "Can't parse response: %s !\n", response);
+    return 0;
+  }
+
+  return 0;
+}
+/*___________________________________________________________________________*/
+/**
+ * Gets the answer from google.
+ * It may be called more than once.
+ */
+static size_t get_response(void *output, size_t size, size_t n, void *ptr) {
+
+  size_t realsize = size * n;
+ 
+  if(realsize >= MAX_RESPONSE_LENGTH) {
+    fprintf(stderr, "Not enough memory to handle vox response (%d/%d) !\n",
+            realsize, MAX_RESPONSE_LENGTH);
+    return 0;
+  }
+
+  if (debug) {
+    fprintf(stdout, "Got %d bytes from google\n", realsize);
+  }
+
+  strncat((char*)ptr, (char*)output, realsize);
+
+  return realsize;
+}
+/*___________________________________________________________________________*/
+/**
+ * Prints the answer from google.
+ */
+static int parse_content(char* content) {
+
+  if (content == NULL) {
+    fprintf(stderr, "No content to parse !\n");
+    return -1;
+  }
+
+  if (debug) {
+    printf("\nContent to parse:\n%s\n", content);
+  }
+
+  /**
+   * Get rid of the first line which should only contain {"result":[]}
+   * Then get the second line.
+   */
+  char * line = strtok(content, "\n");
+
+  line = strtok(NULL, "\n");
+  if (line == NULL) {
+    fprintf(stderr, "No second line to parse !\n");
+    return -1;
+  }
+
+  /**
+   * Then parse the content which should be a json formatted string.
+   * json_array array  = (json_value)(*value);
+   */
+  json_value* value = json_parse(line, strlen(line));
+  if (value == NULL) {
+    fprintf(stderr, "Can't parse line %s !\n", line);
+    return -1;
+  }
+
+  if (value->type != json_object) {
+    fprintf(stderr, "Wrong type %s / %s\n",
+            type_name(value->type), type_name(json_object));
+    return -1;
+  }
+
+  int n = (value->u).object.length;
+  int i;
+  /**
+   * Extract the first word which was guessed by google.
+   * The loop is not necessary.
+   */
+  for (i = 0; i < 1; i++) {
+    json_object_entry entry = (value->u).object.values[i];
+
+    if (strcmp("result", entry.name) != 0) {
+      fprintf(stderr, "Wrong name %s / %s\n", entry.name, "result");
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    json_value* v = entry.value;
+
+    if (v->type != json_array) {
+      fprintf(stderr, "Wrong type %s / %s\n",
+              type_name(v->type), type_name(json_array));
+      fprintf(stderr, "%s\n", line);
+      return 1;
+    }
+
+    v = (v->u).array.values[0];
+    if (v->type != json_object) {
+      fprintf(stderr, "Wrong type %s / %s\n",
+              type_name(v->type), type_name(json_object));
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    entry = (v->u).object.values[0];
+
+    if (strcmp("alternative", entry.name) != 0) {
+      fprintf(stderr, "Wrong name %s / %s\n", entry.name, "alternative");
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    v = entry.value;
+    if (v->type != json_array) {
+      fprintf(stderr, "Wrong type %s / %s\n",
+              type_name(v->type), type_name(json_array));
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    v = (v->u).array.values[0];
+    if (v->type != json_object) {
+      fprintf(stderr, "Wrong type %s / %s\n",
+              type_name(v->type), type_name(json_object));
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    n = (v->u).object.length;
+    if (n != 2) {
+      fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    entry = (v->u).object.values[0];
+    json_value* v_word = entry.value;
+
+    if (strcmp("transcript", entry.name) != 0 || v_word->type != json_string) {
+      fprintf(stderr, "Wrong entry %s / %s\n",
+              entry.name, type_name(v_word->type));
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    char* word = (v_word->u).string.ptr;
+
+    entry = (v->u).object.values[1];
+    json_value* v_level = entry.value;
+
+    if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
+      fprintf(stderr, "Wrong entry %s / %s\n",
+              entry.name, type_name(v_level->type));
+      fprintf(stderr, "%s\n", line);
+      return -1;
+    }
+
+    double level = (v_level->u).dbl;
+    fprintf(stdout, "\nFound word: '%s' with confidence: %f\n", word, level);
+
+  }
+
+  return 0;
+}
+/*___________________________________________________________________________*/
+/**
+ * Translates the enum value to strings.
+ */
+static char* type_name(json_type t) {
+
+  switch(t) {
+  case json_none:
+    return "json_none";
+  case  json_object:
+    return "json_object";
+  case  json_array:
+    return "json_array";
+  case  json_integer:
+    return "json_integer";
+  case  json_double:
+    return "json_double";
+  case  json_string:
+    return "json_string";
+  case  json_boolean:
+    return "json_boolean";
+  case  json_null:
+    return "json_null";
+  default:
+    return "unknown";
+  }
 }
 /*___________________________________________________________________________*/
 /**

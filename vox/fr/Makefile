@@ -16,7 +16,7 @@ CPPFLAGS := -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 \
 	    -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DHAVE_LONG_LONG=1 \
 	    -DSIZEOF_LONG_LONG=8 -DHAVE_DUP2=1 $(INC)
 
-CFLAGS  := -g
+CFLAGS  := -O2
 LDFLAGS	:= -L$(ORGROOT)/lib -logg \
 	   -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
@@ -28,7 +28,7 @@ hark 	: hark.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -L/opt/Flac/lib -lFLAC -lm $< -o $@
 
 command : command.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -L/opt/Flac/lib -lFLAC -lm $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -L/opt/Flac/lib -lFLAC $< -L$(ORGROOT)/lib -ljsonparser -o $@
 
 split	: split.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@
