@@ -16,15 +16,18 @@ CPPFLAGS := -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 \
 	    -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DHAVE_LONG_LONG=1 \
 	    -DSIZEOF_LONG_LONG=8 -DHAVE_DUP2=1 $(INC)
 
-CFLAGS  :=
+CFLAGS  := -g
 LDFLAGS	:= -L$(ORGROOT)/lib -logg \
 	   -lpocketsphinx -lsphinxbase -lsphinxad \
 	   -lasound -lpthread -lm -lsamplerate -lsndfile -lcurl
 
-todo	: parse enflac split hark interpret
+todo	: parse enflac split hark interpret command
 
 # Note than a static link leads to a segfault. Dunno why !
 hark 	: hark.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -L/opt/Flac/lib -lFLAC -lm $< -o $@
+
+command : command.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -L/opt/Flac/lib -lFLAC -lm $< -o $@
 
 split	: split.c
@@ -40,7 +43,7 @@ interpret  : interpret.c
 	$(CC) $(CFLAGS) $< -L$(ORGROOT)/lib -ljsonparser -lcurl -lm -o $@
 
 clean	:
-	@$(RM) $(PROG) *~ enflac hark split parse screenlog.?
+	@$(RM) $(PROG) *~ enflac hark split parse interpret command screenlog.?
 
 cleanflac :
 	@$(RM) *.flac *.raw
