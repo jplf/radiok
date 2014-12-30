@@ -1,7 +1,8 @@
 /*___________________________________________________________________________*/
 /**
  * @file command.c
- * @brief command [-vd] [-r sampling-rate] [-s silence(sec)] [-D device]
+ * @brief
+ * command [-vd] [-r sampling-rate] [-s silence(sec)] [-D device] [-u url]
  *
  * The program used to send commands interpreted by google to the radiok
  * server.
@@ -45,6 +46,8 @@
  */
 /**
  * This code merges routines from hark.c and from interpret.c
+ * See the google developer account associated with this project:
+ * https://console.developers.google.com/project/dynamic-poet-655
  *
  */
 
@@ -81,30 +84,37 @@ typedef enum { false = 0, true = 1 } bool;
 /**
  * Prints syntax and exit.
  */
-static void usage();
+static void     usage();
 
-static int start_flac_encoding(FLAC__byte*, int);
-static int make_flac_encoder(int);
-static int get_utterance(int16*);
-static int enflac_utterance(int, int16*);
+static int      start_flac_encoding(FLAC__byte*, int);
+static int      make_flac_encoder(int);
+static int      get_utterance(int16*);
+static int      enflac_utterance(int, int16*);
+static char*    interpret_flac();
+static int      send_command(char*, char*);
 
 static char*    type_name(json_type t);
-static size_t   get_response(void *content, size_t size, size_t n, void *ptr);
-static int      interpret_flac();
-static int      parse_content(char*);
+static size_t   get_google_response(void *content, size_t size, size_t n,
+                                    void *ptr);
+static char*    parse_google_content(char*);
+
+static bool verbose = false;
+static bool debug   = false;
 
 static FLAC__StreamEncoder* encoder = NULL;
-static bool verbose = true;
-static bool debug   = false;
 static cont_ad_t* cont;
 static int32 silence_samples;
 
 static char* flacfile = "utterance.flac";
 static char* rawfile  = "utterance.raw";
 
-static CURL* googurl = NULL;
-static char error[CURL_ERROR_SIZE];
-static char response[MAX_RESPONSE_LENGTH];
+static CURL* googlurl = NULL;
+static char  error[CURL_ERROR_SIZE];
+static char  google_response[MAX_RESPONSE_LENGTH];
+
+static CURL* radiokurl = NULL;
+static char  radiok_response[MAX_RESPONSE_LENGTH];
+static char  vox_server_url[128];
 
 /**
  * Starts the processing loop.
@@ -140,7 +150,9 @@ int main(int32 argc, char **argv)
   extern int   optind;
   int opt;
 
-  while((opt = getopt(argc, argv, "s:r:D:vhd")) != EOF) {
+  memset(vox_server_url, 0, sizeof(vox_server_url));
+
+  while((opt = getopt(argc, argv, "s:r:D:u:vhd")) != EOF) {
 
     switch(opt) {
     case 'v'	:
@@ -167,6 +179,10 @@ int main(int32 argc, char **argv)
       strcpy(device, optarg);
       break;
 
+    case 'u'	:
+      strcpy(vox_server_url, optarg);
+      break;
+
     case 's'	:
       silence = atof(optarg);
       if(silence < 0. || silence > 10.)
@@ -187,33 +203,59 @@ int main(int32 argc, char **argv)
     usage(argv[0]);
   }
 
+  /**
+   * Prepare the connection to the google speech application.
+   */
   static char* google = "https://www.google.com/speech-api/v2/recognize";
   static char* output = "json";
   static char* lang   = "fr-fr";
 
-  char url[256];
-  strcpy(url, google);
-  strcat(url, "?output="); strcat(url, output);
-  strcat(url, "&lang="); strcat(url, lang);
-  strcat(url, "&key="); strcat(url, key);
+  char google_url[256];
+  strcpy(google_url, google);
+  strcat(google_url, "?output="); strcat(google_url, output);
+  strcat(google_url, "&lang="); strcat(google_url, lang);
+  strcat(google_url, "&key="); strcat(google_url, key);
 
   struct curl_slist *slist = NULL;
   slist = curl_slist_append(slist, "Expect: 100-continue");
   slist = curl_slist_append(slist, "Content-type: audio/x-flac; rate=44100;");
 
   if(debug) {
-    printf("URL: %s (size: %d)\n", url, strlen(url));
+    printf("URL: %s (size: %d)\n", google_url, strlen(google_url));
   }
 
-  googurl = curl_easy_init( );
-  curl_easy_setopt(googurl, CURLOPT_WRITEFUNCTION, get_response);
-  curl_easy_setopt(googurl, CURLOPT_WRITEDATA, (void *)response);
-  curl_easy_setopt(googurl, CURLOPT_URL, url);
-  curl_easy_setopt(googurl, CURLOPT_POST, 1);
-  curl_easy_setopt(googurl, CURLOPT_USERAGENT, "Mozilla/5.0");
-  curl_easy_setopt(googurl, CURLOPT_HTTPHEADER, slist);
-  curl_easy_setopt(googurl, CURLOPT_ERRORBUFFER, error);
-  curl_easy_setopt(googurl, CURLOPT_VERBOSE, 0L);
+  googlurl = curl_easy_init();
+  curl_easy_setopt(googlurl, CURLOPT_WRITEFUNCTION, get_google_response);
+  curl_easy_setopt(googlurl, CURLOPT_WRITEDATA, (void *)google_response);
+  curl_easy_setopt(googlurl, CURLOPT_URL, google_url);
+  curl_easy_setopt(googlurl, CURLOPT_POST, 1);
+  curl_easy_setopt(googlurl, CURLOPT_USERAGENT, "Mozilla/5.0");
+  curl_easy_setopt(googlurl, CURLOPT_HTTPHEADER, slist);
+  curl_easy_setopt(googlurl, CURLOPT_ERRORBUFFER, error);
+  curl_easy_setopt(googlurl, CURLOPT_VERBOSE, 0L);
+
+  /**
+   * Prepare the connection to the radiok server.
+   */
+  if (strlen(vox_server_url) > 0) {
+
+      /* Add a trailing slash if necessary */
+      if (vox_server_url[strlen(vox_server_url) -1 ] != '/') {
+        strcat(vox_server_url, "/");
+      }
+
+      if (verbose) {
+        printf("Radiok server URL: %s\n", vox_server_url);
+      }
+
+      radiokurl = curl_easy_init();
+      curl_easy_setopt(radiokurl, CURLOPT_VERBOSE, 0);
+      curl_easy_setopt(radiokurl, CURLOPT_WRITEFUNCTION, get_google_response);
+      curl_easy_setopt(radiokurl, CURLOPT_WRITEDATA, (void *)radiok_response);
+  }
+  else if (verbose) {
+    printf("No connection to the radiok server attempted !\n");
+  }
 
   /**
    * Convert desired min. inter-utterance silence duration to #samples
@@ -250,7 +292,7 @@ int main(int32 argc, char **argv)
    * Forever listen for utterances
    */
   if (verbose) {
-    printf(" you may speak now\n");
+    printf(" you may speak now ...\n");
   }
 
   /**
@@ -258,6 +300,8 @@ int main(int32 argc, char **argv)
    */
   int utter_nbr = 0;
   bool forever  = true;
+  struct timeval tv;
+  char start_time[128];
 
   while (forever) {
 
@@ -265,6 +309,16 @@ int main(int32 argc, char **argv)
     int16 utterance[MAX_SAMPLES];
 
     int total_samples = get_utterance(utterance);
+    /*
+     * Beginning of processing.
+     * Number of milliseconds since Epoch.
+     * This time is passed to the server which computes
+     * the duration.
+     */
+    gettimeofday(&tv, NULL);
+    sprintf(start_time, "%llu",
+            (unsigned long long)(tv.tv_sec) * 1000 +
+            (unsigned long long)(tv.tv_usec) / 1000);
 
     if (make_flac_encoder(sample_rate) <0) {
       fprintf(stderr, "Can't make the flac encoder !\n");
@@ -280,10 +334,20 @@ int main(int32 argc, char **argv)
       FLAC__stream_encoder_delete(encoder);
     }
 
-    if (interpret_flac() < 0) {
+    char* word;
+
+    if ((word = interpret_flac()) == NULL) {
       fprintf(stderr, "Can't interpret utterance %d\n", utter_nbr);
+      continue;
       forever = false;
     }
+
+    if (send_command(word, start_time) < 0) {
+      fprintf(stderr, "Sending command %s (%d) to radiok failed\n",
+              word, utter_nbr);
+    }
+
+    forever = (strcmp(word, "abandon") == 0);
 
     utter_nbr++;
   }
@@ -292,7 +356,7 @@ int main(int32 argc, char **argv)
   cont_ad_close(cont);
   ad_close(ad);
 
-  curl_easy_cleanup(googurl);
+  curl_easy_cleanup(googlurl);
 
   return 0;
 }
@@ -498,22 +562,25 @@ static int get_utterance(int16* utterance) {
 }
 /*___________________________________________________________________________*/
 /**
- * The code used to communicate with google to interpret what was said.
+ * The following code is used to communicate with google to interpret
+ * what was said.
  */
 /*___________________________________________________________________________*/
 /**
  * Makes the flac file interpreted by google.
+ * Returns the word interpreted by google.
  */
-static int interpret_flac() {
+static char* interpret_flac() {
 
   FILE* file;
+
   // The buffer is not dynamically allocated to avoid a malloc(3)
   // Make sure that MAX_FILE_SIZE is big enough.
   char buffer[MAX_FILE_SIZE]; 
 
   if ((file = fopen(flacfile, "rb")) == NULL) {
     fprintf(stderr, "Can't open %s for input\n", flacfile);
-    return -1;
+    return NULL;
   }
 
   size_t s = fread(buffer, 1, MAX_FILE_SIZE, file);
@@ -523,40 +590,43 @@ static int interpret_flac() {
     fprintf(stdout, "Read %d bytes from %s\n", s, flacfile);
   }
 
-  curl_easy_setopt(googurl, CURLOPT_POSTFIELDSIZE, s);
-  curl_easy_setopt(googurl, CURLOPT_POSTFIELDS, buffer);
+  curl_easy_setopt(googlurl, CURLOPT_POSTFIELDSIZE, s);
+  curl_easy_setopt(googlurl, CURLOPT_POSTFIELDS, buffer);
 
   // Reset the response buffer.
-  memset(response, 0, sizeof(response));
+  memset(google_response, 0, sizeof(google_response));
 
   CURLcode rc;
 
-  if ((rc = curl_easy_perform(googurl)) != 0) {
+  if ((rc = curl_easy_perform(googlurl)) != 0) {
     fprintf(stderr, "Can't perform %s rc: %s\n", flacfile,
             curl_easy_strerror(rc));
     fprintf(stderr, "Error: %s\n", error);
 
-    return -1;
+    return NULL;
   }
 
-  if (parse_content(response) < 0) {
-    fprintf(stderr, "Can't parse response: %s !\n", response);
-    return 0;
+  char* word = parse_google_content(google_response);
+
+  if (word == NULL) {
+    fprintf(stderr, "Can't parse response: %s !\n", google_response);
+    return NULL;
   }
 
-  return 0;
+  return word;
 }
 /*___________________________________________________________________________*/
 /**
  * Gets the answer from google.
- * It may be called more than once.
+ * It may be called more than once so the output must be concateneted.
  */
-static size_t get_response(void *output, size_t size, size_t n, void *ptr) {
+static size_t get_google_response(void *output, size_t size, size_t n,
+                                  void *ptr) {
 
   size_t realsize = size * n;
  
   if(realsize >= MAX_RESPONSE_LENGTH) {
-    fprintf(stderr, "Not enough memory to handle vox response (%d/%d) !\n",
+    fprintf(stderr, "Not enough memory to handle curl response (%d/%d) !\n",
             realsize, MAX_RESPONSE_LENGTH);
     return 0;
   }
@@ -571,13 +641,14 @@ static size_t get_response(void *output, size_t size, size_t n, void *ptr) {
 }
 /*___________________________________________________________________________*/
 /**
- * Prints the answer from google.
+ * Parses the answer from google.
+ * Returns the word found or NULL.
  */
-static int parse_content(char* content) {
+static char* parse_google_content(char* content) {
 
   if (content == NULL) {
     fprintf(stderr, "No content to parse !\n");
-    return -1;
+    return NULL;
   }
 
   if (debug) {
@@ -593,7 +664,7 @@ static int parse_content(char* content) {
   line = strtok(NULL, "\n");
   if (line == NULL) {
     fprintf(stderr, "No second line to parse !\n");
-    return -1;
+    return NULL;
   }
 
   /**
@@ -603,106 +674,105 @@ static int parse_content(char* content) {
   json_value* value = json_parse(line, strlen(line));
   if (value == NULL) {
     fprintf(stderr, "Can't parse line %s !\n", line);
-    return -1;
+    return NULL;
   }
 
   if (value->type != json_object) {
     fprintf(stderr, "Wrong type %s / %s\n",
             type_name(value->type), type_name(json_object));
-    return -1;
+    return NULL;
   }
 
   int n = (value->u).object.length;
-  int i;
+  int i = 0;
   /**
    * Extract the first word which was guessed by google.
    * The loop is not necessary.
    */
-  for (i = 0; i < 1; i++) {
-    json_object_entry entry = (value->u).object.values[i];
+  json_object_entry entry = (value->u).object.values[i];
 
-    if (strcmp("result", entry.name) != 0) {
-      fprintf(stderr, "Wrong name %s / %s\n", entry.name, "result");
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    json_value* v = entry.value;
-
-    if (v->type != json_array) {
-      fprintf(stderr, "Wrong type %s / %s\n",
-              type_name(v->type), type_name(json_array));
-      fprintf(stderr, "%s\n", line);
-      return 1;
-    }
-
-    v = (v->u).array.values[0];
-    if (v->type != json_object) {
-      fprintf(stderr, "Wrong type %s / %s\n",
-              type_name(v->type), type_name(json_object));
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    entry = (v->u).object.values[0];
-
-    if (strcmp("alternative", entry.name) != 0) {
-      fprintf(stderr, "Wrong name %s / %s\n", entry.name, "alternative");
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    v = entry.value;
-    if (v->type != json_array) {
-      fprintf(stderr, "Wrong type %s / %s\n",
-              type_name(v->type), type_name(json_array));
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    v = (v->u).array.values[0];
-    if (v->type != json_object) {
-      fprintf(stderr, "Wrong type %s / %s\n",
-              type_name(v->type), type_name(json_object));
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    n = (v->u).object.length;
-    if (n != 2) {
-      fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    entry = (v->u).object.values[0];
-    json_value* v_word = entry.value;
-
-    if (strcmp("transcript", entry.name) != 0 || v_word->type != json_string) {
-      fprintf(stderr, "Wrong entry %s / %s\n",
-              entry.name, type_name(v_word->type));
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    char* word = (v_word->u).string.ptr;
-
-    entry = (v->u).object.values[1];
-    json_value* v_level = entry.value;
-
-    if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
-      fprintf(stderr, "Wrong entry %s / %s\n",
-              entry.name, type_name(v_level->type));
-      fprintf(stderr, "%s\n", line);
-      return -1;
-    }
-
-    double level = (v_level->u).dbl;
-    fprintf(stdout, "\nFound word: '%s' with confidence: %f\n", word, level);
-
+  if (strcmp("result", entry.name) != 0) {
+    fprintf(stderr, "Wrong name %s / %s\n", entry.name, "result");
+    fprintf(stderr, "%s\n", line);
+    return NULL;
   }
 
-  return 0;
+  json_value* v = entry.value;
+
+  if (v->type != json_array) {
+    fprintf(stderr, "Wrong type %s / %s\n",
+            type_name(v->type), type_name(json_array));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  v = (v->u).array.values[0];
+  if (v->type != json_object) {
+    fprintf(stderr, "Wrong type %s / %s\n",
+            type_name(v->type), type_name(json_object));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  entry = (v->u).object.values[0];
+
+  if (strcmp("alternative", entry.name) != 0) {
+    fprintf(stderr, "Wrong name %s / %s\n", entry.name, "alternative");
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  v = entry.value;
+  if (v->type != json_array) {
+    fprintf(stderr, "Wrong type %s / %s\n",
+            type_name(v->type), type_name(json_array));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  v = (v->u).array.values[0];
+  if (v->type != json_object) {
+    fprintf(stderr, "Wrong type %s / %s\n",
+            type_name(v->type), type_name(json_object));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  n = (v->u).object.length;
+  if (n != 2) {
+    fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  entry = (v->u).object.values[0];
+  json_value* v_word = entry.value;
+
+  if (strcmp("transcript", entry.name) != 0 || v_word->type != json_string) {
+    fprintf(stderr, "Wrong entry %s / %s\n",
+            entry.name, type_name(v_word->type));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  char* word = (v_word->u).string.ptr;
+
+  entry = (v->u).object.values[1];
+  json_value* v_level = entry.value;
+
+  if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
+    fprintf(stderr, "Wrong entry %s / %s\n",
+            entry.name, type_name(v_level->type));
+    fprintf(stderr, "%s\n", line);
+    return NULL;
+  }
+
+  if (verbose) {
+    double level = (v_level->u).dbl;
+    fprintf(stdout, "\nFound word: '%s' with confidence: %f\n", word, level);
+  }
+
+  return word;
 }
 /*___________________________________________________________________________*/
 /**
@@ -730,6 +800,41 @@ static char* type_name(json_type t) {
   default:
     return "unknown";
   }
+}
+/*___________________________________________________________________________*/
+/**
+ * Sends a command to the radiok vox server.
+ * If the connection is not actually set a message is just printed.
+ * Parameter word the name of the command to send.
+ * Parameter start_time the moment at which the word was heard.
+ */
+static int send_command(char* word, char* start_time) {
+
+  if (radiokurl == NULL) {
+    printf("%s at %s\n", word, start_time);
+    return 0;
+  }
+
+  char command[256];
+  strcpy(command, vox_server_url);
+  strcat(command, word);
+  strcat(command, "/");
+  strcat(command, start_time);
+
+  curl_easy_setopt(radiokurl, CURLOPT_URL, command);
+
+  // Reset the response buffer.
+  memset(radiok_response, 0, sizeof(radiok_response));
+
+  int rc = curl_easy_perform(radiokurl);
+  if (rc != CURLE_OK) {
+    fprintf(stderr, "Curl to radiok failed: %s\n", curl_easy_strerror(rc));
+    return -1;
+  }
+
+  printf("Radiok vox response: %s\n", radiok_response);
+
+  return 0;
 }
 /*___________________________________________________________________________*/
 /**
