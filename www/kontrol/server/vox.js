@@ -21,6 +21,11 @@
  */
 var execSync = require('exec-sync');
 
+/**
+ * The module giving the list of valid commands.
+ */
+var cmd = require('./cmd-en');
+
 // The scripts which can be called.
 var onair;
 var setVolume;
@@ -39,6 +44,7 @@ var logger;
 var stationList;
 // The index of the currently selected station.
 var stationIdx = 0;
+
 //__________________________________________________________________________
 /**
  * Changes the radio station.
@@ -72,25 +78,13 @@ module.exports = {
 
         logger = msger;
         logger.info('Vox Kontroller module initialization');
+
+        logger.info('Commands ' + cmd.language + ' ' + cmd.digitList);
+
         onair = root + '/bin/onair.sh ';
         tell  = root + '/bin/tell.sh ';
         setVolume = root + '/bin/set_volume.sh ' + dvol + ' ';
         say = root + '/bin/say.sh ';
-
-        /**
-         * Words leading to the same action are grouped in list of
-         * synonyms.
-         */
-        var yesList   = ['okay', 'yes', 'yep', 'sure', 'absolutely'];
-        var noList    = ['no', 'nope', 'no way'];
-        var plusList  = ['more', 'louder', 'plus', 'higher', 'loud'];
-        var minusList = ['less', 'lower', 'minus', 'weaker', 'soft', 'softer'];
-        var workList  = ['play', 'run', 'begin', 'music', 'radio', 'wake up'];
-        var stopList  = ['terminate', 'shut up', 'silence', 'sleep', 'quiet'];
-        var digitList = ['zero', 'one', 'two', 'three', 'four', 'five',
-                         'six', 'seven', 'height', 'nine', 'ten'];
-        var indexList = ['first', 'previous', 'next', 'last'];
-        var whichList = ['which', 'current', 'selected', 'station'];
 
         // The list of stations is fetched thanks to the script 'onair.sh'
         var str = execSync(onair + '-l');
@@ -131,7 +125,7 @@ module.exports = {
             /**
              * Start playing the last selected radio.
              */
-            if (workList.indexOf(word) >= 0) {
+            if (cmd.workList.indexOf(word) >= 0) {
                 execSync(say + 'welcome_back.wav');
                 execSync(onair);
                 code = 'work';
@@ -139,7 +133,7 @@ module.exports = {
             /**
              * Tell which radio is currently selected.
              */
-            else if (whichList.indexOf(word) >= 0) {
+            else if (cmd.whichList.indexOf(word) >= 0) {
                 var stationName = 'inconnue';
                 if (stationIdx >= 0 && stationIdx <= stationList.length - 1) {
                     stationName = stationList[stationIdx].name;
@@ -150,7 +144,7 @@ module.exports = {
             /**
              * Stop playing.
              */
-            else if (stopList.indexOf(word) >= 0) {
+            else if (cmd.stopList.indexOf(word) >= 0) {
                 execSync(onair + '-k');
                 execSync(say + 'byebye.wav');
                 code = 'stop';
@@ -158,17 +152,17 @@ module.exports = {
             /**
              * Increase or decrease volume.
              */
-            else if (plusList.indexOf(word) >= 0) {
+            else if (cmd.plusList.indexOf(word) >= 0) {
                 execSync(tell + 'Le volume va être augmenté');
                 execSync(setVolume + '+');
                 code = 'plus';
             }
-            else if (minusList.indexOf(word) >= 0) {
+            else if (cmd.minusList.indexOf(word) >= 0) {
                 execSync(tell + 'Le volume va être diminué');
                 execSync(setVolume + '-');
                 code = 'minus';
             }
-            else if (indexList.indexOf(word) >= 0) {
+            else if (cmd.indexList.indexOf(word) >= 0) {
                 // Change the current station
                 var index = -1;
 
@@ -206,10 +200,10 @@ module.exports = {
 
                 code = 'index';
             }
-            else if (digitList.indexOf(word) >= 0) {
+            else if (cmd.digitList.indexOf(word) >= 0) {
 
                 //  Select another station
-                var index = digitList.indexOf(word);
+                var index = cmd.digitList.indexOf(word);
 
                 if (index >= 0 && index <= stationList.length - 1) {
                     if (index != stationIdx) {
