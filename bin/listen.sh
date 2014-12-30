@@ -7,11 +7,25 @@
 # See also kontrol/server/vox.js
 #______________________________________________________________________________
 
-cd $RADIOK_HOME/vox/ps
+if [ -z "$AUDIODEV" ]; then
+    echo "export AUDIODEV="
+    exit 1
+fi
 
-corpus=words
-opt="-adcdev plughw:1,0 -lm $corpus.lm -dict $corpus.dic"
-screen -L -m -d ./whatusay $opt -agc max -agcthresh 2.0
+if [ "english" = "$1" ]; then
+    echo "English version launched ! "
+    cd $RADIOK_HOME/vox/ps
+    corpus=words
+    opt="-adcdev $AUDIODEV -lm $corpus.lm -dict $corpus.dic"
+    screen -L -m -d ./whatusay $opt -agc max -agcthresh 2.0
+
+else
+    echo "Version française lancée ! "
+    cd $RADIOK_HOME/vox/fr
+    opt="-v -u http://localhost:18000/vox/process"
+    ./command $opt
+fi
+
 
 #______________________________________________________________________________
 
