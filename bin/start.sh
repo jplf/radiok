@@ -12,12 +12,17 @@ if [ -z "$RADIOK_HOME" ]; then
     exit 1
 fi
 
-if [ -z "NODE_PATH" ]; then
+if [ -z "$NODE_PATH" ]; then
     echo "export NODE_PATH="
     exit 1
 fi
 
-if [ -z "MIXER_CTRL" ]; then
+if [ -z "$AUDIODEV" ]; then
+    echo "export AUDIODEV="
+    exit 1
+fi
+
+if [ -z "$MIXER_CTRL" ]; then
     echo "export MIXER_CTRL="
     exit 1
 fi
