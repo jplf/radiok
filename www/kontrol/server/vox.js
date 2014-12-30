@@ -23,8 +23,9 @@ var execSync = require('exec-sync');
 
 /**
  * The module giving the list of valid commands.
+ * Either 'cmd-fr' or 'cmd-en'
  */
-var cmd = require('./cmd-en');
+var cmd = require('./cmd-fr');
 
 // The scripts which can be called.
 var onair;
@@ -166,13 +167,13 @@ module.exports = {
                 // Change the current station
                 var index = -1;
 
-                if (word === 'first') {
+                if (word === cmd.indexList[0]) {
                     index = 0;
                 }
-                else if (word === 'last') {
+                else if (word === cmd.indexList[3]) {
                     index = stationList.length - 1;
                 }
-                else if (word === 'previous') {
+                else if (word === cmd.indexList[1]) {
                     if (stationIdx > 0) {
                         index = stationIdx - 1;
                     }
@@ -180,7 +181,7 @@ module.exports = {
                       index = stationList.length - 1;  
                     }
                 }
-                else if (word === 'next') {
+                else if (word === cmd.indexList[2]) {
                     if (stationIdx < stationList.length - 1) {
                         index = stationIdx + 1;
                     }

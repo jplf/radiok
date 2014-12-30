@@ -105,7 +105,7 @@ static FLAC__StreamEncoder* encoder = NULL;
 static cont_ad_t* cont;
 static int32 silence_samples;
 
-static char* flacfile = "utterance.flac";
+static char* flacfile = "/tmp/utterance.flac";
 static char* rawfile  = "utterance.raw";
 
 static CURL* googlurl = NULL;
@@ -339,7 +339,9 @@ int main(int32 argc, char **argv)
     if ((word = interpret_flac()) == NULL) {
       fprintf(stderr, "Can't interpret utterance %d\n", utter_nbr);
       continue;
-      forever = false;
+    }
+    else if (verbose) {
+      printf("Utterance %d: %s\n", utter_nbr, word);
     }
 
     if (send_command(word, start_time) < 0) {
@@ -347,7 +349,7 @@ int main(int32 argc, char **argv)
               word, utter_nbr);
     }
 
-    forever = (strcmp(word, "abandon") == 0);
+    forever = (strcmp(word, "abandon") != 0);
 
     utter_nbr++;
   }
