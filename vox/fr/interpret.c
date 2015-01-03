@@ -32,7 +32,7 @@
 #define MAX_RESPONSE_LENGTH 10000
 #define MAX_WORD_LENGTH 48
 
-static int  debug = 0;
+static int  debug = 1;
 
 static char*    type_name(json_type t);
 static size_t   get_response(void *content, size_t size, size_t n, void *ptr);
@@ -272,9 +272,9 @@ static int parse_content(char* content) {
       return -1;
     }
 
-    n = (v->u).object.length;
-    if (n != 2) {
-      fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
+    int nk = (v->u).object.length;
+    if (nk < 1) {
+      fprintf(stderr, "Wrong number of keys %d / %d\n", nk, 2);
       fprintf(stderr, "%s\n", line);
       return -1;
     }
@@ -291,6 +291,11 @@ static int parse_content(char* content) {
 
     char* word = (v_word->u).string.ptr;
 
+    if (nk < 2) {
+      fprintf(stdout, "\nFound word: '%s' without confidence\n", word);
+      return 0;
+    }
+
     entry = (v->u).object.values[1];
     json_value* v_level = entry.value;
 
@@ -303,7 +308,6 @@ static int parse_content(char* content) {
 
     double level = (v_level->u).dbl;
     fprintf(stdout, "\nFound word: '%s' with confidence: %f\n", word, level);
-
   }
 
   return 0;

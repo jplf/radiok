@@ -72,8 +72,8 @@
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
 
-#define NBR_SAMPLES  4096
-#define MAX_SAMPLES 80000
+#define NBR_SAMPLES   4096
+#define MAX_SAMPLES 120000
 
 #define MAX_FILE_SIZE 300000
 #define MAX_RESPONSE_LENGTH 10000
@@ -309,6 +309,11 @@ int main(int32 argc, char **argv)
     int16 utterance[MAX_SAMPLES];
 
     int total_samples = get_utterance(utterance);
+    if (total_samples < 0) {
+      fprintf(stderr, "Can't get utterance %d\n", utter_nbr);
+      continue;
+    }
+
     /*
      * Beginning of processing.
      * Number of milliseconds since Epoch.
@@ -344,12 +349,14 @@ int main(int32 argc, char **argv)
       printf("Utterance %d: %s\n", utter_nbr, word);
     }
 
-    if (send_command(word, start_time) < 0) {
+    if (strcmp(word, "abandon") == 0) {
+      forever = false;
+      continue;
+    }
+    else if (send_command(word, start_time) < 0) {
       fprintf(stderr, "Sending command %s (%d) to radiok failed\n",
               word, utter_nbr);
     }
-
-    forever = (strcmp(word, "abandon") != 0);
 
     utter_nbr++;
   }
@@ -499,15 +506,6 @@ static int get_utterance(int16* utterance) {
       return -1;
     }
 
-#if 0
-    FILE *fp;
-    if ((fp = fopen(rawfile, "wb")) == NULL) {
-      fprintf(stderr, "Failed to open '%s' for writing", rawfile);
-      return -1;
-    }
-    fwrite(buffer, sizeof(int16), nbread, fp);
-#endif
-
     int16* dest = utterance;
     memcpy(dest, buffer, nbread * sizeof(int16));
     dest += nbread;
@@ -548,17 +546,9 @@ static int get_utterance(int16* utterance) {
         }
       }
 
-#if 0
-      fwrite(buffer, sizeof(int16), nbread, fp);
-#endif
-
       memcpy(dest, buffer, nbread * sizeof(int16));
       dest += nbread;
     }
-
-#if 0
-    fclose(fp);
-#endif
 
     return total_samples;
 }
@@ -740,9 +730,9 @@ static char* parse_google_content(char* content) {
     return NULL;
   }
 
-  n = (v->u).object.length;
-  if (n != 2) {
-    fprintf(stderr, "Wrong number of keys %d / %d\n", n, 2);
+  int nk = (v->u).object.length;
+  if (nk < 1) {
+    fprintf(stderr, "Wrong number of keys: %d\n", nk);
     fprintf(stderr, "%s\n", line);
     return NULL;
   }
@@ -759,19 +749,22 @@ static char* parse_google_content(char* content) {
 
   char* word = (v_word->u).string.ptr;
 
-  entry = (v->u).object.values[1];
-  json_value* v_level = entry.value;
+  if (verbose && nk > 1) {
+    entry = (v->u).object.values[1];
+    json_value* v_level = entry.value;
 
-  if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
-    fprintf(stderr, "Wrong entry %s / %s\n",
-            entry.name, type_name(v_level->type));
-    fprintf(stderr, "%s\n", line);
-    return NULL;
-  }
+    if (strcmp("confidence", entry.name) != 0 || v_level->type != json_double){
+      fprintf(stderr, "Wrong entry %s / %s\n",
+              entry.name, type_name(v_level->type));
+      fprintf(stderr, "%s\n", line);
+      return NULL;
+    }
 
-  if (verbose) {
     double level = (v_level->u).dbl;
     fprintf(stdout, "\nFound word: '%s' with confidence: %f\n", word, level);
+  }
+  else if (verbose) {
+    fprintf(stdout, "\nFound word: '%s' without confidence\n", word);
   }
 
   return word;
@@ -845,8 +838,7 @@ static int send_command(char* word, char* start_time) {
  */
 static void usage(char* prog) {
 
-  printf("Usage: %s [-vd] [-r sampling-rate] [-s silence(sec)] [-D device]\n",
-         prog);
+  printf("Usage: %s [-vd] [-r sampling_rate] [-s silence(sec)] [-D device] [-u radiok_url\n", prog);
 
   exit(0);
 }
