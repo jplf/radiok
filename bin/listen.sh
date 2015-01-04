@@ -23,7 +23,7 @@ else
     echo "Version française lancée ! "
     cd $RADIOK_HOME/vox/fr
     opt="-v -u http://localhost:18000/vox/process"
-    ./command $opt
+    screen -L -m -d ./command $opt
 fi
 
 
