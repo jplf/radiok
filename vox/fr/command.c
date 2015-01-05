@@ -6,6 +6,9 @@
  *
  * The program used to send commands interpreted by google to the radiok
  * server.
+
+ * This software is governed by the
+ * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  *
  * @author Jean-Paul Le Fèvre
  * @date December 2014
@@ -46,6 +49,7 @@
  */
 /**
  * This code merges routines from hark.c and from interpret.c
+ *
  * See the google developer account associated with this project:
  * https://console.developers.google.com/project/dynamic-poet-655
  *

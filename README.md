@@ -6,10 +6,11 @@ It consists of a collection of shell scripts, a web server written with
 [nodejs](http://nodejs.org/) packages,
 a web page built with [angularjs](https://angularjs.org/)
 and a client program allowing
-to control vocally the Rpi thanks
-to the [Jasper](http://jasperproject.github.io/) library.
+to control vocally the Rpi thanks either
+to the [Jasper](http://jasperproject.github.io/) library or
+to the Google speech recognition API.
 
-Work is still in progress but a first version is already usable by the braves.
+Main development is over and the current version is usable (but by the wimps).
 
 The full documentation is available in french from 
 the [RadioK](http://www.fonteny.org/radiok) dedicated web site:
@@ -21,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 05 January 2015 | Google based french version working. Version 2.0 |
 | 06 August 2014 | Audio feedback improved. Version 1.2 |
 | 21 July 2014 | This short README is online. Version 1.1 |
 | 20 July 2014 | Documentation available in french |
