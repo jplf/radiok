@@ -13,7 +13,7 @@
 #________________________________________________________________________________
 
 corpus=words
-opt="-adcdev plughw:1,0 -lm $corpus.lm -dict $corpus.dic"
-whatusay $opt -url null -agc max -agcthresh 2.0
+opt="-adcdev $AUDIODEV -lm $corpus.lm -dict $corpus.dic"
+./whatusay $opt -agc max -agcthresh 2.0
 
 #________________________________________________________________________________
