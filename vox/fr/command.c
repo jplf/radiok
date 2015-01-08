@@ -1,14 +1,31 @@
 /*___________________________________________________________________________*/
 /**
  * @file command.c
- * @brief
- * command [-vd] [-r sampling-rate] [-s silence(sec)] [-D device] [-u url]
- *
- * The program used to send commands interpreted by google to the radiok
+ * @brief The program used to send vocal commands in french to the radiok
  * server.
-
- * This software is governed by the
- * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
+ *
+ * Usage:
+ * command [-vd]
+ * [-r sampling-rate] [-s silence(sec)] [-D device] [-l language] [-u url]
+ *
+ * The proram listens continuously to the audio input, detects words when
+ * they are prononced, stores this content in a flac file, sends this
+ * file to the google engine, gets back the response, parses it, sends the
+ * result to radiok server and prints the conclusion replied by radiok.
+ *
+ * @see split.c to see how to split audio stream into separate words.
+ * @see parse.c to learn how to parse a json packet in the C language.
+ * @see enflac.c to figure out how to convert a raw file into a flac file.
+ * @see hark.c  to test storing speech into flac formatted file.
+ * @see interpret.c to try the google api.
+ *
+ * @see whatusay.c The other version based on the pocket sphinx library.
+ *
+ * It would be nice to improve this code by encapsulating properly some
+ * functions and also by creating a library instead of duplicating the
+ * same code in many programs.
+ *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  *
  * @author Jean-Paul Le Fèvre
  * @date December 2014
@@ -70,7 +87,7 @@
 #include <json-parser/json.h>
 #include <curl/curl.h>
 
-/*
+/**
  * To parse the command line arguments.
  */
 #include <getopt.h>
@@ -85,9 +102,6 @@ typedef enum { false = 0, true = 1 } bool;
 
 #include <FLAC/stream_encoder.h>
 
-/**
- * Prints syntax and exit.
- */
 static void     usage();
 
 static int      start_flac_encoding(FLAC__byte*, int);
@@ -102,6 +116,10 @@ static size_t   get_google_response(void *content, size_t size, size_t n,
                                     void *ptr);
 static char*    parse_google_content(char*);
 
+/**
+ * Well that's not the most elegant way of programming but it saved my
+ * time to code this kinda Fortran common ;)
+ */
 static bool verbose = false;
 static bool debug   = false;
 
@@ -135,6 +153,9 @@ int main(int32 argc, char **argv)
   int sample_rate = 44100;
   float silence = 1.0;
   char device[64];
+  char lang[12];
+
+  strcpy(lang, "fr-fr");
 
   char* s = getenv("AUDIODEV");
   if (s == NULL) {
@@ -156,7 +177,7 @@ int main(int32 argc, char **argv)
 
   memset(vox_server_url, 0, sizeof(vox_server_url));
 
-  while((opt = getopt(argc, argv, "s:r:D:u:vhd")) != EOF) {
+  while((opt = getopt(argc, argv, "s:r:D:u:l:vhd")) != EOF) {
 
     switch(opt) {
     case 'v'	:
@@ -181,6 +202,10 @@ int main(int32 argc, char **argv)
 
     case 'D'	:
       strcpy(device, optarg);
+      break;
+
+    case 'l'	:
+      strcpy(lang, optarg);
       break;
 
     case 'u'	:
@@ -209,10 +234,10 @@ int main(int32 argc, char **argv)
 
   /**
    * Prepare the connection to the google speech application.
+   * The constant part of the request is prepared.
    */
   static char* google = "https://www.google.com/speech-api/v2/recognize";
   static char* output = "json";
-  static char* lang   = "fr-fr";
 
   char google_url[256];
   strcpy(google_url, google);
@@ -227,7 +252,10 @@ int main(int32 argc, char **argv)
   if(debug) {
     printf("URL: %s (size: %d)\n", google_url, strlen(google_url));
   }
-
+  /**
+   * The curl option are initialized.
+   * @see http://curl.haxx.se/libcurl/c/
+   */
   googlurl = curl_easy_init();
   curl_easy_setopt(googlurl, CURLOPT_WRITEFUNCTION, get_google_response);
   curl_easy_setopt(googlurl, CURLOPT_WRITEDATA, (void *)google_response);
@@ -262,6 +290,9 @@ int main(int32 argc, char **argv)
   }
 
   /**
+   * Now prepare the pocket sphinx subprogram in charge of extracting
+   * utterances when they happen.
+   * @see split.c 
    * Convert desired min. inter-utterance silence duration to #samples
    */
   silence_samples = (int32)(silence * sample_rate);
@@ -318,17 +349,22 @@ int main(int32 argc, char **argv)
       continue;
     }
 
-    /*
+    /**
      * Beginning of processing.
      * Number of milliseconds since Epoch.
      * This time is passed to the server which computes
-     * the duration.
+     * the duration of the processing to get an idea of the performances.
      */
     gettimeofday(&tv, NULL);
     sprintf(start_time, "%llu",
             (unsigned long long)(tv.tv_sec) * 1000 +
             (unsigned long long)(tv.tv_usec) / 1000);
 
+    /**
+     * Then the new utterance has to be compressed used the flac
+     * algorithm before being passed to google.
+     * @see https://xiph.org/flac/api/index.html
+     */
     if (make_flac_encoder(sample_rate) <0) {
       fprintf(stderr, "Can't make the flac encoder !\n");
       return 1;
@@ -345,6 +381,10 @@ int main(int32 argc, char **argv)
 
     char* word;
 
+    /**
+     * Finally we may have a word suggested by google.
+     * It is sent to the radiok server.
+     */
     if ((word = interpret_flac()) == NULL) {
       fprintf(stderr, "Can't interpret utterance %d\n", utter_nbr);
       continue;
@@ -353,6 +393,10 @@ int main(int32 argc, char **argv)
       printf("Utterance %d: %s\n", utter_nbr, word);
     }
 
+    /**
+     * If we didn't say 'abandon' we keep on listening for the next utterance.
+     * Otherwise we give up looping.
+     */
     if (strcmp(word, "abandon") == 0) {
       forever = false;
       continue;
@@ -378,7 +422,7 @@ int main(int32 argc, char **argv)
  * Begins to encode a buffer.
  */
 static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
-  /*
+  /**
    * Convert the packed little-endian 16-bit PCM samples
    * from the audio stream into an interleaved FLAC__int32 buffer for libFLAC
    */
@@ -842,7 +886,7 @@ static int send_command(char* word, char* start_time) {
  */
 static void usage(char* prog) {
 
-  printf("Usage: %s [-vd] [-r sampling_rate] [-s silence(sec)] [-D device] [-u radiok_url\n", prog);
+  printf("Usage: %s [-vd] [-r sampling_rate] [-s silence(sec)] [-D device] [-l language] [-u radiok_url\n", prog);
 
   exit(0);
 }

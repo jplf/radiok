@@ -1,17 +1,25 @@
 /*___________________________________________________________________________*/
 /**
  * @file parse.c
- * @brief An experimental program used to learn how to use a json parser
+ * @brief An experimental program used to learn how to use a json parser.
  * in C language.
+ *
+ * As input it takes a text file containing the content to parse.
+ * Such a file can be created by storing a google speech recognition output
+ * using for instance the script speech.py
+ * 
+ * This test file was used to prepare the program 'command'.
+ *
  * A typical google output looks like:
  * {"result":[]}
  * {"result":[{"alternative":[{"transcript":"bravo","confidence":0.75374281},{"transcript":"Bravo"},{"transcript":"bravos"},{"transcript":"travaux"},{"transcript":"Bravo 2"}],"final":true}],"result_index":0}
  *
- *
+ * This program is based on the library json-parser.
  * @see https://github.com/udp/json-parser
  *
- * @see speech.py a python script getting and parsing google's replies
+ * @see speech.py a python script getting and parsing google's replies.
  *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  * @author Jean-Paul Le Fèvre
  * @date October 2014
  */
@@ -37,10 +45,10 @@ int main(int argc, char *argv[])
   int debug = 0;
 
   if(argc != 2) {
-    fprintf(stderr, "usage: %s file", argv[0]);
+    fprintf(stderr, "Usage: %s file", argv[0]);
     return 1;
   }
-  /*
+  /**
    * First read the content of file generated from a google reply.
    */
   strcpy(input,  argv[1]);

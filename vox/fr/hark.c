@@ -6,6 +6,7 @@
  * A test program meant to learn how to use the flac api of a stream of sound
  * split by sphinx.
  *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  * @author Jean-Paul Le Fèvre
  * @date October 2014
  */
@@ -41,16 +42,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * ====================================================================
  */
 /**
- * This code has been modified by me starting from this program:
+ * This code has been modified by me (JPLF) starting from this program:
  * cont_adseg.c Continuously listen and segment input speech into utterances.
  * Found in directory sphinxbase-0.8/src/sphinx_adtools
  *
  * The original codes were a bit messy so I cleaned them up.
- * 
- * 27-Jun-96 M K Ravishankar at Carnegie Mellon University
  */
 
 #include <unistd.h>
@@ -65,7 +63,7 @@
 #include <sphinxbase/cont_ad.h>
 #include <sphinxbase/err.h>
 
-/*
+/**
  * To parse the command line arguments.
  */
 #include <getopt.h>
@@ -251,7 +249,7 @@ int main(int32 argc, char **argv)
  * Begins to encode a buffer.
  */
 static int start_flac_encoding(FLAC__byte* buffer, int nb_samples) {
-  /*
+  /**
    * Convert the packed little-endian 16-bit PCM samples
    * from the audio stream into an interleaved FLAC__int32 buffer for libFLAC
    */
@@ -373,7 +371,7 @@ static int write_utterance(char* rawfile) {
 
     FILE *fp;
 
-    /* Non-silence data received; open and write to new logging file */
+    /** Non-silence data received; open and write to new logging file */
     if ((fp = fopen(rawfile, "wb")) == NULL) {
       fprintf(stderr, "Failed to open '%s' for writing", rawfile);
       return -1;
@@ -386,7 +384,7 @@ static int write_utterance(char* rawfile) {
       printf("\nSamples %d (%d) ", total_samples, nbread);
     }
 
-    /* Note current timestamp */
+    /** Note current timestamp */
     int32 ts = cont->read_ts;
 
     /* Read utterance data until a gap is observed */
