@@ -2,9 +2,13 @@
 #______________________________________________________________________________
 
 # Script get state - Jean-Paul Le Fèvre March 2014
-# It generates a json formatted string.
+#
+# It generates a json formatted string giving the current state
+# of the application. It is usually called from the server in module box.js
 # Useful parameters are made available from this string.
+#
 # See also onair.sh
+# @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
 #______________________________________________________________________________
 
 if [ -z "$RADIOK_HOME" ]; then

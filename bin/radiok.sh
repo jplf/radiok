@@ -12,8 +12,12 @@ export PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin:$RADIOK_HOME/bin
 
 cd $RADIOK_HOME/run
 
-# Check the current time. Then compare timestamp.0 and timestamp.1
+# Clean up any remaining timestamps.
 rm -f timestamp.?
+# Note the current time.
+# On the RPi the time is not locally kept. Clock is set by the ntp program
+# and one must make sure that this initialization is properly performed.
+# This may be check by comparing the timestamp created in start.sh
 touch timestamp.0
 
 # Make almost sure that ntpd has set the right time.

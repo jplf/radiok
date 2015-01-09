@@ -1,10 +1,11 @@
 //__________________________________________________________________________
 /**
  * Fonteny javascript library - January 2015
-
- * Usage: node utf_str.js to understand how utf strings are managed.
+ * A test script used to check how utf strings are managed in javascript
+ *
+ * Usage: node utf_str.js string
  * @author Jean-Paul Le Fèvre
-
+ *
  */
 //__________________________________________________________________________
 
@@ -15,6 +16,7 @@ var s2 = "LeFèvre"
 var s3 = "lefevre"
 var s4 = "çà"
 
+// Actually there is nothing to worry about.
 process.argv.forEach(function (val, i, array) {
     if (i > 1) {
 
@@ -45,7 +47,5 @@ process.argv.forEach(function (val, i, array) {
             console.log('val # ', s4);    
         }
     }
-
 });
-
 //__________________________________________________________________________

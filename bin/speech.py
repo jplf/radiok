@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#________________________________________________________________________________
+
 """
 Ask google to recognize what has been said.
 
@@ -15,7 +17,12 @@ library.
 
 Just say 'stop' to exit the loop.
 
+ @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
+ @author Jean-Paul Le Fèvre
+ @date December 2014
+
 """
+#________________________________________________________________________________
 
 import sys
 import os
@@ -135,3 +142,4 @@ def main(argv):
     
 if __name__ == "__main__":
     main(sys.argv[1:])
+#________________________________________________________________________________

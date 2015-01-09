@@ -9,7 +9,7 @@
  * [-r sampling-rate] [-s silence(sec)] [-D device] [-l language] [-u url]
  *
  * The proram listens continuously to the audio input, detects words when
- * they are prononced, stores this content in a flac file, sends this
+ * they are pronounced, stores this content in a flac file, sends this
  * file to the google engine, gets back the response, parses it, sends the
  * result to radiok server and prints the conclusion replied by radiok.
  *
