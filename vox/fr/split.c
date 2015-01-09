@@ -1,10 +1,15 @@
 /*___________________________________________________________________________*/
 /**
  * @file split.c
- * @brief An test program used to split an audio input stream into words.
+ * @brief An test program used to split an audio input stream
+ * into separate words.
  *
- * It was meant to prepare the french versio of the full voice recognition
+ * It was meant to prepare the french version of the full voice recognition
  * program.
+ *
+ * @see command.c The final program.
+ *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  *
  * @author Jean-Paul Le Fèvre
  * @date September 2014
@@ -40,17 +45,13 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ====================================================================
  */
 /*
- * This code has been modified by Jaypee starting from this this program:
+ * This code has been modified by me (JPLF) starting from this program:
  * cont_adseg.c Continuously listen and segment input speech into utterances.
  * Found in directory sphinxbase-0.8/src/sphinx_adtools
  *
- * The original code was not very modern.
- * 
- * 27-Jun-96    M K Ravishankar at Carnegie Mellon University
+ * The original code was very old fashioned.
  */
 
 #include <unistd.h>
@@ -70,12 +71,12 @@
 #include <getopt.h>
 typedef enum { false = 0, true = 1 } bool;
 
-/*
+/**
  * Prints syntax and exit.
  */
 static void usage();
 
-/*
+/**
  * Segment raw A/D input data into utterances whenever silence
  * region of given duration is encountered.
  * Utterances are written to files named 0001.raw, 0002.raw, 0003.raw, etc.
@@ -93,7 +94,7 @@ int main(int32 argc, char **argv)
     extern int   optind;
     int opt;
 
-    /*
+    /**
      * The main parameters and their default values.
      */
     int error = 0;
@@ -146,20 +147,20 @@ int main(int32 argc, char **argv)
       usage(argv[0]);
     }
 
-    /* Convert desired min. inter-utterance silence duration to #samples */
+    /** Convert desired min. inter-utterance silence duration to #samples */
     endsilsamples = (int32) (endsil * sps);
 
     if ((ad = ad_open_dev(device, sps)) == NULL) {
         E_FATAL("Failed to open audio device\n");
     }
 
-    /*
+    /**
      * Associate new continuous listening module with opened raw A/D device
      */
     if ((cont = cont_ad_init(ad, ad_read)) == NULL)
         E_FATAL("cont_ad_init failed\n");
 
-    /* Calibrate continuous listening for background noise/silence level */
+    /** Calibrate continuous listening for background noise/silence level */
     if (verbose) {
       printf("Calibrating ...");
     }
@@ -172,18 +173,18 @@ int main(int32 argc, char **argv)
         printf(" done\n");
     }
 
-    /* Forever listen for utterances */
+    /** Almost forever listen for utterances */
     if (verbose) {
       printf("You may speak now\n");
     }
 
     for (uttno = 0; uttno < 999; uttno++) {
-        /* Wait for beginning of next utterance; for non-silence data */
+      /** Wait for beginning of next utterance; for non-silence data */
         while ((k = cont_ad_read(cont, buf, 4096)) == 0);
         if (k < 0)
             E_FATAL("cont_ad_read failed\n");
 
-        /* Non-silence data received; open and write to new logging file */
+        /** Non-silence data received; open and write to new logging file */
         sprintf(file, "%03d.raw", uttno);
         if ((fp = fopen(file, "wb")) == NULL)
             E_FATAL_SYSTEM("Failed to open '%s' for writing", file);
@@ -194,7 +195,7 @@ int main(int32 argc, char **argv)
           printf("Utterance %04d, logging to %s\n", uttno, file);
         }
 
-        /* Note current timestamp */
+        /** Note current timestamp */
         ts = cont->read_ts;
 
         /* Read utterance data until a gap of at least 1 sec observed */
@@ -203,7 +204,7 @@ int main(int32 argc, char **argv)
                 E_FATAL("cont_ad_read failed\n");
 
             if (k == 0) {
-                /*
+              /**
                  * No speech data available; check current timestamp. 
                  * End of * utterance if no non-silence data been read
                  * for at least 1 sec.
@@ -212,7 +213,7 @@ int main(int32 argc, char **argv)
                     break;
             }
             else {
-                /*
+              /**
                  * Note timestamp at the end of most recently
                  * read speech data
                  */
@@ -236,7 +237,7 @@ int main(int32 argc, char **argv)
     return 0;
 }
 /*___________________________________________________________________________*/
-/*
+/**
  * Prints usage and exit.
  * Parameter prog the name of the program.
  */

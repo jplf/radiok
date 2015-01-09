@@ -8,13 +8,16 @@
  *
  * The code was copied from the original version found in the Flac library,
  * then it was adapted, simplified and cleaned up.
+ * The Flac library is really crappy.
  *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  * @author Jean-Paul Le Fèvre
  * @date September 2014
  */
 /*___________________________________________________________________________*/
 
-/* example_c_encode_file - Simple FLAC file encoder using libFLAC
+/**
+ * Model : example_c_encode_file - Simple FLAC file encoder using libFLAC
  * Copyright (C) 2007-2009  Josh Coalson
  * Copyright (C) 2011-2013  Xiph.Org Foundation
  *
@@ -33,7 +36,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/*
+/**
  * This example shows how to use libFLAC to encode a WAVE file to a FLAC
  * file.  It only supports 16-bit stereo files in canonical WAVE format.
  *
@@ -53,8 +56,7 @@
 
 static unsigned total_samples = 0;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   FLAC__bool ok = true;
   FLAC__StreamEncoder *encoder = 0;
   FLAC__StreamEncoderInitStatus init_status;
@@ -93,7 +95,7 @@ int main(int argc, char *argv[])
   total_samples = info.st_size / 2;
   fprintf(stdout, "File %s: %d samples\n", input, total_samples);
 
-  /* allocate the encoder */
+  /** Allocate the encoder */
   if((encoder = FLAC__stream_encoder_new()) == NULL) {
     fprintf(stderr, "ERROR: allocating encoder\n");
     fclose(fin);
@@ -132,7 +134,7 @@ int main(int argc, char *argv[])
   printf("Number of bytes read: %d\n", n);
   fclose(fin);
 
-  /*
+  /**
    * Convert the packed little-endian 16-bit PCM samples
    * from WAVE into an interleaved FLAC__int32 buffer for libFLAC
    */

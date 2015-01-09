@@ -10,12 +10,13 @@
  *
  * The environment variable GOOGLE_KEY must be defined and must store a
  * valid key.
- * https://developers.google.com/console/help/#WhatIsKey
+ * @see https://developers.google.com/console/help/#WhatIsKey
  *
  * @see hark.c and parse.c
  *
  * @usage : interpret file1.flac file2.flac ...
  *
+ * @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
  * @author Jean-Paul Le Fèvre
  * @date December 2014
  */
