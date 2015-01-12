@@ -179,7 +179,7 @@ to manage french words.
 * **bin**  scripts in bash, python, js, ...
 * **lib**  miscellaneous resources : images, sounds ...
 * **run**  files generated at runtime : log files, persistent data.
-* **vox**  voice recognition programs. Local, english in **ps**,
-Remote, french in **fr**
+* **vox**  voice recognition programs. Local, english version in **ps**,
+Remote, french version in **fr**
 * **www**  web stuff. Documentation in **doc**, web application in **kontrol**
 in which **server** and **client** have the related components.
