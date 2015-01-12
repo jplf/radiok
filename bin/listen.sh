@@ -31,6 +31,11 @@ if [ "english" = "$1" ]; then
 else
     echo "Version française lancée ! "
     # Actually an other language could be selected using the -l option.
+
+    if [ -z "$GOOGLE_KEY" ]; then
+        echo "export GOOGLE_KEY="
+        exit 1
+    fi
     cd $RADIOK_HOME/vox/fr
     opt="-v -u http://localhost:18000/vox/process"
     screen -L -m -d ./command $opt
