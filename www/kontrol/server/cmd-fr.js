@@ -6,6 +6,8 @@
  * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
 
  * This is the dictionnary used by the french version of the application.
+ * Actually it has been only tested with the remote version of the voice
+ * recognition program based on the google api.
  *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
 */

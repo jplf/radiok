@@ -6,6 +6,8 @@
  * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
 
  * This is the dictionnary used by the english version of the application.
+ * If it is used with the local voice recognition program the corpus must
+ * be updated and compiled. See the file whatusay.c in the directory vox/ps.
  *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
 */

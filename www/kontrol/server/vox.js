@@ -8,7 +8,7 @@
  * This is a module managing operations on the server side.
  * It handles commands sent by the vox controller client.
  * It is used by the app.js main procedure.
-*
+ *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
 */
 //__________________________________________________________________________
@@ -17,13 +17,16 @@
 
 /**
  * @module vox
- * It handles commands sent by the vox controller.
+ * It handles commands sent by the voice interpreter program.
  */
 var execSync = require('exec-sync');
 
 /**
  * The module giving the list of valid commands.
  * Either 'cmd-fr' or 'cmd-en'
+ * However be aware that the english version in 'cmd-en' will no longer be
+ * maintained.
+ * Note also that the messages spoken by the program are in french.
  */
 var cmd = require('./cmd-fr');
 
@@ -31,9 +34,9 @@ var cmd = require('./cmd-fr');
 var onair;
 var setVolume;
 
-// Output recorded sounds
+// Output already recorded sounds.
 var say;
-// Output synthetized sounds
+// Output google synthetized sounds.
 var tell;
  
 // Delta volume. Increment or decrement in dB. See amixer(1)
@@ -55,9 +58,9 @@ var setStation = function(index) {
 
     // Check if mplayer is running or not
     var playing = execSync('/sbin/pidof -s mplayer');
-    if (playing == undefined) {
+    if (playing == undefined || (!playing)) {
         // Not playing so do nothing
-        execSync(tell + "\"la radio n'est pas en ligne actuellement\"");
+        execSync(tell + "\"la radio n'est pas en marche actuellement\"");
         return;
     }
 
@@ -80,7 +83,7 @@ module.exports = {
         logger = msger;
         logger.info('Vox Kontroller module initialization');
 
-        logger.info('Commands ' + cmd.language + ' ' + cmd.digitList);
+        logger.info('Commands in ' + cmd.language + ' language');
 
         onair = root + '/bin/onair.sh ';
         tell  = root + '/bin/tell.sh ';
@@ -104,10 +107,16 @@ module.exports = {
 //__________________________________________________________________________
        /**
          * Processes a word request.
+         *
+         * The word is taken to execute a command. Words are organized as
+         * list of synonyms. Different synonyms cause the same command to
+         * be launched.
+         *
          * The number of milliseconds since 1/1/1970 is also passed by the
          * voice recognition program. This number is measured each time
          * a word is understood. It allows to figure out how long it takes
          * process a command.
+         *
          * Returns the result of the processing.
          */
         app.get('/vox/process/:word/:time?', function(req, res) {
@@ -125,6 +134,7 @@ module.exports = {
 
             /**
              * Start playing the last selected radio.
+             * Check to see whether 'word' in the list of 'work' synonyms.
              */
             if (cmd.workList.indexOf(word) >= 0) {
                 execSync(say + 'welcome_back.wav');

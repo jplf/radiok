@@ -7,9 +7,11 @@
 
  * This is a module managing operations on the server side.
  * It is used by the app.js main procedure.
-*
+ * Most of the functions provided by this modules are implemented by the
+ * scripts found in the bin subdirectory.
+ *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
-*/
+ */
 //__________________________________________________________________________
 
 "use strict";
@@ -18,14 +20,14 @@
  * @module box
  * It handles all operations on the radio box.
  */
-// Google these nodejs modules for doc.
+// Run google to get information about these nodejs modules.
 var execSync = require('exec-sync');
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
 var fs       = require('fs');
 var vox      = require('./vox');
 
-// The program to execute on a regular basis
+// The program to execute on a regular basis thanks to cron.
 var job;
 // The default trigger time
 var hour      = 22;
@@ -38,6 +40,7 @@ var station   = 'b-inter';
 
 // The script to run if triggered.
 var onair;
+// The log file manager.
 var logger;
 
 // The name of the file storing the trigger state.
@@ -138,9 +141,10 @@ module.exports = {
 
 //__________________________________________________________________________
        /**
-         * Processes a get status request.
-         * Returns the current status of the box, e.g. "a-fip, 4652"
-         */
+        * Processes a get status request.
+        * It executes the script onair.sh
+        * Returns the current status of the box, e.g. "a-fip, 4652"
+        */
         app.get('/box/status', function(req, res) {
 
             logger.info('Fetching the box status');
@@ -152,12 +156,12 @@ module.exports = {
  
 //__________________________________________________________________________
        /**
-         * Processes a get state request.
-         * A json string is returned by a script,
-         * it provides some details about the box.
-         *
-         * Returns the current state of the box.
-         */
+        * Processes a get state request.
+        * A json string is returned by a script,
+        * it provides some details about the box.
+        *
+        * Returns the current state of the box.
+        */
         app.get('/box/get_state', function(req, res) {
 
             logger.info('Fetching the state of the box');
@@ -208,9 +212,9 @@ module.exports = {
         });
 //__________________________________________________________________________
        /**
-         * Gets the status of the cron job.
-         * Returns the cron parameters.
-         */
+        * Gets the status of the cron job.
+        * Returns the cron parameters.
+        */
         app.get('/box/cronjob', function(req, res) {
 
             res.send({
@@ -222,9 +226,9 @@ module.exports = {
         });
 //__________________________________________________________________________
        /**
-         * Gets the list of declared stations.
-          * Returns the list.
-         */
+        * Gets the list of declared stations.
+        * Returns the list.
+        */
         app.get('/box/stations', function(req, res) {
 
             var str  = execSync(onair + ' -l');
@@ -234,10 +238,10 @@ module.exports = {
         });
 //__________________________________________________________________________
        /**
-         * Gets the value of the volume.
-         * It is a number between 0 and 100.
-         * Returns the value.
-         */
+        * Gets the value of the volume.
+        * It is a number between 0 and 100.
+        * Returns the value.
+        */
         app.get('/box/get_volume', function(req, res) {
 
             var value = execSync(root + '/bin/get_volume.sh');
@@ -246,10 +250,10 @@ module.exports = {
         });
 //__________________________________________________________________________
        /**
-         * Sets the value of the volume.
-         * It is a number between 0 and 100.
-         * Returns the value.
-         */
+        * Sets the value of the volume.
+        * It is a number between 0 and 100.
+        * Returns the value.
+        */
         app.get('/box/set_volume/:value', function(req, res) {
 
             var volume = new Number(req.params.value);
@@ -270,9 +274,9 @@ module.exports = {
         });
 //__________________________________________________________________________
        /**
-         * Starts or stops the cron job.
-         * Returns the new cron spec.
-         */
+        * Starts or stops the cron job.
+        * Returns the new cron spec.
+        */
         app.get('/box/trigger/:hour/:minute/:on', function(req, res) {
 
             var h = req.params.hour;
