@@ -167,12 +167,30 @@ The source of the recognition program is in the file *whatusay.c*. If needed
 the program can be regenerated using *make*. It is a good idea to see if it
 works correctly by running it with *null* as the server url option.
 
-The current version is working with an english vocabulary.
+The current version is working with an english vocabulary. Development of
+this version is discontinued since the efficiency of the recognition is less
+than with the remote version.
 
 #### Remote recognition
 
 The code of the program is in the file *command.c*. By default it is configured
-to manage french words.
+to manage french words but it can potentially accept any language by just
+changing a parameter.
+
+As for the local version the program starts by spliting the sounds recorded
+from the microphone into chunks of data delimited by short periods of silence.
+Once a chunk is detected it is written into a file using a compressed format.
+This lossless compressed format is the [flac format](https://xiph.org/flac).
+The file is given to the google recognition engine by a http request
+transmitted to the google server.
+The google web application sends back a list of strings corresponding to the
+possible words expressed by the speaker.
+The list which is json-formatted is parsed and the string which is the most
+likeky is passed to the radiok web server. If it is understood as a valid
+command it triggers an action of the application.
+
+This version looks more reliable but seems to be a bit slower.
+
 
 ### Directories
 
