@@ -119,7 +119,15 @@ pcm.!default {
               cette page</a>.
          </p>
 
-          <h2>L'implémentation</h2>
+          <h2>La première implémentation</h2>
+          <p>
+            Une première implémentation a été expérimentée. Elle se
+            base sur les routines disponibles dans la bibliothèque
+            <a href="http://cmusphinx.sourceforge.net/">pocket
+            sphinx</a>. Le programme réalisé s'exécute localement sur
+            le processeur de la machine, et il fonctionne en tentant
+            de déchiffrer des mots prononcés en anglais.
+          </p>
           <p>
             Le principe de fonctionnement est le suivant : une liste
             de mots à reconnaître est préparée, une fois compilée elle
@@ -237,7 +245,7 @@ pcm.!default {
             faciles à prononcer pour un non-anglophone.
           </p>
           <p>
-            Les commandes sont les suivantes:
+            Les commandes comprises sont les suivantes:
             <ul>
             <li>démarrer la radio :
               <code><b>music, wake up, begin, radio</b>, play, run, start</code></li>
@@ -259,7 +267,10 @@ pcm.!default {
             <li>diminuer le volume : 
               <code>less, softer, minus, lower</code></li>
             </ul>
-            Les mots en gras sont les mieux compris et donc les plus utilisés.
+            Les mots en gras sont les mieux compris et donc les plus
+            utilisés. À noter cependant que cette page de
+            documentation n'est pas forcèment synchronisé avec le
+            contenu du fichier mis sur github.
           </p>
 
           <p>
@@ -298,6 +309,42 @@ pcm.!default {
                "https://github.com/jplf/radiok/tree/master/lib/sounds">
               <code>sounds</code></a> on trouve les fichiers son
               utilisés pour le feed back.
+          </p>
+          <p>
+            Cette version fonctionne relativement correctement. Les
+            performances sur la raspberry sont acceptables. Il faut en
+            général 2 à 3 secondes pour être compris. Cependant
+            l'utilisation de l'anglais comme langue implique une bonne
+            prononciation, en particulier un effort sur l'accent
+            tonique. Par ailleurs l'application peut se déclencher sur
+            des bruits parasites : il faut mieux éviter d'éternuer
+            trop près du micro et de claquer trop fort une porte.
+          </p>
+
+          <h2>La seconde implémentation</h2>
+          <p>
+            Une deuxième approche a été tentée. Elle se base sur
+            l'utilisation du moteur de reconnaissance vocale de google
+            qui est disponible en ligne. Avec cette technique on peut
+            utiliser le français comme vocabulaire de commande. On
+            devrait d'ailleurs pouvoir utiliser n'importe quelle
+            langue gérée par google en changeant simplement un
+            paramètre lors du lancement du programme. Cette
+            implémentation utilise des requêtes http pour communiquer
+            avec google, c'est à dire pour envoyer un fichier son et
+            recevoir en retour les chaines de caractères résultant de
+            l'interprétation par le moteur de google.
+          </p>
+          <p>
+            Le code de cette version se trouve dans le
+            répertoire <code>vox/fr</code>. Le programme final
+            s'appelle <code>command</code>. Les autres programmes ont
+            été écrits pour tester les différentes étapes à coder pour
+            arriver au résultat final. L'intégration des différents
+            morceaux n'a pas été facile car ils sont écrits en
+            utilisant des routines venant de bibliothèques
+            différentes, à la documentation limitée et au style de
+            programmation particulièrement dégoûtant.
           </p>
 
         <div class="center" style="margin-top: 2em;">

@@ -46,7 +46,10 @@
           </p>
           <p>
             Le dernier moyen de contrôle de l'application est le
-            contrôle vocal basé sur 
+            contrôle vocal dont 2 versions ont été développées.
+          </p>
+          <p>
+            La première version est basé sur 
             <a href="http://cmusphinx.sourceforge.net/2014/04/jasper-personal-assistant-for-raspberry-pi/">Jasper</a>
             développé à Carnegie Mellon University. Un des outils de
             cette bibliothèque a été modifié pour accéder
@@ -60,8 +63,13 @@
             peut tourner sur la rpi elle-même mais il peut être aussi
             lancé sur une autre machine puisque la communication avec
             le reste du système s'effectue via le réseau.
-
-
+          </p>
+          <p>
+            La deuxième version a une architecture voisine mais
+            l'analyse vocale n'est pas effectuée localement par un
+            sous-programme mais par l'application proposée par google
+            pour la reconnaissance vocale. Ce programme est disponible
+            en ligne sur un serveur qu'on intérroge par des requêtes http.
           </p>
 
           <div class="center">
