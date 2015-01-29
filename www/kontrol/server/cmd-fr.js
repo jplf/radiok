@@ -25,16 +25,20 @@ module.exports = {
     yesList:   ['oui', 'dac', 'absolument'],
     noList:    ['non', 'refus'],
     plusList:  ['plus', 'fort', 'fortement', 'augmenter', 'augmenté',
-                'plus haut'],
+                'plus fort', 'plus haut'],
     minusList: ['moins', 'doux', 'doucement', 'diminuer', 'diminué',
-                'plus bas'],
-    workList:  ['jouer', 'commencer', 'allumer',
-                'joué', 'commencé', 'allumé','musique', 'radio'],
-    stopList:  ['stop', 'terminer', 'terminé', 'silence', 'éteindre', 'finir'],
+                'plus bas', 'moins fort'],
+    workList:  ['musique', 'jouer', 'commencer', 'allumer',
+                'joué', 'commencé', 'allumé','radio'],
+    stopList:  ['silence', 'stop', 'terminer', 'terminé', 'éteindre', 'finir',
+                'arrêter', 'arrêté', , 'arrêt'],
     digitList: ['zero', 'un', 'deux', 'trois', 'quatre', 'cinq',
-                     'six', 'sept', 'huit', 'neuf', 'dix'],
-    indexList: ['premier', 'précédent', 'suivant', 'dernier'],
+                'six', 'sept', 'huit', 'neuf', 'dix'],
+    indexList: ['premier', 'précédent', 'suivant', 'dernier',
+                'première', 'précédente', 'suivante', 'dernière'],
     whichList: ['lequel', 'laquelle', 'selection', 'station', 'poste'],
-    setList:   ['alarme', 'état', 'réveil']
+    setList:   ['alarme', 'état', 'réveil'],
+    nameList:  ['Fip Radio', 'France Inter', 'France Musique', 'France Culture',
+                'Chante France', 'TSF Jazz']
 }
 //__________________________________________________________________________
