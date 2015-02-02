@@ -346,7 +346,40 @@ pcm.!default {
             différentes, à la documentation limitée et au style de
             programmation particulièrement dégoûtant.
           </p>
-
+          <p>
+            La première étape est classique : elle consiste à décoder
+            les options données sur la ligne de commande. Mais en
+            général les paramètres par défaut sont suffisants pour
+            faire fonctionner le programme : on peut le lancer
+            simplement en tapant : <code>command</code>.<br>
+            En revanche il est indispensable d'avoir défini la
+            variable d'environnement <code>GOOGLE_KEY</code>. La
+            valeur est fournie par Google quand on s'identifie comme
+            utilisateur de l'API - Voir 
+            <a href="https://developers.google.com/console/help/new/?hl=fr#usingkeys">
+              la documentation</a>.
+          </p>
+          <p>
+            Ensuite on doit initialiser les paramètres
+            de <code>curl</code> pour communiquer et avec google et
+            avec radiok. Il n'y a rien de très compliqué, il suffit de
+            lire la doc
+            de <a href="http://curl.haxx.se/libcurl/c/">libcurl</a>.
+          </p>
+          <p>
+            Une fois les initialisations effectuées on entre dans la
+            boucle permanente pour écouter et tenter de reconnaître
+            les paroles prononcées. Pour en sortir on peut dire à
+            haute voix "<i>abandon</i>" ou on peut tout simplement
+            balancer un Control-C.
+          </p>  
+          <p>
+            Au départ de cette boucle on appelle la
+            routine <code>get_utterance()</code> qui détecte les sons
+            entendus. Un son borné par des instants de silence est
+            stocké sous forme brute dans le tableau
+            d'échantillons <code>utterance</code>.
+          </p>
         <div class="center" style="margin-top: 2em;">
           <a class="btn btn-primary" href="index.html">Home</a>
         </div>
