@@ -217,9 +217,9 @@ module.exports = {
 
                 code = 'index';
             }
-            else if (cmd.nameList.indexOf(word.toUpperCase()) >= 0) {
+            else if (nameList.indexOf(word.toUpperCase()) >= 0) {
                 //  Select another station
-                var index = cmd.digitList.indexOf(word.toUpperCase());
+                var index = nameList.indexOf(word.toUpperCase());
 
                 if (index >= 0 && index <= stationList.length - 1) {
                     if (index != stationIdx) {
