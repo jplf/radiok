@@ -19,7 +19,7 @@ module.exports = {
     /**
      * Words leading to the same action are grouped in list of
      * synonyms.
-     * Some lists are actually in use.
+     * Some lists are not actually in use (yes, no, names).
      */
     language:  'french',
 
@@ -36,7 +36,7 @@ module.exports = {
     digitList: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
     indexList: ['premier', 'précédent', 'suivant', 'dernier',
                 'première', 'précédente', 'suivante', 'dernière'],
-    whichList: ['laquelle', 'lequel', 'selection', 'station', 'poste'],
+    whichList: ['laquelle', 'lequel', 'sélection', 'station', 'poste'],
     setList:   ['alarme', 'état', 'réveil'],
     nameList:  ['Fip radio', 'France Inter', 'France Musique', 'France Culture',
                 'chante France', 'TSF Jazz']
