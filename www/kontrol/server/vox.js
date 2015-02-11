@@ -242,6 +242,10 @@ module.exports = {
                           + d.getMinutes() + ' minutes';
                 execSync(tell + 'il est ' + heure);
             }
+            else if (cmd.setList.indexOf(word) >= 0) {
+
+                execSync(tell + 'bientôt');
+            }
             else if (cmd.digitList.indexOf(word) >= 0) {
 
                 //  Select another station
