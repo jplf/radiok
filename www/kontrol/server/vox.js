@@ -236,6 +236,12 @@ module.exports = {
 
                 code = 'name';
             }
+            else if (cmd.timeList.indexOf(word) >= 0) {
+                var d = new Date();
+                var heure = d.getHours() + ' heures '
+                          + d.getMinutes() + ' minutes';
+                execSync(tell + 'il est ' + heure);
+            }
             else if (cmd.digitList.indexOf(word) >= 0) {
 
                 //  Select another station

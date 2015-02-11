@@ -38,6 +38,7 @@ module.exports = {
                 'première', 'précédente', 'suivante', 'dernière'],
     whichList: ['laquelle', 'lequel', 'sélection', 'station', 'poste'],
     setList:   ['alarme', 'état', 'réveil'],
+    timeList:  ['heure', 'quelle heure'],
     nameList:  ['Fip radio', 'France Inter', 'France Musique', 'France Culture',
                 'chante France', 'TSF Jazz']
 }
