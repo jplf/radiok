@@ -46,6 +46,8 @@ var logger;
 
 // The map of radio stations.
 var stationList;
+// The array of station names.
+var nameList;
 // The index of the currently selected station.
 var stationIdx = 0;
 
@@ -100,7 +102,11 @@ module.exports = {
         this.setStationIdx(s[0]);
         logger.info('Station key, index set to ' + s[0] + ', ' + stationIdx);
 
+        // Initialize the array of names (kept in upper case)
+        nameList = Array(stationList.length);
+
         for (var i=0; i <stationList.length; i++) {
+            nameList[i] = stationList[i].name.toUpperCase();
             logger.log('info', stationList[i].key + ': '
                        + stationList[i].name);
         }
@@ -211,6 +217,25 @@ module.exports = {
 
                 code = 'index';
             }
+            else if (nameList.indexOf(word.toUpperCase()) >= 0) {
+                //  Select another station
+                var index = nameList.indexOf(word.toUpperCase());
+
+                if (index >= 0 && index <= stationList.length - 1) {
+                    if (index != stationIdx) {
+                        setStation(index);
+                    }
+                    else {
+                        execSync(tell + 'Même nom de station ' + word);
+                    }
+                }
+                else {
+                    // No new correct index decoded.
+                    execSync(tell + 'Nom de station invalide ' + word);
+                }
+
+                code = 'name';
+            }
             else if (cmd.digitList.indexOf(word) >= 0) {
 
                 //  Select another station
@@ -221,7 +246,7 @@ module.exports = {
                         setStation(index);
                     }
                     else {
-                        execSync(tell + 'Même index de station  ' + word);
+                        execSync(tell + 'Même index de station ' + word);
                     }
                 }
                 else {
