@@ -21,7 +21,9 @@ rm -f timestamp.?
 touch timestamp.0
 
 # Make almost sure that ntpd has set the right time.
-at now + 1 minutes -f $RADIOK_HOME/bin/listen.sh
-at now + 5 minutes -f $RADIOK_HOME/bin/start.sh
+sleep 60
+$RADIOK_HOME/bin/listen.sh
+sleep 300
+$RADIOK_HOME/bin/start.sh
 
 #______________________________________________________________________________
