@@ -380,9 +380,25 @@ pcm.!default {
             stocké sous forme brute dans le tableau
             d'échantillons <code>utterance</code>.
           </p>
-        <div class="center" style="margin-top: 2em;">
-          <a class="btn btn-primary" href="index.html">Home</a>
-        </div>
+          <p>
+            Pour passer ces données son à google il va falloir
+            d'abord les compresser en utilisant en encodage
+            <a https://xiph.org/flac/>flac</a>. Cet algorithme est
+            adapté aux fichiers son, il compresse les données sans
+            perte. L'ennui est que la bibliothèque disponible pour
+            manipuler à compresser est particulièrement mal foutue et
+            mal documentée. Après pas mal d'essais je suis finalement
+            parvenu à quelquechose. La routine 
+            <code>make_flac_encoder()</code> initialise le traitement
+            puis <code>enflac_utterance()</code> effectue la
+            compression. Le résultat est mis dans un fichier
+            temporaire <code>/tmp/utterance.flac</code> que je n'ai
+            pas réussi à éviter.
+          </p>  
+
+          <div class="center" style="margin-top: 2em;">
+            <a class="btn btn-primary" href="index.html">Home</a>
+          </div>
 
         </div>
       </div>
