@@ -51,6 +51,9 @@ var nameList;
 // The index of the currently selected station.
 var stationIdx = 0;
 
+// The trigger info.
+var triggerState;
+
 //__________________________________________________________________________
 /**
  * Changes the radio station.
@@ -244,7 +247,22 @@ module.exports = {
             }
             else if (cmd.setList.indexOf(word) >= 0) {
 
-                execSync(tell + 'bientôt');
+                var message;
+
+                if (! triggerState) {
+                    message = "le statut de l'alarme n'est pas disponible";
+                }
+                else if (triggerState.set) {
+                  message = "\"l'alarme est mise pour "
+                    + triggerState.hour + " heures "
+                    + triggerState.minute + " minutes\"";
+                    logger.log('info', message);
+                }
+                else {
+                   message = "l'alarme n'est pas mise"; 
+                }
+
+                execSync(tell + message);
             }
             else if (cmd.digitList.indexOf(word) >= 0) {
 
@@ -289,6 +307,13 @@ module.exports = {
                 break;
             }
         }
-     }
+     },
+    /**
+     * Stores the trigger status got from box.js
+     * Parameter: the json object.
+     */
+    setTriggerState: function(status) {
+        triggerState = status;
+    }
 //__________________________________________________________________________
 }

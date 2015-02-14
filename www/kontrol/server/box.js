@@ -114,6 +114,9 @@ var setTrigger = function(h, m, set) {
         station:  triggeredStation
     };
 
+    // Make vox.js aware of the new trigger
+    vox.setTriggerState(triggerState);
+
     fs.writeFile(triggerStateFile, JSON.stringify(triggerState, null, 4),
                  function (err) {
                      if (err) {
