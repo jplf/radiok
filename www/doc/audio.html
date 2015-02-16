@@ -348,8 +348,8 @@ pcm.!default {
           </p>
           <p>
             La première étape est classique : elle consiste à décoder
-            les options données sur la ligne de commande. Mais en
-            général les paramètres par défaut sont suffisants pour
+            les options données sur la ligne de commande.
+            Mais en général les paramètres par défaut sont suffisants pour
             faire fonctionner le programme : on peut le lancer
             simplement en tapant : <code>command</code>.<br>
             En revanche il est indispensable d'avoir défini la
@@ -363,8 +363,8 @@ pcm.!default {
             Ensuite on doit initialiser les paramètres
             de <code>curl</code> pour communiquer et avec google et
             avec radiok. Il n'y a rien de très compliqué, il suffit de
-            lire la doc
-            de <a href="http://curl.haxx.se/libcurl/c/">libcurl</a>.
+            lire la doc de
+            <a href="http://curl.haxx.se/libcurl/c/">libcurl</a>.
           </p>
           <p>
             Une fois les initialisations effectuées on entre dans la
@@ -382,25 +382,53 @@ pcm.!default {
           </p>
           <p>
             Pour passer ces données son à google il va falloir
-            d'abord les compresser en utilisant en encodage
-            <a https://xiph.org/flac/>flac</a>. Cet algorithme est
+            d'abord les compresser en utilisant un encodage
+            <a href="https://xiph.org/flac/">flac</a>. Cet algorithme est
             adapté aux fichiers son, il compresse les données sans
             perte. L'ennui est que la bibliothèque disponible pour
-            manipuler à compresser est particulièrement mal foutue et
-            mal documentée. Après pas mal d'essais je suis finalement
-            parvenu à quelquechose. La routine 
+            manipuler les fichier à compresser est particulièrement 
+            mal foutue et mal documentée. Après pas mal d'essais je
+            suis finalement parvenu à quelquechose. La routine 
             <code>make_flac_encoder()</code> initialise le traitement
             puis <code>enflac_utterance()</code> effectue la
             compression. Le résultat est mis dans un fichier
             temporaire <code>/tmp/utterance.flac</code> que je n'ai
             pas réussi à éviter.
+          </p>
+          <p>
+            La suite du traitement est codé dans la fonction
+            <code>interpret_flac()</code>.
+            Le fichier flac est transmis à google en utilisant
+            <code>curl_easy_setopt()</code> pour passer son contenu en
+            paramètre POST.
+            <br>
+            La réponse de google est analysée en utilisant la
+            fonction <code>json_parse()</code> qui permet de retrouver
+            les éléments d'un contenu formatté en json. Finalement, si
+            tout s'est bien passé, on obtient un mot en sortie de
+            <code>parse_google_content()</code>. Il correspond à
+            l'interprétation par google de ce qui a été entendu.
+          </p>
+          <p>
+            Le mot est ensuite passé au serveur de radiok par la
+            routine <code>send_command()</code>. Cette fois aussi on
+            utilise <code>curl</code> pour communiquer. Comme pour la
+            première implémentation le serveur effectue une opération
+            choisie en fonction du mot reçu.
+          </p>  
+          <p>
+            Après plusieurs semaines d'utilisation je constate que
+            cette implémentation marche très bien et vraiment mieux
+            que l'implémentation basée sur un traitement local. En
+            revanche il faut un peu plus de temps pour obtenir le
+            résultat d'un commande.
           </p>  
 
           <div class="center" style="margin-top: 2em;">
             <a class="btn btn-primary" href="index.html">Home</a>
           </div>
 
-        </div>
+</div>
       </div>
 
     </div>
