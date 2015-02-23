@@ -98,9 +98,20 @@ if (! box.trigger(root + '/run/trigger')) {
 
 /**
  * Initializes routing.
+ * Actually I do not understand why I need to rewrite URL like that.
+ * I've read a lot of web pages on this topic but I still don't get it.
  */
 app.use(app.router);
-app.use(express.static(path.join(__dirname, 'client')));
+
+app.use(express.static(path.join(__dirname, '/client')));
+
+app.get("/state", function(req, res, next){
+  res.sendfile(__dirname + '/client/index.html');
+});
+
+app.get("/trigger", function(req, res, next){
+  res.sendfile(__dirname + '/client/index.html');
+});
 
 /**
  * We are all set, the service can be started.
