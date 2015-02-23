@@ -32,7 +32,7 @@ fi
 
 amixer -q set PCM $vol$s
 
-# Keep track on the new value.
+# Keep track of the new value.
 
 $RADIOK_HOME/bin/get_volume.sh > $RADIOK_HOME/run/volume
 
