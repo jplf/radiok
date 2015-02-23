@@ -22,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 23 February 2015 | Development is over |
 | 05 January 2015 | Google based french version working. Version 2.0 |
 | 06 August 2014 | Audio feedback improved. Version 1.2 |
 | 21 July 2014 | This short README is online. Version 1.1 |
