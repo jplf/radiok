@@ -21,7 +21,13 @@
  * It handles all operations on the radio box.
  */
 // Run google to get information about these nodejs modules.
-var execSync = require('exec-sync');
+
+var runSync = require('child_process').execSync;
+var execSync = function(cmd) {
+    return runSync(cmd, {encoding: 'utf-8'});
+};
+
+//var execSync = require('exec-sync');
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
 var fs       = require('fs');

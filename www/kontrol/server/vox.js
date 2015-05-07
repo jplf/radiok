@@ -19,7 +19,12 @@
  * @module vox
  * It handles commands sent by the voice interpreter program.
  */
-var execSync = require('exec-sync');
+//var execSync = require('exec-sync');
+
+var runSync = require('child_process').execSync;
+var execSync = function(cmd) {
+    return runSync(cmd, {encoding: 'utf-8'});
+};
 
 /**
  * The module giving the list of valid commands.
