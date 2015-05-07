@@ -22,8 +22,8 @@ var mainModule = angular.module('main-module',
 
 
 mainModule.constant('version', {
-    'release': '3.0',
-    'date':    '06 March 2015'
+    'release': '3.1',
+    'date':    '07 May 2015'
 });
 
 /**
