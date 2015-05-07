@@ -30,6 +30,10 @@ var express = require('express');
 var http    = require('http');
 var path    = require('path');
 
+var favicon        = require('serve-favicon');
+var bodyParser     = require('body-parser');
+var methodOverride = require('method-override');
+
 var root = process.env.RADIOK_HOME;
 
 if (root === undefined) {
@@ -74,9 +78,9 @@ var app = express();
 
 app.set('port', port);
 
-app.use(express.favicon());
-app.use(express.bodyParser());
-app.use(express.methodOverride());
+app.use(favicon(__dirname + '/client/triskell.ico'));
+app.use(bodyParser.json());
+app.use(methodOverride());
 
 /**
  * The Radio Box Kontrol server specific modules.
@@ -96,21 +100,14 @@ if (! box.trigger(root + '/run/trigger')) {
     process.kill();
 }
 
-/**
- * Initializes routing.
- * Actually I do not understand why I need to rewrite URL like that.
- * I've read a lot of web pages on this topic but I still don't get it.
- */
-app.use(app.router);
-
 app.use(express.static(path.join(__dirname, '/client')));
 
 app.get("/state", function(req, res, next){
-  res.sendfile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/client/index.html');
 });
 
 app.get("/trigger", function(req, res, next){
-  res.sendfile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/client/index.html');
 });
 
 /**
