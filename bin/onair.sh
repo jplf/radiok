@@ -115,16 +115,16 @@ declare -A radios
 declare -A surnames
 
 # The key prefix is used to sort the list.
-radios["a-fip"]="http://mp3lg.tdf-cdn.com/fip/all/fiphautdebit.mp3";
+radios["a-fip"]="http://audio.scdn.arkena.com/11016/fip-midfi128.mp3";
 surnames["a-fip"]="Fip Radio"
 
-radios["c-musique"]="http://mp3lg.tdf-cdn.com/francemusique/all/francemusiquehautdebit.mp3";
+radios["c-musique"]="http://audio.scdn.arkena.com/11012/francemusique-midfi128.mp3";
 surnames["c-musique"]="France Musique"
 
-radios["b-inter"]="http://mp3lg.tdf-cdn.com/franceinter/all/franceinterhautdebit.mp3";
+radios["b-inter"]="http://audio.scdn.arkena.com/11008/franceinter-midfi128.mp3";
 surnames["b-inter"]="France Inter"
 
-radios["d-culture"]="http://mp3lg.tdf-cdn.com/franceculture/all/franceculturehautdebit.mp3";
+radios["d-culture"]="http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3";
 surnames["d-culture"]="France Culture"
 
 radios["r-chantefr"]="http://stream.chantefrance.com/stream_chante_france.mp3";
