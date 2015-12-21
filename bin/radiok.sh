@@ -2,7 +2,7 @@
 #______________________________________________________________________________
 
 # Script used to start the server
-# Jean-Paul Le Fèvre - April 2014
+# Jean-Paul Le Fèvre - April 2015
 
 #______________________________________________________________________________
 
@@ -17,7 +17,7 @@ rm -f timestamp.?
 # Note the current time.
 # On the RPi the time is not locally kept. Clock is set by the ntp program
 # and one must make sure that this initialization is properly performed.
-# This may be check by comparing the timestamp created in start.sh
+# This may be checked by comparing the timestamp created in start.sh
 touch timestamp.0
 
 # Make almost sure that ntpd has set the right time.
