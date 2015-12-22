@@ -33,6 +33,21 @@ function get_status {
 }
 #______________________________________________________________________________
 
+# Pings a station
+# Makes sure that the selected station is still connected to the internet and
+# working.
+function ping_station {
+
+    if curl --output /dev/null --silent --head --fail "$url"; then
+        echo "Station: $1 is on air"
+        return 0
+    else
+        echo "Station: $1 is not reachable"
+        return 1
+    fi
+}
+#______________________________________________________________________________
+
 # Output the  sorted list of known stations.
 function print_list {
 
@@ -76,6 +91,14 @@ function start {
 
     echo $cmd $opt "$url">>$log
     echo "Starting onair.sh $station on `date` ..." >>$log
+
+    if ping_station $url; then
+        echo "Starting onair.sh $station on `date` ..." >>$log
+    else
+        echo "Station $station in not reachable on `date` ..." >>$log
+        url="file://$RADIOK_HOME/lib/buffalo-soldier.mp3"
+        echo "Playing $url"
+    fi
 
     $cmd $opt $url 1>$RADIOK_HOME/run/mp.log 2>>$log &
 
