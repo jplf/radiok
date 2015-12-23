@@ -35,7 +35,8 @@ function get_status {
 
 # Pings a station
 # Makes sure that the selected station is still connected to the internet and
-# working.
+# working. This test does not work if the site to be pinged do not handle
+# a head request correctly.
 function ping_station {
 
     if curl --output /dev/null --silent --head --fail "$url"; then
@@ -43,7 +44,7 @@ function ping_station {
         return 0
     else
         echo "Station: $1 is not reachable"
-        return 1
+        return 0
     fi
 }
 #______________________________________________________________________________
@@ -153,8 +154,14 @@ surnames["d-culture"]="France Culture"
 radios["r-chantefr"]="http://stream.chantefrance.com/stream_chante_france.mp3";
 surnames["r-chantefr"]="Chante France"
 
-radios["r-tsf"]="http://broadcast.infomaniak.net/tsfjazz-high.mp3";
+radios["r-tsf"]="http://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3";
 surnames["r-tsf"]="TSF Jazz"
+
+radios["s-swiss"]="http://stream.srg-ssr.ch/m/rsj/mp3_128"
+surnames["s-swiss"]="Swiss Jazz"
+
+radios["v-venice"]="http://109.123.116.202:8020"
+surnames["v-venice"]="Venice Classic"
 
 #______________________________________________________________________________
 
