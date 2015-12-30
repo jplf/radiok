@@ -3,13 +3,14 @@
 
 # Fichier start radio - Jean-Paul Le Fèvre march 2014
 
-# Usage onair.sh [-k][-s] [-t time] [station]
+# Usage onair.sh [-k][-s][-l][-r] [-t time] [station]
 
 # Option -h to see the list of options
 # Option -k to kill a running player
 # Option -t to set the duration of a play
 # Option -s to find the status of the player
 # Option -l to find the list of declared stations
+# Option -r to check the reachability of the stations
 
 # Argument station to select the radio station to listen.
 # Volume control: amixer sset 'Master' 60%
@@ -39,11 +40,18 @@ function get_status {
 # a head request correctly.
 function ping_station {
 
+    url=${radios[$1]}
+
     if curl --output /dev/null --silent --head --fail "$url"; then
         echo "Station: $1 is on air"
         return 0
-    else
+    elif [ "$1" = "b-inter" ]; then
+        # France inter is used to wake up in the morning.
         echo "Station: $1 is not reachable"
+        return 1
+    else
+        echo "Station: $1 may be not reachable"
+        # May be because the reply by the server is wrong.
         return 0
     fi
 }
@@ -76,6 +84,20 @@ function print_list {
 }
 #______________________________________________________________________________
 
+# Checks if the stations are reachable on the internet.
+function check_list {
+
+    # Sort the keys
+    list=`echo ${!radios[@]} | tr ' ' '\n'| sort | tr '\n' ' '`
+
+    for key in $list
+    do
+        ping_station $key
+    done
+    echo " "
+}
+#______________________________________________________________________________
+
 # Launches mplayer and keeps track of the selected station and the pid.
 # A duration may be specified.
 function start {
@@ -93,7 +115,7 @@ function start {
     echo $cmd $opt "$url">>$log
     echo "Starting onair.sh $station on `date` ..." >>$log
 
-    if ping_station $url; then
+    if ping_station $station; then
         echo "Starting onair.sh $station on `date` ..." >>$log
     else
         echo "Station $station in not reachable on `date` ..." >>$log
@@ -214,6 +236,9 @@ case $1 in
         exit 0 ;;
 
     -l) print_list;
+        exit 0 ;;
+
+    -r) check_list;
         exit 0 ;;
 
     -*) echo $usage
