@@ -22,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 30 December 2015 | Plain button replaced by a switch in the trigger page |
 | 07 May 2015 | Updated for the new versions of nodejs modules. Version 3.1 |
 | 23 February 2015 | Development is over |
 | 05 January 2015 | Google based french version working. Version 2.0 |

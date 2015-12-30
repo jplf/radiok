@@ -4,3 +4,6 @@ alert, buttons, position, progressbar, timepicker, tooltip
 
 License can be read in:
 https://github.com/angular-ui/bootstrap/blob/master/LICENSE
+
+The angular-ui-switch component has been downloaded from github at 
+https://github.com/xpepermint/angular-ui-switch

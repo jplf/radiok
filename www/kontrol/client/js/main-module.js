@@ -18,12 +18,13 @@
  * @see http://angularjs.org/
  */
 var mainModule = angular.module('main-module',
-                                ['ngRoute', 'ui.bootstrap', 'ui.slider']);
+                                ['ngRoute', 'ui.bootstrap',
+                                 'ui.slider', 'uiSwitch']);
 
 
 mainModule.constant('version', {
-    'release': '3.2',
-    'date':    '22 December 2015'
+    'release': '3.3',
+    'date':    '30 December 2015'
 });
 
 /**

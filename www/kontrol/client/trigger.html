@@ -4,11 +4,11 @@
   <div class="row">
     <div class="span12">
 
-    <h2>Trigger the Radio Box</h2>
+    <h2>Radio Box Trigger</h2>
 
     <div class="center" style="margin-top:4em;" ng-controller="TriggerCtrl">
 
-      <table style="border:1px solid; margin:auto;" class="well" >
+      <table style="border:1px solid; margin:auto;" class="well">
         <tr>
           <td>
             <div ng-model="triggerTime"
@@ -19,20 +19,22 @@
             </div>
           </td>
           <td>
-            <button type="button" class="btn btn-default"
-                    style="width:4em; margin:1em;"
+
+            <switch id="enabled"
+                    on="set" off="" ng-click="toggle()"
                     tooltip="Enable or disable the cronjob."
-                    ng-model="alarm" ng-click="toggle()">
-              {{setUnset}}
-            </button>
+                    ng-model="alarm" class="mini">
+            </switch><br>
+
           </td>
         </tr>
       </table>
 
-        <div class="alert alert-warning"
-             style="width:14em; margin:1em auto;">
-          <span>{{cronjob}}</span>
-        </div>
+      <div class="alert alert-warning"
+           style="width:14em; margin:1em auto;">
+        <span>{{cronjob}}</span>
+      </div>
+
 
       <button type="button" class="btn btn-primary"
               style="margin-top:1em;margin-bottom:3em;"
