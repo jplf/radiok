@@ -23,7 +23,7 @@ var mainModule = angular.module('main-module',
 
 
 mainModule.constant('version', {
-    'release': '3.3',
+    'release': '3.5',
     'date':    '30 December 2015'
 });
 
