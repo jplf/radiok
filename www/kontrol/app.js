@@ -95,8 +95,8 @@ vox.init(app, logger, root);
  * Initialize the wake up trigger from a configuration file.
  * Play every week day by default.
  */
-if (! box.trigger(root + '/run/trigger')) {
-    console.log('Invalid box trigger !');
+if (! box.trigger(root + '/run/triggers.json')) {
+    console.log('Invalid box triggers file !');
     process.kill();
 }
 

@@ -34,6 +34,7 @@ var fs       = require('fs');
 var vox      = require('./vox');
 
 // The program to execute on a regular basis thanks to cron.
+// See https://github.com/ncb000gt/node-cron/blob/master/README.md
 var job;
 // The default trigger time
 var hour      = 22;
@@ -51,15 +52,16 @@ var logger;
 
 // The name of the file storing the trigger state.
 var triggerStateFile;
-// The name of the triggered station which can be different from the current one.
-var triggeredStation = 'b-inter';
+// The key of the wake up station which can be different
+// from the current one.
+var wakeUpStation = 'b-inter';
 
 //__________________________________________________________________________
-    /**
-     * Initializes the cron job.
-     * If one is already running kill it.
-     * Returns true if arguments are correct.
-     */
+/**
+ * Initializes the cron job.
+ * If one is already running kills it.
+ * Returns true if arguments are correct.
+ */
 var setTrigger = function(h, m, set) {
 
     // Check input arguments
@@ -83,6 +85,7 @@ var setTrigger = function(h, m, set) {
         triggered = false;
     }
 
+    // From Monday to Friday : 1-5
     var spec  = '00 ' + minute + ' ' + hour + ' * * 1-5';
     logger.log('info', 'Cronjob spec: ' + spec + ' set ' + triggered);
 
@@ -98,7 +101,7 @@ var setTrigger = function(h, m, set) {
                        + moment().format('HH:mm'));
 
             var cmd = execSync(onair + '-t ' + duration
-                               + ' ' + triggeredStation + ' &');
+                               + ' ' + wakeUpStation + ' &');
         },
         start: false
     });
@@ -113,11 +116,20 @@ var setTrigger = function(h, m, set) {
     }
 
     var triggerState = {
-        hour:     hour,
-        minute:   minute,
-        duration: duration,
-        set:      triggered,
-        station:  triggeredStation
+        wakeup: {
+            hour:     hour,
+            minute:   minute,
+            duration: duration,
+            set:      triggered,
+            station:  wakeUpStation
+        },
+        alarm: {
+            hour:     "16",
+            minute:   "0",
+            duration: "20",
+            set:      false,
+            station:  "a-fip"
+        }
     };
 
     // Make vox.js aware of the new trigger
@@ -190,7 +202,7 @@ module.exports = {
             }
             // It is appended to the output
             output.trigger = output.trigger + hour + ':' + minute
-            + ' on ' + triggeredStation;
+            + ' on ' + wakeUpStation;
 
             res.send(output);
         });
@@ -315,17 +327,22 @@ module.exports = {
         triggerStateFile = trigfile;
         var code = true;
 
-        fs.readFile(triggerStateFile, function (err, data) {
+        fs.readFile(trigfile, function (err, data) {
             if (err) {
-                logger.log('error', 'Cannot read ' + triggerStateFile);
+                logger.log('error', 'Cannot read ' + trigfile);
                 code = setTrigger('10', '10', false);
             }
             else {
                 var state = JSON.parse(data);
+                var wakeup = state.wakeup;
+                logger.debug('Trigger wake up ' + wakeup);
 
-                code = setTrigger(state.hour, state.minute, state.set);
-                duration = state.duration;
-                station  = state.station;
+                code = setTrigger(wakeup.hour, wakeup.minute, wakeup.set);
+                duration = wakeup.duration;
+                station  = wakeup.station;
+
+                var alarm = state.alarm;
+                logger.debug('Trigger alarm ' + alarm);
             }
         });
 
