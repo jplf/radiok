@@ -37,7 +37,7 @@ $RADIOK_HOME/bin/atrmall.sh
 screen -L -d -m /usr/local/bin/node $RADIOK_HOME/www/kontrol/app.js
 
 # Make sure the server is ready.
-sleep 15
+sleep 30
 
 # Initialize the volume on the server
 if [ -f $RADIOK_HOME/run/volume ]; then

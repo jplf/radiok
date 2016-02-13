@@ -255,18 +255,22 @@ module.exports = {
                 var message;
 
                 if (! triggerState) {
-                    message = "le statut de l'alarme n'est pas disponible";
-                }
-                else if (triggerState.set) {
-                  message = "\"l'alarme est mise pour "
-                    + triggerState.hour + " heures "
-                    + triggerState.minute + " minutes\"";
-                    logger.log('info', message);
+                    message = "le statut des alarmes n'est pas disponible";
                 }
                 else {
-                   message = "l'alarme n'est pas mise"; 
-                }
 
+                    var wakeup = triggerState.wakeup;
+
+                    if (wakeup.set) {
+                        message = "\"le réveil est activé pour "
+                            + wakeup.hour + " heures "
+                            + wakeup.minute + " minutes\"";
+                        logger.log('info', message);
+                    }
+                    else {
+                        message = "le réveil n'est pas activé"; 
+                    }
+                }
                 execSync(tell + message);
             }
             else if (cmd.digitList.indexOf(word) >= 0) {
