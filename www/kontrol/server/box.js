@@ -24,10 +24,10 @@
 
 var runSync = require('child_process').execSync;
 var execSync = function(cmd) {
-    return runSync(cmd, {encoding: 'utf-8'});
+    var out = runSync(cmd, {encoding: 'utf-8'});
+    return out;
 };
 
-//var execSync = require('exec-sync');
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
 var fs       = require('fs');
@@ -37,12 +37,12 @@ var vox      = require('./vox');
 // See https://github.com/ncb000gt/node-cron/blob/master/README.md
 var job;
 // The default trigger time
-var hour      = 22;
-var minute    =  0;
+var hour      =  6;
+var minute    = 59;
 // Not triggered by default
 var triggered = false;
 // Play France Inter for 30 minutes by default
-var duration  = 30;
+var duration  = 20;
 var station   = 'b-inter';
 
 // The script to run if triggered.
@@ -100,8 +100,7 @@ var setTrigger = function(h, m, set) {
             logger.log('info', 'My radio goes off at '
                        + moment().format('HH:mm'));
 
-            var cmd = execSync(onair + '-t ' + duration
-                               + ' ' + wakeUpStation + ' &');
+            var cmd = execSync(onair + '-t ' + duration + ' ' + wakeUpStation);
         },
         start: false
     });
