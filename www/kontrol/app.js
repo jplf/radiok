@@ -60,7 +60,7 @@ fs.exists(logfile, function (exists) {
  */
 var stamp = function() {
     var d = new Date();
-    return d.toLocaleTimeString();
+    return d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.toLocaleTimeString();
 };
 var winston = require('winston');
 var logger  = new (winston.Logger)({
