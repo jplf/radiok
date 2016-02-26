@@ -113,7 +113,6 @@ function start {
     fi
 
     echo $cmd $opt "$url">>$log
-    echo "Starting onair.sh $station on `date` ..." >>$log
 
     if ping_station $station; then
         echo "Starting onair.sh $station on `date` ..." >>$log
