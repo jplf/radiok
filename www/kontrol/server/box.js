@@ -25,7 +25,7 @@
 var runSync = require('child_process').execSync;
 var execSync = function(cmd) {
     var out = runSync(cmd, {encoding: 'utf-8'});
-    logger.log('info', out);
+    logger.info(out);
     return out;
 };
 
@@ -67,14 +67,14 @@ var setTrigger = function(h, m, set) {
 
     // Check input arguments
     if (isNaN(h) || isNaN(m)) {
-        logger.log('error', 'Invalid numbers: '+ h + ' ' + m + ' ' + on);
+        logger.error('Invalid numbers: '+ h + ' ' + m + ' ' + on);
         return false;
     }
 
     hour   = new Number(h);
     minute = new Number(m);
     if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-        logger.log('error', 'Invalid times: '+ h + ' ' + m + ' ' + on);
+        logger.error('Invalid times: '+ h + ' ' + m + ' ' + on);
         return false;
     }
 
@@ -87,8 +87,8 @@ var setTrigger = function(h, m, set) {
     }
 
     // From Monday to Friday : 1-5
-    var spec  = '00 ' + minute + ' ' + hour + ' * * 1-5';
-    logger.log('info', 'Cronjob spec: ' + spec + ' set ' + triggered);
+    var spec  = '00 ' + minute + ' ' + hour + ' * * *';
+    logger.info('Cronjob spec: ' + spec + ' set ' + triggered);
 
     // Stop the current job if any.
     if (job) {
@@ -98,21 +98,20 @@ var setTrigger = function(h, m, set) {
     job = new CronJob({
         cronTime: spec,
         onTick: function() {
-            logger.log('info', 'My radio goes off at '
-                       + moment().format('HH:mm'));
+            logger.info('My radio goes off at ' + moment().format('HH:mm'));
 
-            var cmd = execSync(onair + '-t ' + duration + ' ' + wakeUpStation);
+            var cmd = execSync(onair + ' -t ' + duration + ' ' + wakeUpStation);
         },
         start: false
     });
 
     if (triggered) {
         job.start();
-        logger.log('info', 'Trigger set at ' + moment().format('HH:mm'));
+        logger.info('Trigger set at ' + moment().format('HH:mm'));
     }
     else {
         job.stop();
-        logger.log('info', 'Trigger unset at ' + moment().format('HH:mm'));
+        logger.info('Trigger unset at ' + moment().format('HH:mm'));
     }
 
     var triggerState = {
@@ -138,10 +137,10 @@ var setTrigger = function(h, m, set) {
     fs.writeFile(triggerStateFile, JSON.stringify(triggerState, null, 4),
                  function (err) {
                      if (err) {
-                         logger.log('error', 'Trigger failed saving data');
+                         logger.error('Trigger failed saving data');
                      }
                      else {
-                         logger.log('info', 'Trigger successfully saved.');
+                         logger.info('Trigger successfully saved.');
                      }
     });
 
@@ -153,12 +152,20 @@ module.exports = {
     /**
      * Initializes the module.
      */
-    init: function(app, msger, root) {
+    init: function(msger, rootdir) {
 
-        onair = root + '/bin/onair.sh ';
+        root  = rootdir;
+        onair = root + '/bin/onair.sh';
 
         logger = msger;
         logger.info('Box Kontroller module initialization');
+    },
+    /**
+     * Initializes the http get methods.
+     */
+    sender: function(app) {
+
+        logger.info('Box Kontroller sender definition');
 
 //__________________________________________________________________________
        /**
@@ -217,17 +224,17 @@ module.exports = {
             var key = req.params.station;
 
             if (key === '-k') {
-                logger.log('info', 'Stop streaming radio');
+                logger.info('Stop streaming radio');
             }
             else {
                 // Keep track of the selected station.
                 station = key;
                 // Let vox know the new station.
                 vox.setStationIdx(key);
-                logger.log('info', 'Starting station key %s', key);
+                logger.info('Starting station key %s', key);
             }
             
-            var output = execSync(onair + key);
+            var output = execSync(onair + ' ' + key);
 
             res.send({status: output});
         });
@@ -286,10 +293,10 @@ module.exports = {
             }
 
             var cmd = root + '/bin/set_volume.sh ' + volume;
-            logger.log('debug', cmd);
+            logger.debug(cmd);
 
             var status = execSync(cmd);
-            logger.log('info', 'Volume set to ' + volume + '%');
+            logger.info('Volume set to ' + volume + '%');
  
             res.send({status: status});
         });
@@ -329,7 +336,7 @@ module.exports = {
 
         fs.readFile(trigfile, function (err, data) {
             if (err) {
-                logger.log('error', 'Cannot read ' + trigfile);
+                logger.error('Cannot read ' + trigfile);
                 code = setTrigger('10', '10', false);
             }
             else {

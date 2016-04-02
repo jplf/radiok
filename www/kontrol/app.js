@@ -86,10 +86,10 @@ app.use(methodOverride());
  * The Radio Box Kontrol server specific modules.
  */
 var box = require('./server/box');
-box.init(app, logger, root);
+box.init(logger, root);
+box.sender(app);
 
 var vox = require('./server/vox');
-vox.init(app, logger, root);
 
 /**
  * Initialize the wake up trigger from a configuration file.
