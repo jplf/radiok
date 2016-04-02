@@ -64,6 +64,7 @@ var stamp = function() {
 };
 var winston = require('winston');
 var logger  = new (winston.Logger)({
+    level: 'debug',
     transports: [
         new (winston.transports.File)({
             timestamp: stamp,
@@ -90,6 +91,7 @@ box.init(logger, root);
 box.sender(app);
 
 var vox = require('./server/vox');
+vox.init(app, logger, root);
 
 /**
  * Initialize the wake up trigger from a configuration file.

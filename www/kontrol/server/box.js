@@ -229,9 +229,9 @@ module.exports = {
             else {
                 // Keep track of the selected station.
                 station = key;
+                logger.info('Starting station key %s', key);
                 // Let vox know the new station.
                 vox.setStationIdx(key);
-                logger.info('Starting station key %s', key);
             }
             
             var output = execSync(onair + ' ' + key);
