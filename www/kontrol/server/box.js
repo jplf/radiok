@@ -25,6 +25,7 @@
 var runSync = require('child_process').execSync;
 var execSync = function(cmd) {
     var out = runSync(cmd, {encoding: 'utf-8'});
+    logger.log('info', out);
     return out;
 };
 
@@ -119,14 +120,14 @@ var setTrigger = function(h, m, set) {
             hour:     hour,
             minute:   minute,
             duration: duration,
-            set:      triggered,
+            set:      triggered.toString(),
             station:  wakeUpStation
         },
         alarm: {
             hour:     "16",
             minute:   "0",
             duration: "20",
-            set:      false,
+            set:      "false",
             station:  "a-fip"
         }
     };
