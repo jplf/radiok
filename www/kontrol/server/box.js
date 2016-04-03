@@ -25,9 +25,11 @@
 var runSync = require('child_process').execSync;
 var execSync = function(cmd) {
     var out = runSync(cmd, {encoding: 'utf-8'});
-    logger.info(out);
+    logger.debug(out);
     return out;
 };
+
+var spawn = require('child_process').spawn;
 
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
@@ -87,7 +89,8 @@ var setTrigger = function(h, m, set) {
     }
 
     // From Monday to Friday : 1-5
-    var spec  = '00 ' + minute + ' ' + hour + ' * * *';
+    var spec  = '0 ' + minute + ' ' + hour + ' * * *';
+    // var spec  = '0 ' + '*/3' + ' ' + '*' + ' * * *';
     logger.info('Cronjob spec: ' + spec + ' set ' + triggered);
 
     // Stop the current job if any.
@@ -100,7 +103,7 @@ var setTrigger = function(h, m, set) {
         onTick: function() {
             logger.info('My radio goes off at ' + moment().format('HH:mm'));
 
-            var cmd = execSync(onair + ' -t ' + duration + ' ' + wakeUpStation);
+             spawn(onair, ['-t', duration, wakeUpStation]);
         },
         start: false
     });
