@@ -64,7 +64,7 @@ var stamp = function() {
 };
 var winston = require('winston');
 var logger  = new (winston.Logger)({
-    level: 'debug',
+    level: 'info',
     transports: [
         new (winston.transports.File)({
             timestamp: stamp,
