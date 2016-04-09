@@ -115,7 +115,7 @@ app.get("/trigger", function(req, res, next){
 /**
  * We are all set, the service can be started.
  */
-http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), function() {
     logger.log('info',
                'Radio Box Kontroller accepting connections on port %d',
                app.get('port'));
