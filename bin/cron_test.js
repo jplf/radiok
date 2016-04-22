@@ -68,4 +68,5 @@ if (! box.trigger(root + '/run/cron_test.json')) {
     console.log('Invalid box triggers file !');
     process.kill();
 }
+
 //__________________________________________________________________________
