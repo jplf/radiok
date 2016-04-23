@@ -10,6 +10,9 @@
  * Most of the functions provided by this modules are implemented by the
  * scripts found in the bin subdirectory.
  *
+ * It has been partly rewritten in April 2016. This new version do not use
+ * the cronjob module which is buggy. It simply use the crontab(1) unix command.
+ *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
  */
 //__________________________________________________________________________
@@ -29,25 +32,24 @@ var execSync = function(cmd) {
     return out;
 };
 
-var spawn = require('child_process').spawn;
-
 var moment   = require('moment');
 var CronJob  = require('cron').CronJob;
 var fs       = require('fs');
 var vox      = require('./vox');
 
-// The program to execute on a regular basis thanks to cron.
-// See https://github.com/ncb000gt/node-cron/blob/master/README.md
-var job;
 // The default trigger time
 var hour      =  6;
 var minute    = 59;
 // Not triggered by default
 var triggered = false;
-// Play France Inter for 30 minutes by default
+// Play France Inter for 20 minutes by default
 var duration  = 20;
-var station   = 'b-inter';
+// The key of the wake up station which can be different
+// from the current one.
+var wakeUpStation = 'b-inter';
 
+// The top directory of radiok.
+var root;
 // The script to run if triggered.
 var onair;
 // The log file manager.
@@ -55,17 +57,76 @@ var logger;
 
 // The name of the file storing the trigger state.
 var triggerStateFile;
-// The key of the wake up station which can be different
-// from the current one.
-var wakeUpStation = 'b-inter';
+// The current station
+var station   = 'b-inter';
 
 //__________________________________________________________________________
 /**
+ * Update the crontab.
+ * id identifies the job.
+ * spec gives the time and the command.
+ * set enables or disables the execution of the command.
+ * Returns true if arguments are correct.
+ */
+var updateCrontab = function(id, spec, set) {
+
+    // Read and parse the current content of the crontab.
+    var crontab = execSync('crontab -l');
+    var cronIn  = crontab.split('\n');
+
+    // What will be the updated content.
+    var cronOut = [];
+    var found   = false;
+
+    for (var i = 0; i < cronIn.length; i++) {
+
+        // Get rid of white spaces and empty lines.
+        cronIn[i].trim();
+        if (cronIn[i].length < 1) {
+            continue;
+        }
+        else if (cronIn[i].indexOf(id) < 0) {
+            // It is not the job to update : keep it as is.
+            cronOut.push(cronIn[i]);
+        }
+        else if (set) {
+            // It is the job to update.
+            found = true;
+            cronOut.push(spec);
+        }
+        else {
+            // It is the job to be disabled.
+            found = true;
+            cronOut.push('#' + spec);
+        }
+    }
+
+    // The job was not yet in the crontab.
+    if (! found && set) {
+        cronOut.push(spec);
+    }
+
+    // Write the updated content of the new crontab
+    crontab = cronOut[0];
+    for (var i = 1; i < cronOut.length; i++) {
+        crontab = crontab + '\n' + cronOut[i];
+    }
+    crontab = crontab + '\n';
+
+    // Save the updated content to a file.
+    var cronfile = root + '/run/crontab.txt';
+    fs.writeFileSync(cronfile, crontab);
+
+    runSync('crontab ' + cronfile);
+}
+//__________________________________________________________________________
+/**
  * Initializes the cron job.
+ * id identifies the job. See crontab(1)
  * If one is already running kills it.
  * Returns true if arguments are correct.
  */
-var setTrigger = function(h, m, set) {
+var setTrigger = function(id, h, m, set) {
 
     // Check input arguments
     if (isNaN(h) || isNaN(m)) {
@@ -88,32 +149,25 @@ var setTrigger = function(h, m, set) {
         triggered = false;
     }
 
+    // Identify the job, define the command to execute.
+    var cmd = 'ID=' + id + ' ';
+    cmd = cmd + onair + ' -t ' + duration + ' ' + wakeUpStation;
+    // Redirect stdout and stderr
+    var out = root + '/run/' + id + '.log';
+    cmd = cmd + ' 1>' + out + ' 2>&1';
+
     // From Monday to Friday : 1-5
-    var spec  = '0 ' + minute + ' ' + hour + ' * * *';
-    // var spec  = '0 ' + '*/3' + ' ' + '*' + ' * * *';
-    logger.info('Cronjob spec: ' + spec + ' set ' + triggered);
+    var spec  = minute + ' ' + hour + ' * * * ' + cmd;
+    // var spec  = '*/3' + ' ' + '*' + ' * * *  + cmd';
+    logger.info('Crontab spec: ' + spec + ' set ' + triggered);
 
-    // Stop the current job if any.
-    if (job) {
-        job.stop();
-    }
-
-    job = new CronJob({
-        cronTime: spec,
-        onTick: function() {
-            logger.info('My radio goes off at ' + moment().format('HH:mm'));
-
-             spawn(onair, ['-t', duration, wakeUpStation]);
-        },
-        start: false
-    });
+    // Communicate the spec to crontab(1)
+    updateCrontab(id, spec, triggered);
 
     if (triggered) {
-        job.start();
         logger.info('Trigger set at ' + moment().format('HH:mm'));
     }
     else {
-        job.stop();
         logger.info('Trigger unset at ' + moment().format('HH:mm'));
     }
 
@@ -171,11 +225,11 @@ module.exports = {
         logger.info('Box Kontroller sender definition');
 
 //__________________________________________________________________________
-       /**
-        * Processes a get status request.
-        * It executes the script onair.sh
-        * Returns the current status of the box, e.g. "a-fip, 4652"
-        */
+        /**
+         * Processes a get status request.
+         * It executes the script onair.sh
+         * Returns the current status of the box, e.g. "a-fip, 4652"
+         */
         app.get('/box/status', function(req, res) {
 
             logger.info('Fetching the box status');
@@ -184,7 +238,6 @@ module.exports = {
 
             res.send({status: output});
         });
- 
 //__________________________________________________________________________
        /**
         * Processes a get state request.
@@ -203,7 +256,7 @@ module.exports = {
 
             var output = JSON.parse(str);
 
-            // More info about the cronjob is stored internally
+            // More info about the crontab is stored internally
             if (triggered) {
                 output.trigger = 'Set at ';
             }
@@ -249,7 +302,7 @@ module.exports = {
         app.get('/box/cronjob', function(req, res) {
 
             res.send({
-                job: (job != undefined),
+                job: triggered,
                 hour: hour,
                 minute: minute,
                 set: triggered
@@ -310,16 +363,17 @@ module.exports = {
         */
         app.get('/box/trigger/:hour/:minute/:on', function(req, res) {
 
+            var i = 'wakeup';
             var h = req.params.hour;
             var m = req.params.minute;
             var o = req.params.on;
 
             // Define the cronjob
-            var status = setTrigger(h, m, o);
+            var status = setTrigger(i, h, m, o);
 
             // Send back the cronjob parameters
             res.send({
-                job: (job != undefined),
+                job: triggered,
                 hour: hour,
                 minute: minute,
                 set: triggered
@@ -340,14 +394,15 @@ module.exports = {
         fs.readFile(trigfile, function (err, data) {
             if (err) {
                 logger.error('Cannot read ' + trigfile);
-                code = setTrigger('10', '10', false);
+                code = setTrigger('wakeup', '10', '10', false);
             }
             else {
                 var state = JSON.parse(data);
                 var wakeup = state.wakeup;
                 logger.debug('Trigger wake up ' + wakeup);
 
-                code = setTrigger(wakeup.hour, wakeup.minute, wakeup.set);
+                code = setTrigger('wakeup',
+                                  wakeup.hour, wakeup.minute, wakeup.set);
                 duration = wakeup.duration;
                 station  = wakeup.station;
 

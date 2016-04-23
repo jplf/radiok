@@ -1,13 +1,11 @@
 //__________________________________________________________________________
 /**
  * Fonteny javascript library - March 2016
- * A test script used to test anothe approach to crontab.
- * It is motivated because radiok no longer works with the new version of
- * node, this script may useful to check an alternative.
- * It does not depend on the express module.
+ * A test script used to test another approach to crontab.
+ * It is motivated by the fact that radiok no longer works with
+ * the new version of node, this script may useful to check an alternative.
  *
- * Usage: node cron_tru.js
- * The cron spec must be given in a file name 'run/cron_test.json'
+ * Usage: node cron_test.js
  *
  * See also : cron_test box.js
  * @author Jean-Paul Le Fèvre
@@ -42,8 +40,8 @@ var fs = require('fs');
 var trigfile = root + '/run/cron_test.json'
 var data = fs.readFileSync(trigfile);
 
-var spec  = '*/10' + ' ' + '*' + ' * * * ';
-spec = spec + '/usr/bin/mplayer $HOME/etc/buffalo-soldier.mp3'
+var spec  = '*/5' + ' ' + '*' + ' * * * ';
+spec = spec + '$HOME/bin/onair.sh -t 1 a-fip > cron.log 2>&1'
 todo.push(spec);
 
 crontab = lines[0];

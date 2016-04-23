@@ -1,8 +1,9 @@
 //__________________________________________________________________________
 /**
  * Fonteny javascript library - March 2016
+ *
  * A test script used to test the cron modules.
- * It is motivated because radiok no longer works with the new version of
+ * It was written because radiok no longer works with the new version of
  * node, this script may useful to figure out why.
  * It does not depend on the express module.
  *

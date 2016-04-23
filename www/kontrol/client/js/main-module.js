@@ -23,8 +23,8 @@ var mainModule = angular.module('main-module',
 
 
 mainModule.constant('version', {
-    'release': '3.7',
-    'date':    '3 April 2016'
+    'release': '4.0',
+    'date':    '23 April 2016'
 });
 
 /**
