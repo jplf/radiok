@@ -188,8 +188,8 @@ surnames["v-venice"]="Venice Classic"
 
 # The root directory of this application.
 if [ -z "$RADIOK_HOME" ]; then
-    echo "RADIOK_HOME undefined !"
-    exit 1
+    export RADIOK_HOME=$HOME/work/git/radiok
+    echo "Set RADIOK_HOME=$RADIOK_HOME"
 fi
 
 # The directory storing runtime parameters.
