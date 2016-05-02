@@ -22,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 23 April 2016 | New version based on the brave old crontab(1) |
 | 11 February 2016 | I have successfully installed nodejs 5.5.0 on my slackware-based rpi |
 | 30 December 2015 | Plain button replaced by a switch in the trigger page |
 | 07 May 2015 | Updated for the new versions of nodejs modules. Version 3.1 |

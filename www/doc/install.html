@@ -40,7 +40,7 @@
             sans anicroche.
           </p>
           <p>
-            Suivant mes habitudes j'ai synchronisé
+            Suivant mes habitudes au début j'ai synchronisé
             avec <a href="http://subversion.apache.org/">subversion</a>
             sur la rpi mes propres
             fichiers d'environnement, de configuration, mes
@@ -53,8 +53,8 @@
             J'ajoute que l'ai profité de ce développement sur rpi
             pour me mettre
             à <a href="http://git-scm.com/">git</a>.
-            L'application <em class="rk">RadioK</em> n'est pas sous svn mais
-            sous git.
+            Maintenant toute l'application <em class="rk">RadioK</em>
+            est gérée sous git et non plus sous subversion.
           </p>
           <p>
             Tout ceci étant dit, l'application doit pourvoir tourner
@@ -103,7 +103,14 @@
           <p>
             De base <code>NodeJs</code> n'est pas installé sur une
             machine linux. Il faut donc aller sur le site web,
-            télécharger le logiciel et l'installer.
+            télécharger le logiciel et l'installer. Ce fut facile avec
+            la version 0.4, en revanche ce fut une vraie galère pour
+            installer une des dernières versions. Actuellement je
+            tourne avec la version 5.5. Il m'a fallu passer des heures
+            à googler les problèmes, à trouver les modifications à
+            apporter au code source, à compiler et à recompiler tout
+            le paquet sachant qu'il faut environ une douzaine d'heures
+            pour refabriquer un exécutable.
             <br>
             Il y a ensuite toute une liste de modules à
             installer. L'opération est assez simple
@@ -118,10 +125,20 @@
             sont les suivants:
             <ul>
               <li><code>express, http, path, fs, winston</code></li>
-              <li><code>exec-sync, moment, cron</code></li>
+              <li><code>exec-sync, moment</code></li>
             </ul>
           </p> 
-
+          <p>
+            Les modules javascript implémentant les fonctionnalités de
+            <code>crontab(1)</code> ont été la cause de grosses
+            déconvenues. Pour des raisons inconnues, sans doute liées
+            à la conception même de nodejs, ils ne déclenchaient pas
+            les commandes programmées quand l'intervalle de répetition
+            était trop grand. À cause de ce
+            bug <em class="rk">RadioK</em> ne fonctionnait plus. La
+            solution a consisté à utiliser simplement directement la
+            commande unix de base <code>crontab(1)</code>.
+          </p>
           <h3>AngularJs</h3>
           <p>
             Ce framework est utilisé pour le codage des pages web. Il
@@ -188,6 +205,10 @@
                  Télécharger et installer les composants tiers
                  mentionnés plus haut : <code>NodeJs</code>,
                  <code>Bootstrap</code>, &hellip;
+              </li>
+              <li>
+                 Vérifer que l'utilisateur est bien membre du
+                 groupe <code>audio</code>.
               </li>
               <li>
                 Tester <code>mplayer</code> avec une URL de radio
