@@ -23,8 +23,8 @@ var mainModule = angular.module('main-module',
 
 
 mainModule.constant('version', {
-    'release': '4.0',
-    'date':    '23 April 2016'
+    'release': '4.1',
+    'date':    '2 May 2016'
 });
 
 /**
@@ -269,6 +269,7 @@ mainModule.controller('TriggerCtrl', ['$rootScope', '$scope', '$http',
 function($rootScope, $scope, $http) {
 
     $rootScope.message = null;
+    $scope.unchanged   = true;
 
     $http.get('/box/cronjob')
         .success(function(data) {
@@ -278,7 +279,7 @@ function($rootScope, $scope, $http) {
             $scope.triggerTime.setHours(data.hour);
             $scope.triggerTime.setMinutes(data.minute);
 
-            $scope.alarm = data.set;
+            $scope.wakeUp = data.set;
             if (data.set) {
                 $scope.setUnset = "Set";
             }
@@ -297,21 +298,29 @@ function($rootScope, $scope, $http) {
         });
 
     $scope.toggle = function() {
-        if ($scope.alarm) {
-            $scope.alarm    = false;
+
+        $scope.unchanged = false;
+
+        if ($scope.wakeUp) {
+            $scope.wakeUp  = false;
             $scope.setUnset = "Unset";
         }
         else {
-            $scope.alarm    = true;
+            $scope.wakeUp  = true;
             $scope.setUnset = "Set";
         }
+    }
+
+    $scope.change = function() {
+        $scope.unchanged = false;
+        console.log("Trigger def changed !");
     }
 
     $scope.validate = function() {
 
         var h  = $scope.triggerTime.getHours();
         var m  = $scope.triggerTime.getMinutes();
-        var on = $scope.alarm;
+        var on = $scope.wakeUp;
 
         $http.get('/box/trigger/' + h + '/' + m + '/' + on)
             .success(function(data) {
@@ -327,6 +336,7 @@ function($rootScope, $scope, $http) {
                     $scope.setUnset = "Set";
                 }
 
+                $scope.unchanged   = true;
                 $scope.cronjob='On server '
                     + data.hour + ':' + data.minute + ' ' + s;
 
