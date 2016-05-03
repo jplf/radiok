@@ -44,7 +44,7 @@ echo "\"wifi\":" "\"$s\",">>$out
 
 
 echo " " >>$out
-s=`/usr/bin/crontab -l | head -n 1`
+s=`/usr/bin/crontab -l | tail -1`
 echo "\"crontab\":" "\"$s\",">>$out
 
 # Get the at queue and take care of the tab character.
