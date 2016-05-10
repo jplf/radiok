@@ -263,21 +263,21 @@ function($rootScope, $scope, $http) {
 }]);
 //__________________________________________________________________________
 /**
- * Manages the cronjob on the server.
+ * Manages the wake up cronjob on the server.
  */
-mainModule.controller('TriggerCtrl', ['$rootScope', '$scope', '$http',
+mainModule.controller('WakeUpCtrl', ['$rootScope', '$scope', '$http',
 function($rootScope, $scope, $http) {
 
     $rootScope.message = null;
     $scope.unchanged   = true;
 
-    $http.get('/box/cronjob')
+    $http.get('/box/cronjob/wakeup')
         .success(function(data) {
 
-            $scope.triggerTime = new Date();
+            $scope.wakeUpTime = new Date();
             
-            $scope.triggerTime.setHours(data.hour);
-            $scope.triggerTime.setMinutes(data.minute);
+            $scope.wakeUpTime.setHours(data.hour);
+            $scope.wakeUpTime.setMinutes(data.minute);
 
             $scope.wakeUp = data.set;
             if (data.set) {
@@ -313,19 +313,105 @@ function($rootScope, $scope, $http) {
 
     $scope.change = function() {
         $scope.unchanged = false;
-        console.log("Trigger def changed !");
+        console.log("Wake up def changed !");
     }
 
     $scope.validate = function() {
 
-        var h  = $scope.triggerTime.getHours();
-        var m  = $scope.triggerTime.getMinutes();
+        var h  = $scope.wakeUpTime.getHours();
+        var m  = $scope.wakeUpTime.getMinutes();
         var on = $scope.wakeUp;
 
-        $http.get('/box/trigger/' + h + '/' + m + '/' + on)
+        $http.get('/box/trigger/wakeup/' + h + '/' + m + '/1-5' + '/' + on)
             .success(function(data) {
 
-                $rootScope.message="Cronjob successfully updated !";
+                $rootScope.message="Wake up time successfully updated !";
+                var s;
+                if (data.set) {
+                    s = "Set";
+                    $scope.setUnset = "Unset";
+                }
+                else {
+                    s = "Unset";
+                    $scope.setUnset = "Set";
+                }
+
+                $scope.unchanged   = true;
+                $scope.cronjob='On server '
+                    + data.hour + ':' + data.minute + ' ' + s;
+
+            })
+            .error(function(data) {
+                console.log("Error when setting cronjob: " + data);
+                $rootScope.message = "Can't update cronjob !";
+            });
+    }
+}]);
+//__________________________________________________________________________
+/**
+ * Manages the alarm cronjob on the server.
+ */
+mainModule.controller('AlarmCtrl', ['$rootScope', '$scope', '$http',
+function($rootScope, $scope, $http) {
+
+    $rootScope.message = null;
+    $scope.unchanged   = true;
+
+    $http.get('/box/cronjob/alarm')
+        .success(function(data) {
+
+            $scope.alarmTime = new Date();
+            
+            $scope.alarmTime.setHours(data.hour);
+            $scope.alarmTime.setMinutes(data.minute);
+
+            $scope.alarm = data.set;
+            if (data.set) {
+                $scope.setUnset = "Set";
+            }
+            else {
+                $scope.setUnset = "Unset";
+            }
+
+            $scope.cronjob='On server ' + data.hour + ':' + data.minute
+                + ' ' + $scope.setUnset;
+
+        })
+        .error(function(data) {
+            console.log("Error when getting cron state: " + data);
+            $rootScope.message = "Can't get cron state";
+            $scope.cronjob='On server ?';
+        });
+
+    $scope.toggle = function() {
+
+        $scope.unchanged = false;
+
+        if ($scope.alarm) {
+            $scope.alarm  = false;
+            $scope.setUnset = "Unset";
+        }
+        else {
+            $scope.alarm  = true;
+            $scope.setUnset = "Set";
+        }
+    }
+
+    $scope.change = function() {
+        $scope.unchanged = false;
+        console.log("Wake up def changed !");
+    }
+
+    $scope.validate = function() {
+
+        var h  = $scope.alarmTime.getHours();
+        var m  = $scope.alarmTime.getMinutes();
+        var on = $scope.alarm;
+
+        $http.get('/box/trigger/alarm/' + h + '/' + m + '/*' + '/' + on)
+            .success(function(data) {
+
+                $rootScope.message="Alarm time successfully updated !";
                 var s;
                 if (data.set) {
                     s = "Set";
