@@ -38,14 +38,19 @@ else
 fi
 
 
+# Is it really useful ? 
 echo " " >>$out
 s=`/sbin/iwconfig wlan0 2>/dev/null | fgrep Link | sed 's/^ *//'`
 echo "\"wifi\":" "\"$s\",">>$out
 
 
 echo " " >>$out
-s=`/usr/bin/crontab -l | tail -1`
-echo "\"crontab\":" "\"$s\",">>$out
+s=`/usr/bin/crontab -l | fgrep "ID=wakeup"`
+echo "\"wakeup\":" "\"$s\",">>$out
+
+echo " " >>$out
+s=`/usr/bin/crontab -l | fgrep "ID=alarm"`
+echo "\"alarm\":" "\"$s\",">>$out
 
 # Get the at queue and take care of the tab character.
 echo " " >>$out
