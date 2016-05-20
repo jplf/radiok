@@ -1,6 +1,6 @@
 //__________________________________________________________________________
 /**
- * Fonteny javascript library - March 2014
+ * Fonteny javascript library - March 2014 - May 2016
 
  * This software is governed by the
  * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
@@ -11,7 +11,8 @@
  * scripts found in the bin subdirectory.
  *
  * It has been partly rewritten in April 2016. This new version do not use
- * the cronjob module which is buggy. It simply use the crontab(1) unix command.
+ * the cronjob module which is buggy.
+ * It simply use the crontab(1) unix command.
  *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
  */
@@ -37,16 +38,25 @@ var CronJob  = require('cron').CronJob;
 var fs       = require('fs');
 var vox      = require('./vox');
 
-// The default trigger time
-var hour      =  6;
-var minute    = 59;
-// Not triggered by default
-var triggered = false;
-// Play France Inter for 20 minutes by default
-var duration  = 20;
-// The key of the wake up station which can be different
-// from the current one.
-var wakeUpStation = 'b-inter';
+// The configuration of the triggers
+var triggerState = {
+    wakeup: {
+        hour:     "6",
+        minute:   "59",
+        day:      "*",
+        duration: "20",
+        set:      "false",
+        station:  "b-inter"
+    },
+    alarm: {
+        hour:     "16",
+        minute:   "0",
+        day:      "*",
+        duration: "20",
+        set:      "false",
+        station:  "a-fip"
+    }
+};
 
 // The top directory of radiok.
 var root;
@@ -57,13 +67,12 @@ var logger;
 
 // The name of the file storing the trigger state.
 var triggerStateFile;
-// The current station
-var station   = 'b-inter';
 
 //__________________________________________________________________________
 /**
  * Update the crontab.
- * id identifies the job.
+ * Parameters are the following :
+ * id identifies the job. (ID in crontab(1))
  * spec gives the time and the command.
  * set enables or disables the execution of the command.
  * Returns true if arguments are correct.
@@ -72,10 +81,12 @@ var updateCrontab = function(id, spec, set) {
 
     // Read and parse the current content of the crontab.
     var crontab = execSync('crontab -l');
+    // The array of lines in the current crontab.
     var cronIn  = crontab.split('\n');
 
     // What will be the updated content.
     var cronOut = [];
+    // Flag telling whether the job was specified in the crontab.
     var found   = false;
 
     for (var i = 0; i < cronIn.length; i++) {
@@ -95,7 +106,7 @@ var updateCrontab = function(id, spec, set) {
             cronOut.push(spec);
         }
         else {
-            // It is the job to be disabled.
+            // It is the job to be disabled. Comment it out !
             found = true;
             cronOut.push('#' + spec);
         }
@@ -114,19 +125,22 @@ var updateCrontab = function(id, spec, set) {
     crontab = crontab + '\n';
 
     // Save the updated content to a file.
-    var cronfile = root + '/run/crontab.txt';
+    var cronfile = root + '/run/crontab~';
     fs.writeFileSync(cronfile, crontab);
 
-    runSync('crontab ' + cronfile);
+    execSync('crontab ' + cronfile);
 }
 //__________________________________________________________________________
 /**
  * Initializes the cron job.
  * id identifies the job. See crontab(1)
+ * h & m give the hour and minutes.
+ * d specifies the days.
+ * set enables or disables the cron.
  * If one is already running kills it.
  * Returns true if arguments are correct.
  */
-var setTrigger = function(id, h, m, set) {
+var setTrigger = function(id, h, m, d, set) {
 
     // Check input arguments
     if (isNaN(h) || isNaN(m)) {
@@ -134,59 +148,71 @@ var setTrigger = function(id, h, m, set) {
         return false;
     }
 
-    hour   = new Number(h);
-    minute = new Number(m);
+    var hour   = new Number(h);
+    var minute = new Number(m);
     if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
         logger.error('Invalid times: '+ h + ' ' + m + ' ' + on);
         return false;
     }
 
+    // Only 2 choices allowed in this version.
+    if (d != '*' && d != '1-5') {
+        logger.error('Invalid days: '+ d);
+        return false;
+    }
+    var day = d;
+    var triggered = false;
+
     // Argument set is a string, triggered a boolean.
     if (set === 'true') {
         triggered = true;
     }
+
+    var dt   = '20';
+    var key = 'b-inter';
+
+    if (id == 'wakeup') {
+        triggerState.wakeup =  {
+            hour:     hour,
+            minute:   minute,
+            day:      day,
+            duration: dt,
+            set:      triggered,
+            station:  key
+        };
+    }
     else {
-        triggered = false;
+        triggerState.alarm =  {
+            hour:     hour,
+            minute:   minute,
+            day:      day,
+            duration: dt,
+            set:      triggered,
+            station:  key
+       };
     }
 
     // Identify the job, define the command to execute.
     var cmd = 'ID=' + id + ' ';
-    cmd = cmd + onair + ' -t ' + duration + ' ' + wakeUpStation;
+    cmd = cmd + onair + ' -t ' + dt + ' ' + key;
     // Redirect stdout and stderr
     var out = root + '/run/' + id + '.log';
     cmd = cmd + ' 1>' + out + ' 2>&1';
 
     // From Monday to Friday : 1-5
-    var spec  = minute + ' ' + hour + ' * * * ' + cmd;
-    // var spec  = '*/3' + ' ' + '*' + ' * * *  + cmd';
+    var spec  = minute + ' ' + hour + ' * * ' + day + ' ' + cmd;
     logger.info('Crontab spec: ' + spec + ' set ' + triggered);
 
     // Communicate the spec to crontab(1)
     updateCrontab(id, spec, triggered);
 
+    var m = moment().format('HH:mm');
     if (triggered) {
-        logger.info('Trigger set at ' + moment().format('HH:mm'));
+        logger.info('Trigger ' + id + ' set at ' + m);
     }
     else {
-        logger.info('Trigger unset at ' + moment().format('HH:mm'));
+        logger.info('Trigger ' + id + ' unset at ' + m);
     }
-
-    var triggerState = {
-        wakeup: {
-            hour:     hour,
-            minute:   minute,
-            duration: duration,
-            set:      triggered.toString(),
-            station:  wakeUpStation
-        },
-        alarm: {
-            hour:     "16",
-            minute:   "0",
-            duration: "20",
-            set:      "false",
-            station:  "a-fip"
-        }
-    };
 
     // Make vox.js aware of the new trigger
     vox.setTriggerState(triggerState);
@@ -202,6 +228,36 @@ var setTrigger = function(id, h, m, set) {
     });
 
     return true;
+}
+//__________________________________________________________________________
+/**
+ * Parses a line of contrab
+ * Returns something like : 'Set at 7:15'
+ */
+var parseCronline = function(str) {
+
+    var s;
+    var i;
+    if (str.startsWith('#')) {
+        s = 'Unset at ';
+        i = 1;
+    }
+    else {
+        s = 'Set at ';
+        i = 0;
+    }
+
+    // End of time stpec
+    var j = str.indexOf('ID');
+    if (j < 0) {
+        // Should work if ID is not found
+        j = 12;
+    }
+
+    str = str.substring(i, j);
+    var mh = str.split(' ');
+
+    return s + mh[1] + ':' + mh[0] + ' on days ' + mh[4];
 }
 //__________________________________________________________________________
 
@@ -256,16 +312,11 @@ module.exports = {
 
             var output = JSON.parse(str);
 
-            // More info about the crontab is stored internally
-            if (triggered) {
-                output.trigger = 'Set at ';
-            }
-            else {
-                output.trigger = 'Unset at ';
-            }
-            // It is appended to the output
-            output.trigger = output.trigger + hour + ':' + minute
-            + ' on ' + wakeUpStation;
+            var str = parseCronline(output.wakeup);
+            output.wakeup = str;
+
+            str = parseCronline(output.alarm);
+            output.alarm = str;
 
             res.send(output);
         });
@@ -284,7 +335,6 @@ module.exports = {
             }
             else {
                 // Keep track of the selected station.
-                station = key;
                 logger.info('Starting station key %s', key);
                 // Let vox know the new station.
                 vox.setStationIdx(key);
@@ -297,16 +347,29 @@ module.exports = {
 //__________________________________________________________________________
        /**
         * Gets the status of the cron job.
+        * Parameter id can be 'wakeup' or 'alarm'
         * Returns the cron parameters.
         */
-        app.get('/box/cronjob', function(req, res) {
+        app.get('/box/cronjob/:id', function(req, res) {
 
-            res.send({
-                job: triggered,
-                hour: hour,
-                minute: minute,
-                set: triggered
-            });
+            var id = req.params.id;
+
+            if (id == 'wakeup') {
+                res.send({
+                    job:    id,
+                    hour:   triggerState.wakeup.hour,
+                    minute: triggerState.wakeup.minute,
+                    set:    triggerState.wakeup.set
+                });
+            }
+            else {
+                res.send({
+                    job:    id,
+                    hour:   triggerState.alarm.hour,
+                    minute: triggerState.alarm.minute,
+                    set:    triggerState.alarm.set
+                });
+            }
         });
 //__________________________________________________________________________
        /**
@@ -361,23 +424,36 @@ module.exports = {
         * Starts or stops the cron job.
         * Returns the new cron spec.
         */
-        app.get('/box/trigger/:hour/:minute/:on', function(req, res) {
-
-            var i = 'wakeup';
+        app.get('/box/trigger/:id/:hour/:minute/:day/:on', function(req, res) {
+            var i = req.params.id;
             var h = req.params.hour;
             var m = req.params.minute;
+            var d = req.params.day;
             var o = req.params.on;
 
             // Define the cronjob
-            var status = setTrigger(i, h, m, o);
+            var status = setTrigger(i, h, m, d, o);
 
             // Send back the cronjob parameters
-            res.send({
-                job: triggered,
-                hour: hour,
-                minute: minute,
-                set: triggered
-            });
+            if (i == 'wakeup') {
+                res.send({
+                    id: 'wakeup',
+                    hour:   triggerState.wakeup.hour,
+                    minute: triggerState.wakeup.minute,
+                    day:    triggerState.wakeup.day,
+                    set:    triggerState.wakeup.set
+                });
+            }
+            else {
+                res.send({
+                    id: 'alarm',
+                    hour:   triggerState.alarm.hour,
+                    minute: triggerState.alarm.minute,
+                    day:    triggerState.alarm.day,
+                    set:    triggerState.alarm.set
+                });
+
+            }
         });
     },
  //__________________________________________________________________________
@@ -394,20 +470,22 @@ module.exports = {
         fs.readFile(trigfile, function (err, data) {
             if (err) {
                 logger.error('Cannot read ' + trigfile);
-                code = setTrigger('wakeup', '10', '10', false);
+                code = setTrigger('wakeup', '10', '10', '*', false);
             }
             else {
                 var state = JSON.parse(data);
+
                 var wakeup = state.wakeup;
                 logger.debug('Trigger wake up ' + wakeup);
 
                 code = setTrigger('wakeup',
-                                  wakeup.hour, wakeup.minute, wakeup.set);
-                duration = wakeup.duration;
-                station  = wakeup.station;
+                      wakeup.hour, wakeup.minute, wakeup.day, wakeup.set);
 
                 var alarm = state.alarm;
                 logger.debug('Trigger alarm ' + alarm);
+
+                code = setTrigger('alarm',
+                      alarm.hour, alarm.minute, alarm.day, alarm.set);
             }
         });
 
