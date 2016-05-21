@@ -22,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 20 May 2016 | Two crontabs are managed by the application |
 | 23 April 2016 | New version based on the brave old crontab(1) |
 | 11 February 2016 | I have successfully installed nodejs 5.5.0 on my slackware-based rpi |
 | 30 December 2015 | Plain button replaced by a switch in the trigger page |
@@ -43,7 +44,7 @@ this application.
 
 The program *mplayer* is at the heart of the application. It is managed by
 a bunch of small shell scripts. These scripts themselves are run thru a
-web server. A client can send http request to the web server to trigger
+web server. A client can send http requests to the web server to trigger
 the scripts.
 
 A dedicated program is used to implement the voice control. Each time it
@@ -53,7 +54,8 @@ web application which triggers an appropriate procedure.
 
 Two versions of the voice recognition program have been implemented.
 The first one is based on the [CMU Sphinx](http://cmusphinx.sourceforge.net/)
-library and runs locally. It has been configured to understand english words.
+library and it is run locally.
+It has been configured to understand english words.
 The second version uses the google speech recognition API. The recorded sound
 files are sent to the remote google web application which replies by the
 interpreted text. The language is selected as a option in the configuration.
@@ -130,7 +132,7 @@ The second one, *vox.js*, processes requests coming from the voice control
 program. Depending on the word recognized by *whatusay* or *command*
 and received by the web server different actions are taken.
 
-The web pages sent by the server to the browsers are generated in the
+The web pages sent by the server to the browser are generated in the
 AngularJS framework.
 
 ### Installation
@@ -154,6 +156,11 @@ a modification of the style.
 The server is started by the script start.sh. The log files are found in
 the *run* directory. In case of client-side errors a browser has the
 possibility to show error messages.
+
+A new version (5.0) was committed in may 2016. It is no longer using the nodejs
+crontab modules which were proven to be buggy. Alarms are now triggered by the
+standard *crontab(1)* unix command. To allow `mplayer` to output sound when
+started from *cron* you must belong to the *audio* group.
 
 ### Voice control
 
