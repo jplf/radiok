@@ -258,9 +258,13 @@
             l'alarme. Le but est de déclencher à un moment déterminé
             la radio. Pour utiliser l'application comme réveil-matin
             il suffit de mettre en route <code>mplayer</code> tous les
-            matins à une heure fixée. Ceci est réalisé grâce au module
-            <a href="https://www.npmjs.org/package/cron">cron</a> qui
-            encapsule la commande unix <code>cron(1)</code>
+            matins à une heure fixée. Ceci a d'abord été réalisé grâce
+            à un module<code>node-cron</code> mais qui n'a plus
+            fonctionné après une mise à jour de
+            nodejs. L'implémentation actuelle manipule des
+            fichiers unix <code>crontab(1)</code> et est
+            particulièrement robuste.
+
           </p>
 
           <h3>vox.js</h3>

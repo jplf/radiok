@@ -19,19 +19,8 @@
           <h2>La suite</h2>
 
           <p>
-            Il y a d'abord des bugs à corriger. Certains sont
-            clairement identifiés. Ils sont dûs à des erreurs de
-            programmation et ce devrait être facile à corriger.<br>
-            En revanche d'autres problèmes avec <code>mplayer</code>
-            surviennent de temps à autre. La cause n'en n'est pas évidente
-            à comprendre. Il faudra passer du temps pour investiguer
-            plus avant.<br>
-            Il y des effets désagréables avec les fragments de page
-            manipulés par AngularJS qu'il serait bien de maitriser.<br>
-            Il y a aussi très rarement des plantages complets du
-            système avec impossibilité de se reconnecter avec
-            <code>ssh</code>. Il faut alors couper l'alimentation
-            sauvagement et redémarrer.
+            Il y a d'abord des bugs à corriger et des fonctionnalités
+            à améliorer.
           </p>
 
           <h2>Les améliorations prévues</h2>
@@ -41,12 +30,11 @@
             version actuelle de <em class="rk">RadioK</em>.
             <ul class="proc">
               <li>
-                Traiter le cas du week-end. La version actuelle
-                suppose que le réveil n'est pas déclenché le samedi et
-                le dimanche matin même si l'option <code>set</code>
-                est activée. Néanmoins il se trouve qu'on a besoin
-                parfois de se lever à une heure précise en fin de
-                semaine. Donc cette possibilité devrait être implémentée.
+                Améliorer le traitement de la configuration et des
+                options. Il reste encore des paramètres qui ne sont
+                pas accessibles depuis l'interface web. Il faudrait
+                qu'ils le soient, ça permettrait d'éviter d'aller
+                éditer les fichiers sources.
               </li>
               <li>
                 L'implémentation actuelle utilise beaucoup des scripts
@@ -87,6 +75,25 @@
           <h2>Historique des modifications</h2>
 
           <dl>
+
+            <dt>26 Mai 2016</dt>
+            <dd>
+              Il y a maintenant 2 alarmes programmables. La première
+              est déclenchée tous les jours de la semaine pour le
+              réveil. La deuxième alarme, si elle est activée, se
+              déclenche tous les jours, samedi et dimanche
+              compris. Elle permet de se réveiller d'une petite sieste.
+            </dd>
+
+            <dt>20 Mai 2016</dt>
+            <dd>
+              Le grave problème posé par le module
+              <a href="https://github.com/ncb000gt/node-cron">
+                <code>node-cron</code></a> et ses différentes
+                variantes a enfin été résolu. Ces modules ne sont plus
+                utilisés du tout, la programmation est assurée par les
+                simples <code>cron(1)</code> unix et <code>crontab(1)</code>.
+            </dd>
 
             <dt>30 Décembre 2015</dt>
             <dd>

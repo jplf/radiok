@@ -159,7 +159,7 @@ possibility to show error messages.
 
 A new version (5.0) was committed in may 2016. It is no longer using the nodejs
 crontab modules which were proven to be buggy. Alarms are now triggered by the
-standard *crontab(1)* unix command. To allow `mplayer` to output sound when
+standard *crontab(1)* unix command. To allow *mplayer* to output sound when
 started from *cron* you must belong to the *audio* group.
 
 ### Voice control
