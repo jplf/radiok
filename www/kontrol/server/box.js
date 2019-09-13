@@ -136,11 +136,12 @@ var updateCrontab = function(id, spec, set) {
  * id identifies the job. See crontab(1)
  * h & m give the hour and minutes.
  * d specifies the days.
+ * station identifies the radio.
  * set enables or disables the cron.
  * If one is already running kills it.
  * Returns true if arguments are correct.
  */
-var setTrigger = function(id, h, m, d, set) {
+var setTrigger = function(id, h, m, d, set, station) {
 
     // Check input arguments
     if (isNaN(h) || isNaN(m)) {
@@ -168,8 +169,8 @@ var setTrigger = function(id, h, m, d, set) {
         triggered = true;
     }
 
-    var dt   = '20';
-    var key = 'b-inter';
+    var dt  = '20';
+    var key = station;
 
     if (id == 'wakeup') {
         triggerState.wakeup =  {
@@ -430,9 +431,10 @@ module.exports = {
             var m = req.params.minute;
             var d = req.params.day;
             var o = req.params.on;
+            var k = 'c-musique';
 
             // Define the cronjob
-            var status = setTrigger(i, h, m, d, o);
+            var status = setTrigger(i, h, m, d, o, k);
 
             // Send back the cronjob parameters
             if (i == 'wakeup') {
@@ -470,7 +472,7 @@ module.exports = {
         fs.readFile(trigfile, function (err, data) {
             if (err) {
                 logger.error('Cannot read ' + trigfile);
-                code = setTrigger('wakeup', '10', '10', '*', false);
+                code = setTrigger('wakeup', '10', '10', '*', false, 'a-fip');
             }
             else {
                 var state = JSON.parse(data);
@@ -478,14 +480,14 @@ module.exports = {
                 var wakeup = state.wakeup;
                 logger.debug('Trigger wake up ' + wakeup);
 
-                code = setTrigger('wakeup',
-                      wakeup.hour, wakeup.minute, wakeup.day, wakeup.set);
+                code = setTrigger('wakeup', wakeup.hour, wakeup.minute,
+                                  wakeup.day, wakeup.set, wakeup.station);
 
                 var alarm = state.alarm;
                 logger.debug('Trigger alarm ' + alarm);
 
-                code = setTrigger('alarm',
-                      alarm.hour, alarm.minute, alarm.day, alarm.set);
+                code = setTrigger('alarm', alarm.hour, alarm.minute,
+                                  alarm.day, alarm.set, alarm.station);
             }
         });
 
