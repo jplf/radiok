@@ -56,7 +56,7 @@ def main(argv):
 
     google_key = os.getenv('GOOGLE_KEY')
     if google_key is None:
-        print 'Please set your GOOGLE_KEY !'
+        print('Please set your GOOGLE_KEY !')
         sys.exit(1)
 
     # The specification of remote google app used for voice recognition
@@ -71,7 +71,7 @@ def main(argv):
     silence = "silence 1 0.5 1% 1 0.5 1%"
     rec = "rec -V0 -q -t flac -r 44100 -b 16 - " + silence
 
-    print 'Say "stop" to exit the loop.'
+    print('Say "stop" to exit the loop.')
 
     # The curl library is used to communicate with the google app.
     c = pycurl.Curl()
@@ -88,11 +88,11 @@ def main(argv):
     
     while True:
 
-        print "\nSay something ..."
+        print("\nSay something ...")
         # Word understood by sox will be in variable output
         p = subprocess.Popen(rec, stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()
-        print "Popen code: ", p.returncode, "size: ", sys.getsizeof(output), "index:", index
+        print("Popen code: ", p.returncode, "size: ", sys.getsizeof(output), "index:", index)
 
         # The buffer will store the google's answer
         buf = cStringIO.StringIO()
@@ -105,13 +105,13 @@ def main(argv):
         
         code = c.getinfo(pycurl.RESPONSE_CODE)
         if code != 200:
-            print "Error code:", code
+            print("Error code:", code)
             continue
 
         # Parse the reply from google
         out = buf.getvalue().splitlines()
         if len(out) < 2:
-            print "Not enough lines got from google"
+            print("Not enough lines got from google")
             continue
 
         if keep:
@@ -125,11 +125,11 @@ def main(argv):
         stop   = False
         
         t2 = datetime.datetime.now()
-        print "Recognition time", int((t2 - t1).total_seconds() * 1000), "ms."
+        print("Recognition time", int((t2 - t1).total_seconds() * 1000), "ms.")
         
         for s in found:
             word = s['transcript'].lower()
-            print word
+            print(word)
             stop = stop or (word == 'stop')
 
         buf.close()
@@ -138,7 +138,7 @@ def main(argv):
         if stop:
             break
 
-    print '\nHasta luego !'
+    print('\nHasta luego !')
     
 if __name__ == "__main__":
     main(sys.argv[1:])
