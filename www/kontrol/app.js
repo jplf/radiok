@@ -63,7 +63,7 @@ var stamp = function() {
     return d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.toLocaleTimeString();
 };
 var winston = require('winston');
-var logger  = new (winston.Logger)({
+var logger  = new (winston.createLogger)({
     level: 'info',
     transports: [
         new (winston.transports.File)({
