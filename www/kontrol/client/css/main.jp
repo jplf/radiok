@@ -1,0 +1,37 @@
+/* ----------------------------------------------------------------------- */
+/*
+ * CSS for the Fonteny pages - Jean-Paul Le Fèvre - March 2020
+ *
+ */
+/* ----------------------------------------------------------------------- */
+
+body {
+  padding: 0;
+  margin: 0;
+  background: #f2f6e9;
+}
+
+/*--- navigation bar ---*/
+.navbar {
+  background:#6ab446;
+}
+.nav-link,
+.navbar-brand {
+  color: #fff;
+  cursor: pointer;
+}
+.nav-link {
+  margin-right: 1em !important;
+}
+.nav-link:hover {
+  color: #000;
+}
+
+.navbar-collapse {
+  justify-content: flex-end;
+}
+.right {
+  justify-content: flex-end;
+}
+
+/* ----------------------------------------------------------------------- */

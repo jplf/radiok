@@ -1,69 +1,66 @@
 
-<div class="pane">
-  <div class="row">
+<div class="p-2 d-flex flex-row border border-secondary">
 
-    <div class="span12">
-    <h2>Working days Wake Up</h2>
-
-    <div class="center" style="margin-top:2em;" ng-controller="WakeUpCtrl">
-      <table style="border:1px solid; margin:auto;" class="well">
-        <tr>
-          <td>
-            <div ng-model="wakeUpTime" ng-change="change()"
-                 style="display:inline-block;width:10em; margin:1em">
-              <timepicker tooltip-placement="left" tooltip="Hour : Minute"
-                 hour-step="1" minute-step="1" show-meridian="false">
-              </timepicker>
-            </div>
-          </td>
-          <td>
-            <switch id="enabled" on="set" off="" ng-click="toggle()"
-                    tooltip="Enable or disable the cronjob."
-                    ng-model="wakeUp" class="mini">
-            </switch><br>
-          </td>
-        </tr>
-      </table>
-
-      <button type="button" class="btn btn-primary" ng-disabled=unchanged
-              style="margin-top:1em;margin-bottom:3em;"
-              ng-model="wakeUp" ng-click="validate()" value="running">
-        Validate
-      </button>
-    </div>
+  <div class="m-2 d-flex flex-column border border-primary">
+    
+    <div class="p-2 d-flex justify-content-center">
+      <h3>Working days wake Up</h3>
     </div>
 
-    <div class="span12">
-    <h2>Every days Alarm</h2>
+    <div ng-controller="WakeUpCtrl">
+      <div ng-model="wakeUpTime" ng-change="change()"
+           style="display:inline-block;width:10em; margin:1em">
+        <timepicker tooltip-placement="left" tooltip="Hour : Minute"
+                    hour-step="1" minute-step="1" show-meridian="false">
+        </timepicker>
+      </div>
+      
 
-    <div class="center" style="margin-top:2em;" ng-controller="AlarmCtrl">
-      <table style="border:1px solid; margin:auto;" class="well">
-        <tr>
-          <td>
-            <div ng-model="alarmTime" ng-change="change()"
-                 style="display:inline-block;width:10em; margin:1em">
-              <timepicker tooltip-placement="left" tooltip="Hour : Minute"
-                 hour-step="1" minute-step="1" show-meridian="false">
-              </timepicker>
-            </div>
-          </td>
-          <td>
-            <switch id="enabled" on="set" off="" ng-click="toggle()"
-                    tooltip="Enable or disable the cronjob."
-                    ng-model="alarm" class="mini">
-            </switch><br>
-          </td>
-        </tr>
-      </table>
-
-      <button type="button" class="btn btn-primary" ng-disabled=unchanged
-              style="margin-top:1em;margin-bottom:3em;"
-              ng-model="alarm" ng-click="validate()" value="running">
-        Validate
-      </button>
+      <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input"
+               id="customSwitches" ng-click="toggle()" ng-model="wakeUp">
+      </div>
+      
+      <div>
+        <button type="button" class="btn btn-secondary btn-sm m-2"
+                ng-disabled=unchanged
+                ng-model="wakeUp" ng-click="validate()" value="running">
+          Validate
+        </button>
+      </div>
     </div>
-    </div>
-
   </div>
+
+  <div class="m-2 d-flex flex-column border border-primary">
+    
+    <div class="p-2 d-flex justify-content-center">
+      <h3>Every days alarm</h3>
+    </div>
+
+    <div ng-controller="AlarmCtrl">
+      <div ng-model="alarmTime" ng-change="change()">
+        <timepicker tooltip-placement="left" tooltip="Hour : Minute"
+                    hour-step="1" minute-step="1" show-meridian="false">
+        </timepicker>
+      </div>
+      
+      <div>     
+        <switch id="enabled" on="set" off="" ng-click="toggle()"
+                tooltip="Enable or disable the cronjob."
+                ng-model="alarm" class="mini">
+        </switch><br>
+      </div>
+      
+      <div>     
+        <button type="button" class="btn btn-secondary btn-sm m-2"
+                ng-disabled=unchanged
+                ng-model="alarm" ng-click="validate()" value="running">
+          Validate
+        </button>
+      </div>
+      
+    </div>
+  </div>
+
 </div>
 
