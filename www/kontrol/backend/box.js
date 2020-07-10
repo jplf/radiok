@@ -182,16 +182,6 @@ var setTrigger = function(id, h, m, d, set, station) {
             station:  key
         };
     }
-    else {
-        triggerState.alarm =  {
-            hour:     hour,
-            minute:   minute,
-            day:      day,
-            duration: dt,
-            set:      triggered,
-            station:  key
-       };
-    }
 
     // Identify the job, define the command to execute.
     var cmd = 'ID=' + id + ' ';
