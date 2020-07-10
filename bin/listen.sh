@@ -3,14 +3,14 @@
 
 # Script listen.sh - Jean-Paul Le Fèvre June 2014
 # 
-# It listens to what is said by someone close to the micropone and sends
+# It listens to what is said by someone close to the microphone and sends
 # a command to the webapp.
 #
 # By default it starts the 'french' version of the command program based on
 # the remote google api. If the string 'english' is given as argument it starts
 # the whatusay program based on the local sphinx library.
 #
-# See also kontrol/server/vox.js
+# See also kontrol/backend/vox.js
 #
 # @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
 #______________________________________________________________________________

@@ -6,8 +6,13 @@
 
 #______________________________________________________________________________
 
+if [ -z "$RADIOK_HOME" ]; then
+    export RADIOK_HOME=$HOME/work/git/radiok
+    echo "RADIOK_HOME=$RADIOK_HOME"
+    exit 1
+fi
+
 export NODE_PATH=/usr/local/lib/node_modules
-export RADIOK_HOME=$HOME/work/git/radiok
 export PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin:$RADIOK_HOME/bin
 
 cd $RADIOK_HOME/run

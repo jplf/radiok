@@ -4,7 +4,7 @@
  *
  * A test script used to test the cron modules.
  * It was written because radiok no longer works with the new version of
- * node, this script may useful to figure out why.
+ * node, this script may be useful to figure out why.
  * It does not depend on the express module.
  *
  * Usage: node cron_test.js

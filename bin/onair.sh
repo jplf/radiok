@@ -1,7 +1,7 @@
 #!/bin/bash
 #______________________________________________________________________________
 
-# Fichier start radio - Jean-Paul Le Fèvre march 2014
+# A script to start the radio - Jean-Paul Le Fèvre march 2014
 
 # Usage onair.sh [-k][-s][-l][-r] [-t time] [station]
 

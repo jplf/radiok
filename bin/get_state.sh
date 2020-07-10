@@ -4,7 +4,7 @@
 # Script get state - Jean-Paul Le Fèvre March 2014
 #
 # It generates a json formatted string giving the current state
-# of the application. It is usually called from the server in module box.js
+# of the application. It is usually called from the backend in module box.js
 # Useful parameters are made available from this string.
 #
 # See also onair.sh

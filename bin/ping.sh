@@ -1,6 +1,6 @@
 #!/bin/sh
-
 #______________________________________________________________________________
+
 # Pings a station
 # Makes sure that the selected station is still connected to the internet and
 # working.
