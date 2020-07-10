@@ -1,0 +1,33 @@
+{
+  "name": "radiok",
+  "version": "6.0.0",
+  "description": "RadioK is an application used to manage an internet radio implemented on a Raspberry Pi",
+  "main": "main.js",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "express": "^4.17.1",
+    "method-override": "^3.0.0",
+    "moment": "^2.27.0",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jplf/radiok.git"
+  },
+  "keywords": [
+    "raspberry",
+    "nodejs",
+    "angularjs"
+  ],
+  "author": "Jean-Paul Le Fevre",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/jplf/radiok/issues"
+  },
+  "homepage": "https://github.com/jplf/radiok#readme"
+}
