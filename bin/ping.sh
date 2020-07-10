@@ -19,8 +19,8 @@ function ping_station {
 #url="http://audio.scdn.arkena.com/11008/franceinter-midfi128.mp3"
 #ping_station $url
 
-url="http://109.123.116.202:8020"
-ping_station $url
+#url="http://109.123.116.202:8020"
+#ping_station $url
 
 url="http://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3"
 ping_station $url

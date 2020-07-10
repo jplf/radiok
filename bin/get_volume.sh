@@ -7,11 +7,14 @@
 # It uses a Perl regular expression in the grep command.
 # See perlre(1) - Why backslash K ?
 # See also onair.sh
+
+# Try `amixer scontrols` to get the name of the output
 #______________________________________________________________________________
 
 regex="Left.+ \[\K(\d+)"
+scontrol="Master"
 
-echo `amixer get PCM | grep -oP "$regex"`
+echo `amixer get $scontrol | grep -oP "$regex"`
 
 #______________________________________________________________________________
 

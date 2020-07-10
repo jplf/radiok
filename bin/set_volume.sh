@@ -30,7 +30,8 @@ else
     exit 1
 fi
 
-amixer -q set PCM $vol$s
+scontrol="Master"
+amixer -q set $scontrol $vol$s
 
 # Keep track of the new value.
 
