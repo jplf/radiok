@@ -22,6 +22,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 22 July 2020 | A big renovation is in progress. It is based on the new [Angular](https://gorrion.io/blog/angularjs-vs-angular) |
 | 10 July 2020| A light renovation is carried out|
 | 27 May 2020| Another different version of this app is being developped : [RadioG](https://github.com/jplf/radiog)|
 | 20 May 2016 | Two crontabs are managed by the application |
