@@ -22,7 +22,8 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
-| 27 May 2020| Another version of this app is being developped : [RadioG](https://github.com/jplf/radiog)|
+| 10 July 2020| A light renovation is carried out|
+| 27 May 2020| Another different version of this app is being developped : [RadioG](https://github.com/jplf/radiog)|
 | 20 May 2016 | Two crontabs are managed by the application |
 | 23 April 2016 | New version based on the brave old crontab(1) |
 | 11 February 2016 | I have successfully installed nodejs 5.5.0 on my slackware-based rpi |
@@ -45,13 +46,13 @@ this application.
 
 The program *mplayer* is at the heart of the application. It is managed by
 a bunch of small shell scripts. These scripts themselves are run thru a
-web server. A client can send http requests to the web server to trigger
+web server. A client can send http requests to the web frontend server to trigger
 the scripts.
 
 A dedicated program is used to implement the voice control. Each time it
 understands something said by a user it sends a http request containing
 the words which were guessed. The words are interpreted as commands by the
-web application which triggers an appropriate procedure.
+web backend application which triggers an appropriate procedure.
 
 Two versions of the voice recognition program have been implemented.
 The first one is based on the [CMU Sphinx](http://cmusphinx.sourceforge.net/)
@@ -60,6 +61,19 @@ It has been configured to understand english words.
 The second version uses the google speech recognition API. The recorded sound
 files are sent to the remote google web application which replies by the
 interpreted text. The language is selected as a option in the configuration.
+
+### Update
+
+This app is being slightly modified in July 2020. To make sure that it still works try :
+
+1. `cd $RADIOK_HOME/bin`
+1. `get_state.sh`
+1. `get_volume.sh`
+1. `ping.sh`
+1. `onair.sh`
+1. `offair.sh`
+
+Guess the name of the soundcard with `amixer scontrols`.
 
 ### The bash scripts
 
@@ -213,4 +227,4 @@ This version looks more reliable but seems to be a bit slower.
 * **vox**  voice recognition programs. Local, english version in **ps**,
 Remote, french version in **fr**
 * **www**  web stuff. Documentation in **doc**, web application in **kontrol**
-in which **server** and **client** have the related components.
+in which **backend** and **frontend** have the related components.
