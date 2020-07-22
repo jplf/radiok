@@ -9,7 +9,7 @@ It turned out that it was impossible to move incrementally from the original Ang
 
 ### Installation
 
-Here are the first steps made to build progressively the new version.
+Here are the first steps made to build progressively the new version. It is a sort of guide line to follow when developping a new application. Since the Angular framework is pretty complex to master it is good to keep track of what has to be done and in which order.
 
 The angular module of this application is 'app'
 ```
@@ -19,6 +19,7 @@ ng new webui
 ng add @ng-bootstrap/ng-bootstrap
 npm install bootswatch
 ```
+The chosen theme is [journal](https://bootswatch.com/journal/)
 
 #### In directory webui
 ```
@@ -26,6 +27,9 @@ styles.scss
 ```
 
 #### In directory src
+
+Check and edit the topmost files :
+
 ```
 app.component.html
 app.component.scss
