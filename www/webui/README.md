@@ -5,39 +5,49 @@ This project was generated with
 
 ## New RadioK Angular version.
 
+It turned out that it was impossible to move incrementally from the original AngularJs based version to a new Angular version. So the decision was made to start from scratch.
+
 ### Installation
 
-The angular module of this application is 'app'
-npm install -g @angular/cli
-check tsconfig.json
+Here are the first steps made to build progressively the new version.
 
+The angular module of this application is 'app'
+```
+npm install -g @angular/cli
+edit tsconfig.json
 ng new webui
 ng add @ng-bootstrap/ng-bootstrap
 npm install bootswatch
+```
 
-in directory webui
-------------------
+#### In directory webui
+```
 styles.scss
+```
 
-In directory src
-----------------
+#### In directory src
+```
 app.component.html
 app.component.scss
 app.component.ts
 app.module.ts
+```
 
-The station component
----------------------
+#### The station component
+
+```
 ng generate component station
+```
+#### Running the app
 
-
+```
 ng serve --host $HOSTNAME --port 18200
+```
 
 
 The original README created by Angular is herafter :
 
-
-## Development server
+## Original Angular README
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
 The app will automatically reload if you change any of the source files.
