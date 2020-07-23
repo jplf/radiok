@@ -9,24 +9,27 @@ import { Component, OnInit } from '@angular/core';
 export class StationComponent implements OnInit {
 
     constructor() {
-        console.log("Station component created") 
+        console.log("Station component created")
     }
 
     ngOnInit(): void {
         console.log("Station component initialized")
+        this.station = 'Undef';
     }
-    
+
     onSelect(s: string): void {
         console.log("Station : " + s)
+        this.station = s;
     }
 
-    // The array of stations
-    stationList: string[] = ["FIP", "France Musique"];
+    // The array of used stations
+    stationList: string[] = ['FIP', 'France Musique'];
 
+    // The current selected station
+    station: string;
 
     // Returns the list of stations
-    getStationList(): Station[] {
+    getStationList(): string[] {
         return this.stationList;
-    }    
-
+    }
 }
