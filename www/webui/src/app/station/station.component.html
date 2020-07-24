@@ -1,21 +1,20 @@
+<div class="m-2 p-2" style="width:200px;">
 
-<div class="w-50 m-2 mt-4 p-2 border border-primary rounded">
+  <div ngbDropdown class="d-inline-block" style="width:50px;">
+    <button class="btn btn-outline-primary"
+            id="dropdownStations" ngbDropdownToggle> {{ station }}
+    </button>
 
-    <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary"
-              id="dropdownStations" ngbDropdownToggle> {{ station }}
-      </button>
+    <div ngbDropdownMenu aria-labelledby="dropdownStations">
 
-      <div ngbDropdownMenu aria-labelledby="dropdownStations">
+      <div *ngFor="let station of stationList">
 
-        <div *ngFor="let station of stationList">
+        <button ngbDropdownItem id="station" (click)="onSelect(station)">
+          {{ station }}
+        </button>
 
-          <button ngbDropdownItem id="station" (click)="onSelect(station)">
-            {{ station }}
-          </button>
-
-        </div>
       </div>
     </div>
-
+  </div>
 </div>
+

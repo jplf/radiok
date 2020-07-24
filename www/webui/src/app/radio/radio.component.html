@@ -1,0 +1,14 @@
+<div class="d-flex m-3 p-2 ">
+  
+  <div class="custom-control custom-switch">
+    <input type="checkbox" class="custom-control-input" id="onOff" checked="">
+    <label class="custom-control-label" for="onOff">On/Off</label>
+  </div>
+  
+  <div class="ml-4">
+    <input type="range" class="custom-range"
+           [value]="20.0" [(ngModel)]="volume" (change)="onChange(volume)"
+           min="0" max="100" id="volume">
+  </div>
+
+</div>
