@@ -50,11 +50,13 @@ app.component.ts
 app.module.ts
 ```
 
-#### The station component
-
 ```
 ng generate component station
 ```
+```
+ng generate component trigger
+`
+
 #### Running the app
 
 ```
