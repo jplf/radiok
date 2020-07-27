@@ -1,0 +1,21 @@
+<div class="d-flex mt-4 justify-content-center border">
+
+  <div class="my-auto lead">
+    <span style="">Time</span>
+  </div>
+  
+  <ngb-timepicker class="m-2 p-2" [(ngModel)]="trigger">
+  </ngb-timepicker>
+  
+  <div class="custom-control custom-switch my-auto mx-2">
+    <input type="checkbox" class="custom-control-input"
+           id="triggerSet" checked="">
+    <label class="custom-control-label" for="triggerSet">set/unset</label>
+  </div>
+
+   <div class="custom-control custom-checkbox my-auto mx-2">
+      <input type="checkbox" class="custom-control-input"
+             id="weCheck" checked="">
+      <label class="custom-control-label" for="weCheck">week-end</label>
+    </div>  
+</div>
