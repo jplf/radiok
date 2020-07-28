@@ -1,5 +1,6 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
+import { TriggerService } from './trigger.service';
 
 @Component({
   selector: 'app-trigger',
@@ -16,7 +17,7 @@ export class TriggerComponent implements OnInit {
     // The trigger time
     @Input() triggerTime: any = {"hour" : 6, "minute" : 59};
 
-    constructor() {
+    constructor(private triggerService: TriggerService) {
         console.log("Trigger component created")
     }
 
