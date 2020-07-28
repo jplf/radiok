@@ -20,7 +20,7 @@ export class RadioComponent implements OnInit {
         console.log("Radio component initialized");
     }
 
-    status : string = this.onOff ? 'On' : 'Off';;
+    status : string = this.onOff ? 'On' : 'Off';
     
     // Switches on or off the radio
     onSwitch(): void {

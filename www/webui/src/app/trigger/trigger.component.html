@@ -1,21 +1,28 @@
 <div class="d-flex mt-4 justify-content-center border">
 
   <div class="my-auto lead">
-    <span style="">Time</span>
+    <span class=" text-info">Time</span>
   </div>
   
-  <ngb-timepicker class="m-2 p-2" [(ngModel)]="trigger">
+  <ngb-timepicker class="m-2 p-2" (click)="onChange()" [(ngModel)]="triggerTime">
   </ngb-timepicker>
   
-  <div class="custom-control custom-switch my-auto mx-2">
+  <div class="custom-control custom-switch my-auto mx-2"
+       style="width: 10%">
     <input type="checkbox" class="custom-control-input"
-           id="triggerSet" checked="">
-    <label class="custom-control-label" for="triggerSet">set/unset</label>
+           id="triggerStatus" (click)="onSwitch()"
+           [(ngModel)]="setUnset" />
+    <label class="custom-control-label text-danger" for="triggerStatus">
+      {{ triggerStatus }}
+    </label>
   </div>
 
    <div class="custom-control custom-checkbox my-auto mx-2">
       <input type="checkbox" class="custom-control-input"
-             id="weCheck" checked="">
-      <label class="custom-control-label" for="weCheck">week-end</label>
+             id="weCheck" (click)="onToggle()"
+           [(ngModel)]="weIncluded" />
+      <label class="custom-control-label text-danger" for="weCheck">
+        {{ weStatus }}
+      </label>
     </div>  
 </div>
