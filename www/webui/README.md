@@ -55,7 +55,9 @@ ng generate component station
 ```
 ```
 ng generate component trigger
-`
+cd trigger
+ng generate service trigger
+```
 
 #### Running the app
 
