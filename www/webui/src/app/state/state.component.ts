@@ -9,10 +9,10 @@ import { Component, OnInit } from '@angular/core';
 export class StateComponent implements OnInit {
 
     constructor() {
-        console.log("State component created")
+        console.log("State component created");
     }
 
     ngOnInit(): void {
-        console.log("State component initialized")
+        console.log("State component initialized");
     }
 }

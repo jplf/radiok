@@ -14,7 +14,7 @@ export class StationComponent implements OnInit {
 
     ngOnInit(): void {
         console.log("Station component initialized")
-        this.station = 'Undef';
+        this.station = this.stationList[0];
     }
 
     onSelect(s: string): void {
@@ -22,7 +22,7 @@ export class StationComponent implements OnInit {
         this.station = s;
     }
 
-    // The array of used stations
+    // The array of good stations
     stationList: string[] = ['FIP', 'France Musique'];
 
     // The current selected station
