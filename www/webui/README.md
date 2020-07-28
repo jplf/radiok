@@ -56,6 +56,7 @@ ng generate component station
 ```
 ng generate component trigger
 cd trigger
+ng generate interface trigger
 ng generate service trigger
 ```
 
