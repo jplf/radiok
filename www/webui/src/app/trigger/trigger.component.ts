@@ -38,7 +38,8 @@ export class TriggerComponent implements OnInit {
         this.triggerService.setTime(t.hour, t.minute);
         console.log("Trigger set to " + t.hour + ':' + t.minute);
     }
-     
+
+    // A string showing the status
     triggerStatus : string;
    
     setTriggerStatus(flag: boolean): void {
@@ -54,6 +55,7 @@ export class TriggerComponent implements OnInit {
         console.log("Trigger changed to " + this.triggerStatus);
     }
     
+    // A string showing the status
     weStatus : string;
    
     setWeStatus(flag: boolean): void {

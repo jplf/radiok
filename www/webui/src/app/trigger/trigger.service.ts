@@ -14,7 +14,7 @@ export class TriggerService {
     // The current trigger data
     private trigger: Trigger = {
         hour: 6,
-        minute: 59,
+        minute: 34,
         enabled: true,
         weEnabled: false
     };
@@ -40,6 +40,15 @@ export class TriggerService {
     // Returns the time to trig.
     getTime() : any {
         return {"hour": this.trigger.hour, "minute": this.trigger.minute}; 
+    }
+
+    // Returns the time to trig as a string.
+    getFormattedTime() : string {
+        
+        var s = this.trigger.hour.toString().padStart(2, '0') + ':' +
+        this.trigger.minute.toString().padStart(2, '0');
+       
+        return s; 
     }
 
     // Enables or disables the trigger on week days.

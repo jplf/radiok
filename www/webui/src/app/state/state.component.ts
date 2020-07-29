@@ -23,4 +23,7 @@ export class StateComponent implements OnInit {
     
     // Whether alarms goes off also the week-end
     @Input() weIncluded: boolean = this.triggerService.isWeEnabled();
+    
+    // The formatted time
+    @Input() alarmTime: string = this.triggerService.getFormattedTime();
 }
