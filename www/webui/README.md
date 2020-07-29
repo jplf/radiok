@@ -54,6 +54,13 @@ app.module.ts
 ng generate component station
 ```
 ```
+ng generate component radio
+cd radio
+ng generate interface radio
+ng generate service radio
+```
+
+```
 ng generate component trigger
 cd trigger
 ng generate interface trigger
