@@ -7,16 +7,21 @@
   </div>
 
   <div class="custom-control custom-checkbox m-2">
-    <label class="custom-control-label text-danger" for="alarm">
-      alarm set</label>
     <input type="checkbox" class="custom-control-input"
-           id="alarm" checked="">
+           id="alarm" [(ngModel)]="alarmSet"  disabled="">
+    
+    <label class="custom-control-label text-danger" for="alarm">
+      alarm set
+    </label>
   </div>
   
   <div class="custom-control custom-checkbox m-2">
-    <label class="custom-control-label text-danger" for="we">week-end</label>
-    <input type="checkbox" class="custom-control-input"
-           id="we" checked="">
+    <input type="checkbox" class="custom-control-input" id="we"
+           [(ngModel)]="weIncluded" disabled="">
+    
+    <label class="custom-control-label text-danger" for="we">
+      week-end
+    </label>
   </div>
   
 </div>

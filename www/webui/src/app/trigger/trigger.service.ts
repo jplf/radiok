@@ -12,14 +12,19 @@ export class TriggerService {
     };
 
     // The current trigger data
-    private trigger: Trigger = undefined;
+    private trigger: Trigger = {
+        hour: 6,
+        minute: 59,
+        enabled: true,
+        weEnabled: false
+    };
 
     getTrigger(): Trigger {
         return this.trigger;
     };
 
     // Changes the trigger time
-    setTriggerTime(hour: number, minute: number): void {
+    setTime(hour: number, minute: number): void {
         
         if (hour < 0 || hour > 23) {
             throw new RangeError('Invalid hour value : ' + hour);
@@ -32,13 +37,28 @@ export class TriggerService {
         this.trigger.minute = minute;
     };
 
+    // Returns the time to trig.
+    getTime() : any {
+        return {"hour": this.trigger.hour, "minute": this.trigger.minute}; 
+    }
+
     // Enables or disables the trigger on week days.
-    enableTrigger(flag : boolean): void {
+    enable(flag : boolean): void {
        this.trigger.enabled = flag; 
     }
     
+    // Is the trigger set.
+    isEnabled(): boolean {
+       return this.trigger.enabled; 
+    }
+    
     // Enables or disables the trigger on week-end.
-    enableWeTrigger(flag : boolean): void {
-       this.trigger.week-end = flag; 
+    enableWe(flag : boolean): void {
+       this.trigger.weEnabled = flag; 
+    }
+    
+    // Is the trigger set on week-end.
+    isWeEnabled(): boolean {
+       return this.trigger.weEnabled; 
     }
 }
