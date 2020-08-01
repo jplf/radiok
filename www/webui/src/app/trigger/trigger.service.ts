@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Trigger } from './trigger';
+import { SchedulerService } from './scheduler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +8,7 @@ import { Trigger } from './trigger';
 
 export class TriggerService {
 
-    constructor() {
+    constructor(private scheduler: SchedulerService) {
         console.log("Trigger service created");
     };
 
@@ -51,9 +52,15 @@ export class TriggerService {
         return s; 
     }
 
-    // Enables or disables the trigger on week days.
+    // Enables or disables the trigger on working days.
     enable(flag : boolean): void {
-       this.trigger.enabled = flag; 
+        this.trigger.enabled = flag;
+        if (flag) {
+            this.scheduler.start();
+        }
+        else {
+            this.scheduler.stop();
+        }
     }
     
     // Is the trigger set.

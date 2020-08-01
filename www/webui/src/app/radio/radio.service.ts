@@ -6,17 +6,23 @@ import { Injectable } from '@angular/core';
 export class RadioService {
 
     constructor() {
-        console.log("Radio service created");
+        console.log('Radio service created');
     }
+
+    radioPlayer : string = 'http://localhost:18300';
     
     switchOnOff(status : boolean, key: string) {
+
+        var endPoint;
         
         if (status) {
-            url = url + 'listen/' + key;
+            endPoint = this.radioPlayer + 'listen/' + key;
         }
         else {
-            url = url + 'off';
+            endPoint = this.radioPlayer  + 'off';
         }
+
+        console.log("Call " + endPoint);
         
         return;
     }
@@ -26,9 +32,8 @@ export class RadioService {
         
         var volume : string = value.toString();
         
-        var url = config.backend_player;
-        
-        url = url + 'set?volume=' + volume;
+        var endPoint = this.radioPlayer + 'set?volume=' + volume;
+        console.log("Call " + endPoint);
         
         return ;
     }

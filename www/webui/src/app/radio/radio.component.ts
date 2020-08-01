@@ -29,7 +29,7 @@ export class RadioComponent implements OnInit {
         this.status =  (! this.onOff) ? 'On' : 'Off';
         console.log("Radio changed to " + this.status);
         
-        this.radioService.switchOnOff(value, this.station.key);
+        this.radioService.switchOnOff(this.onOff, '0');
     }
      
     onChange(value: number): void {
