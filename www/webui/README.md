@@ -65,7 +65,12 @@ ng generate component trigger
 cd trigger
 ng generate interface trigger
 ng generate service trigger
+ng generate service scheduler
 ```
+
+#### The backend server
+
+The backend server developed for [RadioG](https://github.com/jplf/radiog/tree/master/backend) is reused.
 
 #### Running the app
 
