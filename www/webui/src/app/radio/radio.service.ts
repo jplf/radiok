@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
+import { ConfigService } from '../config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RadioService {
 
-    constructor() {
+    constructor(private configService: ConfigService) {
         console.log('Radio service created');
     }
 
-    radioPlayer : string = 'http://localhost:18300';
+    radioPlayer : string = this.configService.playerUrl;
     
     switchOnOff(status : boolean, key: string) {
 
         var endPoint;
+        var flag = ! status;
         
-        if (status) {
+        if (flag) {
             endPoint = this.radioPlayer + 'listen/' + key;
         }
         else {
@@ -30,7 +32,7 @@ export class RadioService {
     // Changes the output volume
     setVolume(value: number) {
         
-        var volume : string = value.toString();
+        var volume = value.toString();
         
         var endPoint = this.radioPlayer + 'set?volume=' + volume;
         console.log("Call " + endPoint);

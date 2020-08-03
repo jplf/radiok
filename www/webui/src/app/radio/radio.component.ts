@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
 import { RadioService } from './radio.service';
+import { ConfigService } from '../config.service';
 
 @Component({
   selector: 'app-radio',
@@ -12,8 +13,15 @@ export class RadioComponent implements OnInit {
     
     // Whether the player is playing (true) or not (false)
     @Input() onOff: boolean = false;
+    // The volume to play as a number
+    @Input() volume: number;
     
-    constructor(private radioService: RadioService) {
+    constructor(private radioService: RadioService,
+                private configService: ConfigService) {
+        
+        this.volume = this.configService.volume;
+        this.radioService.setVolume(this.volume);
+        
         console.log("Radio component created");
     }
     

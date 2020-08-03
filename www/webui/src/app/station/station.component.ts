@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Station } from './station.interface';
 
 @Component({
   selector: 'app-station',
@@ -14,22 +15,24 @@ export class StationComponent implements OnInit {
 
     ngOnInit(): void {
         console.log("Station component initialized")
-        this.station = this.stationList[0];
+        this.station = this.stationList[1];
     }
 
-    onSelect(s: string): void {
-        console.log("Station : " + s)
-        this.station = s;
+    onSelect(idx: number): void {
+        console.log("Station : " + idx);
+        this.station = this.stationList[idx];
     }
 
-    // The array of good stations
-    stationList: string[] = ['FIP', 'France Musique'];
+    // The array of always used stations
+    stationList: Station[] = [{"key": "10", "name": 'FIP'},
+                              {"key": "11", "name": 'France Musique'}
+                             ];
 
     // The current selected station
-    station: string;
+    station: Station;
 
     // Returns the list of stations
-    getStationList(): string[] {
+    getStationList(): Station[] {
         return this.stationList;
     }
 }

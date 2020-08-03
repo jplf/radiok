@@ -28,6 +28,11 @@ export class ConfigService {
     get version(): string {
         return this.config.version;
     }
+     
+    // Returns the volume of the radio
+    get volume(): number {
+        return this.config.volume;
+    }
    
     // Returns the end point of the backend player
     get playerUrl(): string {

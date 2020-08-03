@@ -8,15 +8,16 @@ import { ConfigService } from './config.service';
 })
 
 export class AppComponent  implements OnInit {
-    title = 'RadioK';
-    version='6.0 20 July 2020';
+    
+    title : string = 'RadioK';
+    version : string;
     
     constructor(private configService: ConfigService) {
         console.log("Application component created");
     }
     
     ngOnInit(): void {
-        console.log("Version : " + this.configService.version);
+        this.version =  this.configService.version;
         console.log("Player at : " + this.configService.playerUrl);
     }
 }
