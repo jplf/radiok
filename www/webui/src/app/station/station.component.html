@@ -7,7 +7,7 @@
 
     <div ngbDropdownMenu aria-labelledby="dropdownStations">
 
-      <div *ngFor="let station of stationList; let idx = index">
+      <div *ngFor="let station of stations; let idx = index">
 
         <button ngbDropdownItem id="station" (click)="onSelect(idx)">
           {{ station.name }}

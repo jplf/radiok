@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
 import { RadioService } from './radio.service';
 import { ConfigService } from '../config.service';
@@ -12,36 +12,34 @@ import { ConfigService } from '../config.service';
 export class RadioComponent implements OnInit {
     
     // Whether the player is playing (true) or not (false)
-    @Input() onOff: boolean = false;
+    @Input() onOff: boolean;
     // The volume to play as a number
     @Input() volume: number;
     
     constructor(private radioService: RadioService,
                 private configService: ConfigService) {
-        
-        this.volume = this.configService.volume;
-        this.radioService.setVolume(this.volume);
-        
-        console.log("Radio component created");
-    }
-    
-     ngOnInit(): void {
-        console.log("Radio component initialized");
     }
 
     status : string = this.onOff ? 'On' : 'Off';
     
-    // Switches on or off the radio
+    ngOnInit(): void {
+        this.onOff = this.configService.radioOnOff;
+        this.status =  this.onOff ? 'On' : 'Off';
+        
+        this.volume = this.configService.volume;
+        this.radioService.setVolume(this.volume);
+    }
+    
+    // Switches  the radio on or off
     onSwitch(): void {
         // Toggle the status
-        this.status =  (! this.onOff) ? 'On' : 'Off';
-        console.log("Radio changed to " + this.status);
+        var flag : boolean = ! this.onOff;
+        this.status =  flag ? 'On' : 'Off';
         
         this.radioService.switchOnOff(this.onOff, '0');
     }
      
     onChange(value: number): void {
-        console.log("Volume : " + value);
         this.radioService.setVolume(value);
     }
 }

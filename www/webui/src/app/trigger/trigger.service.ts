@@ -9,7 +9,7 @@ import { SchedulerService } from './scheduler.service';
 export class TriggerService {
 
     constructor(private scheduler: SchedulerService) {
-        console.log("Trigger service created");
+        //console.log("Trigger service created");
     };
 
     // The current trigger data

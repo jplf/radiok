@@ -37,6 +37,7 @@ import { ConfigService } from './config.service';
             deps: [ConfigService],
             useFactory: (configService: ConfigService) => {
                 return () => {
+                    console.log("The configuration is loaded");
                     return configService.loadConfig();
                 };
             }

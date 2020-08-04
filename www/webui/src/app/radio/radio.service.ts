@@ -10,14 +10,15 @@ export class RadioService {
         console.log('Radio service created');
     }
 
-    radioPlayer : string = this.configService.playerUrl;
+    readonly radioPlayer : string = this.configService.playerUrl;
     
     switchOnOff(status : boolean, key: string) {
 
         var endPoint;
         var flag = ! status;
-        
-        if (flag) {
+        this.configService.radioOnOff = flag;
+
+         if (flag) {
             endPoint = this.radioPlayer + 'listen/' + key;
         }
         else {
@@ -32,6 +33,7 @@ export class RadioService {
     // Changes the output volume
     setVolume(value: number) {
         
+        this.configService.volume = value;
         var volume = value.toString();
         
         var endPoint = this.radioPlayer + 'set?volume=' + volume;

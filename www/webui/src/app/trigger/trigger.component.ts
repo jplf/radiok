@@ -15,15 +15,14 @@ export class TriggerComponent implements OnInit {
     // Whether alarms goes off also the week-end
     @Input() weIncluded: boolean;
     // The trigger time
-    @Input() triggerTime: any;
+    @Input() alarmTime: any;
 
     constructor(private triggerService: TriggerService) {
-        console.log("Trigger component created")
     }
 
     ngOnInit(): void {
-        console.log("Trigger component initialized")
-        this.triggerTime = this.triggerService.getTime();
+        //console.log("Trigger component initialized")
+        this.alarmTime = this.triggerService.getTime();
         this.alarmSet    = this.triggerService.isEnabled();
         this.weIncluded  = this.triggerService.isWeEnabled();
         
@@ -34,9 +33,9 @@ export class TriggerComponent implements OnInit {
     // Change the trigger time
     onChange(): void {
         // Get the time
-        var t = this.triggerTime;
+        var t = this.alarmTime;
         this.triggerService.setTime(t.hour, t.minute);
-        console.log("Trigger set to " + t.hour + ':' + t.minute);
+        //console.log("Trigger set to " + t.hour + ':' + t.minute);
     }
 
     // A string showing the status
@@ -52,7 +51,7 @@ export class TriggerComponent implements OnInit {
         var flag = ! this.alarmSet;
         this.setTriggerStatus(flag);
         this.triggerService.enable(flag);
-        console.log("Trigger changed to " + this.triggerStatus);
+        //console.log("Trigger changed to " + this.triggerStatus);
     }
     
     // A string showing the status
