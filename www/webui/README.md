@@ -78,6 +78,15 @@ The backend server developed for [RadioG](https://github.com/jplf/radiog/tree/ma
 ng serve --host $HOSTNAME --port 18200
 ```
 
+#### Comments
+
+I spent some time trying to figure out how to implement some features since the learning curve for Angular is not short.
+Here are some issues :
+
+* How to get the result of a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) eventually
+* Initialisation using [APP_INITIALIZER](https://dzone.com/articles/how-to-use-the-app-initializer-token-to-hook-into)
+* Choosing constructor() vs NgOnInit() [methods](https://indepth.dev/the-essential-difference-between-constructor-and-ngoninit-in-angular/)
+* Typescript getter and setter [syntax](https://www.typescriptlang.org/docs/handbook/classes.html#accessors)
 
 The original README created by Angular is herafter :
 
