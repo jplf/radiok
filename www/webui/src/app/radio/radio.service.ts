@@ -11,21 +11,23 @@ export class RadioService {
     }
 
     readonly radioPlayer : string = this.configService.playerUrl;
-    
-    switchOnOff(status : boolean, key: string) {
+
+    // New onOff just set
+    switchOnOff(onOff : boolean) {
 
         var endPoint;
-        var flag = ! status;
-        this.configService.radioOnOff = flag;
 
-         if (flag) {
+        this.configService.radioOnOff = onOff;
+        var key = this.configService.stationKey;
+
+        if (onOff) {
             endPoint = this.radioPlayer + 'listen/' + key;
+            console.log("Radio on station " + key);
         }
         else {
             endPoint = this.radioPlayer  + 'off';
+            console.log("Radio switched off");
         }
-
-        console.log("Call " + endPoint);
         
         return;
     }
@@ -39,6 +41,6 @@ export class RadioService {
         var endPoint = this.radioPlayer + 'set?volume=' + volume;
         console.log("Call " + endPoint);
         
-        return ;
+        return;
     }
 }

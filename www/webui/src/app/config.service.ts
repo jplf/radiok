@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Trigger } from './trigger/trigger';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,12 @@ export class ConfigService {
     get version(): string {
         return this.config.version;
     }
-
+    
+    // Returns the trigger parameters
+    get trigger(): Trigger {
+        return this.config.trigger;
+    }
+    
     // Returns whether the radio is on or off
     get radioOnOff(): boolean {
         return this.onOff;

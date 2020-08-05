@@ -11,18 +11,32 @@ export class SchedulerService {
         console.log('SchedulerService created');
     }
 
-    job : any;
+    job : any = undefined;
 
-    setJob(work) {
-        var todo = (): void => console.log('Good job JP');
-        this.job = new CronJob('*/5 * * * * *', todo);
+    setJob(crontab: string, work: any) {
+        this.job = new CronJob(crontab, work);
+        console.log('New job set ' + crontab);
     };
 
+    // Launch the job for a given duration in seconds.
     start(): void {
+        
+        if (this.job === undefined) {
+            return;
+        }
+        
         this.job.start();
     }
 
-    stop(): void {
+    stop(msg: string): void {
+        
+        if (this.job === undefined) {
+            return;
+        }
+        if (msg) {
+          console.log('Job stopped : ' + msg);  
+        }
+        
         this.job.stop();
     }
 }

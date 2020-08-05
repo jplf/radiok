@@ -5,8 +5,9 @@
     "volume": 25,
     "trigger" : {
         "hour": 8,
-        "minute": 0,
-        "enabled": true,
+        "minute": 10,
+        "duration": 15,
+        "enabled": false,
         "weEnabled": false
     }
 }

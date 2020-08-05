@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Trigger } from './trigger';
 import { SchedulerService } from './scheduler.service';
+import { RadioService } from '../radio/radio.service';
+import { ConfigService } from '../config.service';
+import _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -8,21 +11,15 @@ import { SchedulerService } from './scheduler.service';
 
 export class TriggerService {
 
-    constructor(private scheduler: SchedulerService) {
-        //console.log("Trigger service created");
+    constructor(private scheduler: SchedulerService,
+                private config: ConfigService,
+                private radio: RadioService) {
+        
+        console.log("Trigger service created");
     };
 
-    // The current trigger data
-    private trigger: Trigger = {
-        hour: 6,
-        minute: 34,
-        enabled: true,
-        weEnabled: false
-    };
-
-    getTrigger(): Trigger {
-        return this.trigger;
-    };
+    // The current trigger data. Note the json cloning.
+    private trigger: Trigger = _.clone(this.config.trigger);
 
     // Changes the trigger time
     setTime(hour: number, minute: number): void {
@@ -52,15 +49,31 @@ export class TriggerService {
         return s; 
     }
 
-    // Enables or disables the trigger on working days.
-    enable(flag : boolean): void {
-        this.trigger.enabled = flag;
-        if (flag) {
-            this.scheduler.start();
-        }
-        else {
-            this.scheduler.stop();
-        }
+    private count: number = 0;
+    // Enables  the trigger.
+    enable(): void {
+        
+        this.trigger.enabled = true;
+        
+        //var todo = (): void => console.log('Good job JP ' + this.count);
+        var work = (): void => {
+            this.radio.switchOnOff(true);
+            setTimeout((s: string) => { console.log(s)},
+                   this.trigger.duration * 1000, 'timeouté');
+
+        };
+        
+        var crontab = '*/20 * * * * *';
+        this.scheduler.setJob(crontab, work);
+        
+        this.scheduler.start();
+    }
+
+    // Disables the trigger.
+    disable(): void {
+        this.trigger.enabled = false;
+        this.scheduler.stop('Manually disabled');
+        this.count++;
     }
     
     // Is the trigger set.

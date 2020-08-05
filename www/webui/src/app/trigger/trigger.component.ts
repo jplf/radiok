@@ -18,6 +18,7 @@ export class TriggerComponent implements OnInit {
     @Input() alarmTime: any;
 
     constructor(private triggerService: TriggerService) {
+        console.log('TriggerComponent created');
     }
 
     ngOnInit(): void {
@@ -35,7 +36,6 @@ export class TriggerComponent implements OnInit {
         // Get the time
         var t = this.alarmTime;
         this.triggerService.setTime(t.hour, t.minute);
-        //console.log("Trigger set to " + t.hour + ':' + t.minute);
     }
 
     // A string showing the status
@@ -47,11 +47,17 @@ export class TriggerComponent implements OnInit {
     
     // Enables or disables the trigger
     onSwitch(): void {
-        // Toggle the status
+        // Toggle the status: previously this.alarmSet -> new flag
         var flag = ! this.alarmSet;
         this.setTriggerStatus(flag);
-        this.triggerService.enable(flag);
-        //console.log("Trigger changed to " + this.triggerStatus);
+        console.log("Trigger changed to " + this.triggerStatus);
+        
+        if (flag) {
+            this.triggerService.enable();
+        }
+        else {
+            this.triggerService.disable();
+        }
     }
     
     // A string showing the status

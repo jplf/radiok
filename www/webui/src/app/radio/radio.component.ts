@@ -32,11 +32,11 @@ export class RadioComponent implements OnInit {
     
     // Switches  the radio on or off
     onSwitch(): void {
-        // Toggle the status
+        // Toggle the status: previously this.onOff -> new flag
         var flag : boolean = ! this.onOff;
         this.status =  flag ? 'On' : 'Off';
         
-        this.radioService.switchOnOff(this.onOff, '0');
+        this.radioService.switchOnOff(flag);
     }
      
     onChange(value: number): void {
