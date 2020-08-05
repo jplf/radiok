@@ -43,9 +43,9 @@ export class RadioComponent implements OnInit {
             error => {
                 console.log('Error switching the player : ' + error);
             });
-
     }
-     
+    
+    // Change the output volume
     onChange(value: number): void {
         this.radioService.setVolume(value)
             .subscribe(data => {
