@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ConfigService } from '../config.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { catchError, retry } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RadioService {
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService,
+                private http: HttpClient) {
         console.log('Radio service created');
     }
 
@@ -29,10 +34,22 @@ export class RadioService {
             console.log("Radio switched off");
         }
         
-        return;
+        // cd $RADIOG_HOME/backend
+        // npm run start
+        // curl localhost:18300/player | jq
+        
+         return this.http.get(endPoint).pipe(catchError(this.handleError));
     }
     
-    // Changes the output volume
+    // Take care of possible errors.
+    private handleError(error: HttpErrorResponse) {
+        
+        console.log(`Backend error : ${error.message}`);
+        
+        return throwError('Cannot get connected to the player');
+    };
+    
+   // Changes the output volume
     setVolume(value: number) {
         
         this.configService.volume = value;
@@ -41,6 +58,6 @@ export class RadioService {
         var endPoint = this.radioPlayer + 'set?volume=' + volume;
         console.log("Call " + endPoint);
         
-        return;
+        return this.http.get(endPoint).pipe(catchError(this.handleError));
     }
 }

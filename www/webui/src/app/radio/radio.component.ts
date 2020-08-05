@@ -36,10 +36,23 @@ export class RadioComponent implements OnInit {
         var flag : boolean = ! this.onOff;
         this.status =  flag ? 'On' : 'Off';
         
-        this.radioService.switchOnOff(flag);
+        this.radioService.switchOnOff(flag)
+            .subscribe(data => {
+                console.log('Player is actived');
+            },
+            error => {
+                console.log('Error switching the player : ' + error);
+            });
+
     }
      
     onChange(value: number): void {
-        this.radioService.setVolume(value);
+        this.radioService.setVolume(value)
+            .subscribe(data => {
+                console.log('Volume set to ' + value);
+            },
+            error => {
+                console.log('Error changing the volume : ' + error);
+            });
     }
 }
