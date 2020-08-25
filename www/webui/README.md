@@ -73,9 +73,12 @@ npm install
 #### Configuration
 
 Read advice about the [runtime configuration](https://www.tektutorialshub.com/angular/angular-runtime-configuration/) of an Angular app.
-Edit the configuration file :
+
 ```
-assets/radiok-conf.json
+edit app.module.ts to import APP_INITIALIZER
+ng generate service config
+edit app.component.ts to inject the config service
+edit assets/radiok-conf.json
 ```
 
 
