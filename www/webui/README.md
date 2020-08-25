@@ -25,7 +25,7 @@ The chosen theme is [journal](https://bootswatch.com/journal/)
 
 #### Installing from the github repository
 
-Once enough code has been pushed to the github repositoy it is possible to pull the existing content and start working on another computer. On a regular basis the local copies can be synchonized by pushing and pulling from the remote repository.
+Once enough code has been pushed to the github repository it is possible to pull the existing content and start working on another computer. On a regular basis the local copies can be synchonized by pushing and pulling from the remote repository.
 
 ```
 git clone git@github.com:jplf/radiok.git
@@ -35,9 +35,8 @@ npm install
 ```
 
 #### In directory webui
-```
-styles.scss
-```
+
+Check and possibly update the json files.
 
 #### In directory src
 
