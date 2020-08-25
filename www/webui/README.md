@@ -9,6 +9,9 @@ It turned out that it was impossible to move incrementally from the original Ang
 
 ### Installation
 
+It is possible to build the application from scratch by following the instructions provided in the Angular [documentation](https://angular.io/guide/setup-local) and by carrying out the steps described below.
+But it is easier to start from the content in this github repository : it has to be cloned locally and updated.
+
 #### Starting from scratch
 
 Here are the first steps made to build progressively the new version from scratch. It is a sort of guide line to follow when developping a new application. Since the Angular framework is pretty complex to master it is good to keep track of what has to be done and in which order.
@@ -22,17 +25,6 @@ ng add @ng-bootstrap/ng-bootstrap
 npm install bootswatch
 ```
 The chosen theme is [journal](https://bootswatch.com/journal/)
-
-#### Installing from the github repository
-
-Once enough code has been pushed to the github repository it is possible to pull the existing content and start working on another computer. On a regular basis the local copies can be synchonized by pushing and pulling from the remote repository.
-
-```
-git clone git@github.com:jplf/radiok.git
-cd radiok/www/webui
-npm install -g @angular/cli
-npm install
-```
 
 #### In directory webui
 
@@ -65,6 +57,17 @@ cd trigger
 ng generate interface trigger
 ng generate service trigger
 ng generate service scheduler
+```
+
+#### Installing from the github repository
+
+Once enough code has been pushed to the github repository it is possible to pull the existing content and start working on another computer. On a regular basis the local copies can be synchonized by pushing and pulling from the remote repository.
+
+```
+git clone git@github.com:jplf/radiok.git
+cd radiok/www/webui
+npm install -g @angular/cli
+npm install
 ```
 
 #### The backend server
