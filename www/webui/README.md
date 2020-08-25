@@ -70,15 +70,25 @@ npm install -g @angular/cli
 npm install
 ```
 
-#### The backend server
+#### Configuration
+
+Read advice about the [runtime configuration](https://www.tektutorialshub.com/angular/angular-runtime-configuration/) of an Angular app.
+Edit the configuration file :
+```
+assets/radiok-conf.json
+```
+
+
+## The backend server
 
 The backend server developed for [RadioG](https://github.com/jplf/radiog/tree/master/backend) is reused.
 
-#### Running the app
+## Running the app
 
 ```
 ng serve --host $HOSTNAME --port 18200
 ```
+## Miscellaneous
 
 #### Comments
 
