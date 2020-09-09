@@ -55,15 +55,28 @@ export class TriggerService {
         
         this.trigger.enabled = true;
         
-        //var todo = (): void => console.log('Good job JP ' + this.count);
         var work = (): void => {
-            this.radio.switchOnOff(true);
-            setTimeout((s: string) => { console.log(s)},
-                   this.trigger.duration * 1000, 'timeouté');
+            this.radio.switchOnOff(true)
+                .subscribe(data => {
+                    console.log('Player is actived');
+                },
+                error => {
+                    console.log('Error switching the player : ' + error);
+                });
+            
+            // After a duration given in seconds stop the work
+            setTimeout((msg: string) => {
 
+                this.radio.switchOnOff(false)
+                    .subscribe(data => {
+                        console.log(msg);
+                    })
+            },
+            this.trigger.duration * 1000, 'Player is desactived');
         };
-        
-        var crontab = '*/20 * * * * *';
+
+        // Every minute starts playing
+        var crontab = '0 * * * * *';
         this.scheduler.setJob(crontab, work);
         
         this.scheduler.start();
