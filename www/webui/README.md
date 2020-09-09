@@ -78,7 +78,8 @@ Read advice about the [runtime configuration](https://www.tektutorialshub.com/an
 edit app.module.ts to import APP_INITIALIZER
 ng generate service config
 edit app.component.ts to inject the config service
-edit assets/radiok-conf.json
+possibly define a local configuration in environments/environment.ts
+edit assets/radiok-conf.json or assets/local-conf.json
 ```
 
 
