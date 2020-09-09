@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Trigger } from './trigger/trigger';
 
+import { environment } from './../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +24,15 @@ export class ConfigService {
 
     // Reads the configuration from the asset directory
     loadConfig() {
-        return this.http.get('/assets/radiok-conf.json')
+        
+        var radiokConf = 'radiok-conf.json';
+        if (environment.hasOwnProperty('configFile')) {
+            radiokConf = environment['configFile']; 
+        }
+        
+        console.log('Configuration found in ' + radiokConf);
+
+        return this.http.get('/assets/' + radiokConf)
             .toPromise()
             .then(data => {
                 this.config = data;

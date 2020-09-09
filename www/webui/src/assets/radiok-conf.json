@@ -1,6 +1,6 @@
 {
     "version": "Version 6.0 - 20 July 2020",
-    "playerUrl": "http://192.168.0.25:18300/player/",
+    "playerUrl": "http://localhost:18300/player/",
     "stationKey": "10",
     "volume": 25,
     "trigger" : {
