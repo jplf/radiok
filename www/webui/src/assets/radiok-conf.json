@@ -1,12 +1,12 @@
 {
-    "version": "Version 6.0 - 20 July 2020",
+    "version": "Version 6.1 - 15 September 2020",
     "playerUrl": "http://localhost:18300/player/",
     "stationKey": "10",
     "volume": 25,
     "trigger" : {
-        "hour": 8,
-        "minute": 10,
-        "duration": 15,
+        "hour": 6,
+        "minute": 59,
+        "duration": 2,
         "enabled": false,
         "weEnabled": false
     }

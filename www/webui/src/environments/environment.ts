@@ -3,6 +3,6 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-    configFile: 'local-conf.json',
+    configFile: 'radiok-conf.json',
     production: false
 };

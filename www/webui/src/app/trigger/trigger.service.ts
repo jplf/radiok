@@ -64,7 +64,7 @@ export class TriggerService {
                     console.log('Error switching the player : ' + error);
                 });
             
-            // After a duration given in seconds stop the work
+            // After a duration given in minutes stop the work
             setTimeout((msg: string) => {
 
                 this.radio.switchOnOff(false)
@@ -72,11 +72,20 @@ export class TriggerService {
                         console.log(msg);
                     })
             },
-            this.trigger.duration * 1000, 'Player is desactived');
+            this.trigger.duration * 60000, 'Player is desactived');
         };
 
         // Every minute starts playing
-        var crontab = '0 * * * * *';
+        // var crontab = '0 * * * * *';
+        var crontab = '0 ' + this.trigger.minute + ' ' + this.trigger.hour;
+        if (this.trigger.weEnabled) {
+            crontab = crontab + ' * * *';
+        }
+        else {
+            crontab = crontab + ' * * 1-5';
+        }
+            
+        
         this.scheduler.setJob(crontab, work);
         
         this.scheduler.start();
