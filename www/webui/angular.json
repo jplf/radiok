@@ -15,23 +15,28 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/webui",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
-            "aot": false,
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": []
-          },
+            "builder": "@angular-devkit/build-angular:browser",
+            "options": {
+                "outputPath": "dist/webui",
+                "index": "src/index.html",
+                "main": "src/main.ts",
+                "allowedCommonJsDependencies": [
+                    "lodash",
+                    "moment-timezone",
+                    "cron"
+                ],
+                "polyfills": "src/polyfills.ts",
+                "tsConfig": "tsconfig.app.json",
+                "aot": false,
+                "assets": [
+                    "src/favicon.ico",
+                    "src/assets"
+                ],
+                "styles": [
+                    "src/styles.scss"
+                ],
+                "scripts": []
+            },
           "configurations": {
             "production": {
               "fileReplacements": [

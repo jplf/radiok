@@ -24,6 +24,7 @@
     "bootstrap": "^4.5.0",
     "bootswatch": "^4.5.0",
     "package.json": "^2.0.1",
+    "cron": "^1.8.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"

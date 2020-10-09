@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Trigger } from './trigger';
+import { SchedulerService } from './scheduler.service';
+import { RadioService } from '../radio/radio.service';
+import { ConfigService } from '../config.service';
+import _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -7,21 +11,15 @@ import { Trigger } from './trigger';
 
 export class TriggerService {
 
-    constructor() {
+    constructor(private scheduler: SchedulerService,
+                private config: ConfigService,
+                private radio: RadioService) {
+        
         console.log("Trigger service created");
     };
 
-    // The current trigger data
-    private trigger: Trigger = {
-        hour: 6,
-        minute: 34,
-        enabled: true,
-        weEnabled: false
-    };
-
-    getTrigger(): Trigger {
-        return this.trigger;
-    };
+    // The current trigger data. Note the json cloning.
+    private trigger: Trigger = _.clone(this.config.trigger);
 
     // Changes the trigger time
     setTime(hour: number, minute: number): void {
@@ -51,9 +49,53 @@ export class TriggerService {
         return s; 
     }
 
-    // Enables or disables the trigger on week days.
-    enable(flag : boolean): void {
-       this.trigger.enabled = flag; 
+    private count: number = 0;
+    // Enables  the trigger.
+    enable(): void {
+        
+        this.trigger.enabled = true;
+        
+        var work = (): void => {
+            this.radio.switchOnOff(true)
+                .subscribe(data => {
+                    console.log('Player is actived');
+                },
+                error => {
+                    console.log('Error switching the player : ' + error);
+                });
+            
+            // After a duration given in minutes stop the work
+            setTimeout((msg: string) => {
+
+                this.radio.switchOnOff(false)
+                    .subscribe(data => {
+                        console.log(msg);
+                    })
+            },
+            this.trigger.duration * 60000, 'Player is desactived');
+        };
+
+        // Every minute starts playing
+        // var crontab = '0 * * * * *';
+        var crontab = '0 ' + this.trigger.minute + ' ' + this.trigger.hour;
+        if (this.trigger.weEnabled) {
+            crontab = crontab + ' * * *';
+        }
+        else {
+            crontab = crontab + ' * * 1-5';
+        }
+            
+        
+        this.scheduler.setJob(crontab, work);
+        
+        this.scheduler.start();
+    }
+
+    // Disables the trigger.
+    disable(): void {
+        this.trigger.enabled = false;
+        this.scheduler.stop('Manually disabled');
+        this.count++;
     }
     
     // Is the trigger set.

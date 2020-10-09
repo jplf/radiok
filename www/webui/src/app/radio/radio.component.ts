@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
 import { RadioService } from './radio.service';
+import { ConfigService } from '../config.service';
 
 @Component({
   selector: 'app-radio',
@@ -11,29 +12,47 @@ import { RadioService } from './radio.service';
 export class RadioComponent implements OnInit {
     
     // Whether the player is playing (true) or not (false)
-    @Input() onOff: boolean = false;
+    @Input() onOff: boolean;
+    // The volume to play as a number
+    @Input() volume: number;
     
-    constructor(private radioService: RadioService) {
-        console.log("Radio component created");
-    }
-    
-     ngOnInit(): void {
-        console.log("Radio component initialized");
+    constructor(private radioService: RadioService,
+                private configService: ConfigService) {
     }
 
     status : string = this.onOff ? 'On' : 'Off';
     
-    // Switches on or off the radio
-    onSwitch(): void {
-        // Toggle the status
-        this.status =  (! this.onOff) ? 'On' : 'Off';
-        console.log("Radio changed to " + this.status);
+    ngOnInit(): void {
+        this.onOff = this.configService.radioOnOff;
+        this.status =  this.onOff ? 'On' : 'Off';
         
-        this.radioService.switchOnOff(value, this.station.key);
+        this.volume = this.configService.volume;
+        this.radioService.setVolume(this.volume);
     }
-     
+    
+    // Switches  the radio on or off
+    onSwitch(): void {
+        // Toggle the status: previously this.onOff -> new flag
+        var flag : boolean = ! this.onOff;
+        this.status =  flag ? 'On' : 'Off';
+        
+        this.radioService.switchOnOff(flag)
+            .subscribe(data => {
+                console.log('Player is actived');
+            },
+            error => {
+                console.log('Error switching the player : ' + error);
+            });
+    }
+    
+    // Change the output volume
     onChange(value: number): void {
-        console.log("Volume : " + value);
-        this.radioService.setVolume(value);
+        this.radioService.setVolume(value)
+            .subscribe(data => {
+                console.log('Volume set to ' + value);
+            },
+            error => {
+                console.log('Error changing the volume : ' + error);
+            });
     }
 }

@@ -1,35 +1,63 @@
 import { Injectable } from '@angular/core';
+import { ConfigService } from '../config.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { catchError, retry } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RadioService {
 
-    constructor() {
-        console.log("Radio service created");
+    constructor(private configService: ConfigService,
+                private http: HttpClient) {
+        console.log('Radio service created');
     }
-    
-    switchOnOff(status : boolean, key: string) {
-        
-        if (status) {
-            url = url + 'listen/' + key;
+
+    readonly radioPlayer : string = this.configService.playerUrl;
+
+    // New onOff just set
+    switchOnOff(onOff : boolean) {
+
+        var endPoint;
+
+        this.configService.radioOnOff = onOff;
+        var key = this.configService.stationKey;
+
+        if (onOff) {
+            endPoint = this.radioPlayer + 'listen/' + key;
+            console.log("Radio on station " + key);
         }
         else {
-            url = url + 'off';
+            endPoint = this.radioPlayer  + 'off';
+            console.log("Radio switched off");
         }
         
-        return;
+        // cd $RADIOG_HOME/backend
+        // npm run start
+        // curl localhost:18300/player | jq
+        
+         return this.http.get(endPoint).pipe(catchError(this.handleError));
     }
     
-    // Changes the output volume
+    // Take care of possible errors.
+    private handleError(error: HttpErrorResponse) {
+        
+        console.log(`Backend error : ${error.message}`);
+        
+        return throwError('Cannot get connected to the player');
+    };
+    
+   // Changes the output volume
     setVolume(value: number) {
         
-        var volume : string = value.toString();
+        this.configService.volume = value;
+        var volume = value.toString();
         
-        var url = config.backend_player;
+        var endPoint = this.radioPlayer + 'set?volume=' + volume;
+        console.log("Call " + endPoint);
         
-        url = url + 'set?volume=' + volume;
-        
-        return ;
+        return this.http.get(endPoint).pipe(catchError(this.handleError));
     }
 }

@@ -2,15 +2,15 @@
 
   <div ngbDropdown class="d-inline-block" style="width:50px;">
     <button class="btn btn-outline-primary"
-            id="dropdownStations" ngbDropdownToggle> {{ station }}
+            id="dropdownStations" ngbDropdownToggle> {{ station.name }}
     </button>
 
     <div ngbDropdownMenu aria-labelledby="dropdownStations">
 
-      <div *ngFor="let station of stationList">
+      <div *ngFor="let station of stations; let idx = index">
 
-        <button ngbDropdownItem id="station" (click)="onSelect(station)">
-          {{ station }}
+        <button ngbDropdownItem id="station" (click)="onSelect(idx)">
+          {{ station.name }}
         </button>
 
       </div>

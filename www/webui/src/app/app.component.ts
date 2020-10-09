@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ConfigService } from './config.service';
 
 @Component({
     selector: 'app-root',
@@ -6,7 +7,17 @@ import { Component } from '@angular/core';
     styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
-    title = 'RadioK';
-    version='6.0 20 July 2020';
+export class AppComponent  implements OnInit {
+    
+    readonly title : string = 'RadioK';
+    readonly version : string;
+    
+    constructor(private configService: ConfigService) {
+        console.log("Application component created");
+        this.version =  this.configService.version;
+    }
+    
+    ngOnInit(): void {
+        console.log("Player at : " + this.configService.playerUrl);
+    }
 }

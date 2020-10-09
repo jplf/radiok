@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TriggerService } from '../trigger/trigger.service';
 
 @Component({
@@ -7,23 +7,18 @@ import { TriggerService } from '../trigger/trigger.service';
   styleUrls: ['./state.component.scss']
 })
 
-export class StateComponent implements OnInit {
+export class StateComponent {
     
-
     constructor(private triggerService: TriggerService) {
-        console.log("State component created");
     }
 
-    ngOnInit(): void {
-        console.log("State component initialized");
-    }
     
     // Whether alarms is set or not
-    @Input() alarmSet: boolean = this.triggerService.isEnabled();
+    @Input() readonly alarmSet: boolean = this.triggerService.isEnabled();
     
     // Whether alarms goes off also the week-end
-    @Input() weIncluded: boolean = this.triggerService.isWeEnabled();
+    @Input() readonly weIncluded: boolean = this.triggerService.isWeEnabled();
     
     // The formatted time
-    @Input() alarmTime: string = this.triggerService.getFormattedTime();
+    @Input() readonly alarmTime: string = this.triggerService.getFormattedTime();
 }
