@@ -2,15 +2,17 @@
 **RadioK** is an application used to manage an internet radio implemented
 on a *Raspberry Pi*.
 
-It consists of a collection of shell scripts, a web server written with
-[nodejs](http://nodejs.org/) packages,
-a web page built with [angularjs](https://angularjs.org/)
+It consists of a collection of shell scripts, a web server written in [typescript](https://www.typescriptlang.org/)
+with [nodejs](http://nodejs.org/) packages,
+a web page built with the new [Angular](https://angular.io)
 and a client program allowing
 to control vocally the Rpi thanks either
 to the [Jasper](http://jasperproject.github.io/) library or
 to the Google speech recognition API.
 
-Main development is over and the current version is usable (but not by the wimps).
+
+The first version was delivered by February 2015 and was usable (but not by the wimps). It has been in service without interruption since this date.
+As of mid 2020 a complete new version was rebuilt.
 
 The full documentation is available in french from 
 the [RadioK](http://www.fonteny.org/radiok) dedicated web site:
@@ -22,6 +24,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 23 November 2020 | The new version is now almost ready |
 | 22 July 2020 | A big renovation is in progress. It is based on the new [Angular](https://gorrion.io/blog/angularjs-vs-angular) |
 | 10 July 2020| A light renovation is carried out|
 | 27 May 2020| Another different version of this app is being developped : [RadioG](https://github.com/jplf/radiog)|
