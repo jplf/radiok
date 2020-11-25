@@ -4,9 +4,11 @@
 # Script used to start the backend server.
 # It checks the environment and starts.
 
-# The architecture of the new RadioK has been changed. The application is composed of 2
-# components a backend server, the one developped for RadioG and a frontend server.
-# The frontend provides the web interface and communicates via REST Api with the backend.
+# The architecture of the new RadioK has been changed.
+# The application is composed of 2 components : a backend server, the one
+# developped for RadioG and a frontend server.
+# The frontend provides the web interface and communicates via REST Api
+# with the backend.
 
 # Jean-Paul Le Fèvre - December 2020
 # @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
@@ -37,9 +39,6 @@ npm run start 1>../run/backend.log 2>../run/backend.err &
 
 cd $RADIOK_HOME/run
 touch timestamp.1
-
-# Make sure the server is ready.
-sleep 30
 
 echo "Backend server is now accepting requests !"
 curl -s http://localhost:18300/player | jq
