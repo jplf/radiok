@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { NgbModule, NgbButtonsModule } from '@ng-bootstrap/ng-bootstrap';
 import { StationComponent } from './station/station.component';
 import { RadioComponent } from './radio/radio.component';
+import { MessagesComponent } from './messages/messages.component';
 import { StateComponent } from './state/state.component';
 import { TriggerComponent } from './trigger/trigger.component';
 import { HomeComponent } from './home/home.component';
@@ -18,6 +19,7 @@ import { ConfigService } from './config.service';
         AppComponent,
         StationComponent,
         RadioComponent,
+        MessagesComponent,
         StateComponent,
         TriggerComponent,
         HomeComponent

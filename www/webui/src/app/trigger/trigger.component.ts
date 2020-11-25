@@ -1,5 +1,6 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
+import { MessageService } from '../messages/message.service';
 import { TriggerService } from './trigger.service';
 
 @Component({
@@ -17,7 +18,8 @@ export class TriggerComponent implements OnInit {
     // The trigger time
     @Input() alarmTime: any;
 
-    constructor(private triggerService: TriggerService) {
+    constructor(private triggerService: TriggerService,
+                private messageService: MessageService) {
         console.log('TriggerComponent created');
     }
 
@@ -50,6 +52,7 @@ export class TriggerComponent implements OnInit {
         // Toggle the status: previously this.alarmSet -> new flag
         var flag = ! this.alarmSet;
         this.setTriggerStatus(flag);
+        this.messageService.display('Trigger switched !');
         console.log("Trigger changed to " + this.triggerStatus);
         
         if (flag) {

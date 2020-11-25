@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { OnChanges, SimpleChange } from '@angular/core';
 import { RadioService } from './radio.service';
+import { MessageService } from '../messages/message.service';
 import { ConfigService } from '../config.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class RadioComponent implements OnInit {
     @Input() volume: number;
     
     constructor(private radioService: RadioService,
+                private messageService: MessageService,
                 private configService: ConfigService) {
     }
 
@@ -39,9 +41,12 @@ export class RadioComponent implements OnInit {
         this.radioService.switchOnOff(flag)
             .subscribe(data => {
                 console.log('Player is actived');
+                this.messageService.display('Player is actived !');
+
             },
             error => {
                 console.log('Error switching the player : ' + error);
+                this.messageService.display('Player error : ' + error);
             });
     }
     
@@ -53,6 +58,7 @@ export class RadioComponent implements OnInit {
             },
             error => {
                 console.log('Error changing the volume : ' + error);
-            });
+                this.messageService.display('Volume error : ' + error);
+           });
     }
 }
