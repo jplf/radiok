@@ -41,7 +41,7 @@ export class RadioComponent implements OnInit {
         this.radioService.switchOnOff(flag)
             .subscribe(data => {
                 console.log('Player is actived');
-                this.messageService.display('Player is actived !');
+                this.messageService.display('Player is switched !');
 
             },
             error => {
