@@ -45,12 +45,12 @@ echo "Frontend server is being started !"
 cd $RADIOK_HOME/www/webui
 
 ng serve --host $HOSTNAME --port 18301 \
-1>../run/frontend.log 2>../run/frontend.err &
+1>$RADIOK_HOME/run/frontend.log 2>$RADIOK_HOME/run/frontend.err &
 
 echo "Frontend server is now online !"
 echo "Go to http://$HOSTNAME:18301"
 
-cd $RADIOG_HOME/run
+cd $RADIOK_HOME/run
 touch timestamp.2
 echo "Check the log files if necessary"
 
