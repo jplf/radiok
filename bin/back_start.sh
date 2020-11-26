@@ -24,6 +24,10 @@ if [ -z "$RADIOK_HOME" ]; then
     exit 1
 fi
 
+if [ -z "$RADIOG_URL" ]; then
+    export RADIOG_URL="http://localhost:18300"
+fi
+
 # Check the current time to make comparison possible with timestamp.0
 cd $RADIOK_HOME/run
 touch timestamp.0
@@ -41,10 +45,10 @@ cd $RADIOK_HOME/run
 touch timestamp.1
 
 echo "Backend server is now accepting requests !"
-curl -s http://localhost:18300/player | jq
-curl -s http://localhost:18300/device/info | jq
-echo "curl -s http://localhost:18300/player/listen/10"
-echo "curl -s http://localhost:18300/player/off"
+curl -s $RADIOG_URL/player | jq
+curl -s $RADIOG_URL/device/info | jq
+echo "curl -s $RADIOG_URL/player/listen/10"
+echo "curl -s $RADIOG_URL/player/off"
 
 exit 0
 
