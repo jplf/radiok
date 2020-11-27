@@ -37,6 +37,7 @@ export class TriggerComponent implements OnInit {
     onChange(): void {
         // Get the time
         var t = this.alarmTime;
+        console.log('Trigger set to ', t.hour, t.minute);
         this.triggerService.setTime(t.hour, t.minute);
     }
 
@@ -78,5 +79,4 @@ export class TriggerComponent implements OnInit {
         this.triggerService.enableWe(flag);
         console.log("Trigger changed to " + this.weStatus);
     }
-
 }
