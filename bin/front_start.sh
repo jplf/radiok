@@ -30,21 +30,22 @@ fi
 
 cd $RADIOK_HOME/run
 
-echo "Check the configured values"
-cat $RADIOG_CONF
-cat $RADIOK_HOME/www/webui/src/assets/radiok-conf.json
 
 echo "Backend server should be accepting requests !"
 
-curl -s $RADIOG_URL/player
-if [ ! $? ]; then
-    echo "Can't connect to the backend server, rc : $?"
+curl -s $RADIOG_URL/player > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Can't connect to the backend server !"
+    echo
+    echo "Check the configured values"
+    cat $RADIOG_CONF
+    cat $RADIOK_HOME/www/webui/src/assets/radiok-conf.json
     exit 1
 fi
 
-curl -s $RADIOG_URL/device/info
-if [ ! $? ]; then
-    echo "Can't check the output device, rc : $?"
+curl -s $RADIOG_URL/device/info > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Can't check the output device !"
     exit 1
 fi
 
