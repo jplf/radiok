@@ -10,6 +10,8 @@
 # The frontend provides the web interface and communicates via REST Api
 # with the backend.
 
+# Try : 'screen -S BackEnd' '$RADIOK_HOME/bin/back_start.sh'
+
 # Jean-Paul Le Fèvre - December 2020
 # @copyright Gnu general public license (http://www.gnu.org/licenses/gpl.html)
 
