@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { ConfigService } from '../config.service';
 import { HttpClient } from '@angular/common/http';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { catchError, retry } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { map, catchError} from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,15 @@ export class RadioService {
     }
 
     readonly radioPlayer : string = this.configService.playerUrl;
+    radioPlaying$ = new BehaviorSubject<boolean>(false);
 
+    // Return whether the radio is on or off
+    isRadioPlaying() : Observable<boolean> {
+        return this.radioPlaying$;
+    };
+    
     // New onOff just set
-    switchOnOff(onOff : boolean) {
+    switchOnOff(onOff : boolean) : Observable<any> {
 
         var endPoint;
 
@@ -38,7 +44,12 @@ export class RadioService {
         // npm run start
         // curl localhost:18300/player | jq
         
-         return this.http.get(endPoint).pipe(catchError(this.handleError));
+        return this.http.get(endPoint).pipe(
+            map((res: any) => {
+                this.radioPlaying$.next(onOff);
+                console.log('Player response : ' + res);
+            }),
+            catchError(this.handleError));
     }
     
     // Take care of possible errors.
@@ -50,14 +61,17 @@ export class RadioService {
     };
     
    // Changes the output volume
-    setVolume(value: number) {
+    setVolume(value: number) : Observable<any> {
         
         this.configService.volume = value;
         var volume = value.toString();
         
         var endPoint = this.radioPlayer + 'set?volume=' + volume;
-        console.log("Call " + endPoint);
-        
-        return this.http.get(endPoint).pipe(catchError(this.handleError));
+         
+        return this.http.get(endPoint).pipe(
+            map((res: any) => {
+                console.log('Player response ' + res);
+            }),
+            catchError(this.handleError));
     }
 }
