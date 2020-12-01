@@ -3,6 +3,7 @@ import { OnChanges, SimpleChange } from '@angular/core';
 import { RadioService } from './radio.service';
 import { MessageService } from '../messages/message.service';
 import { ConfigService } from '../config.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-radio',
@@ -20,10 +21,17 @@ export class RadioComponent implements OnInit {
     constructor(private radioService: RadioService,
                 private messageService: MessageService,
                 private configService: ConfigService) {
+        
+        // Observes if the radio is playing and updates the switch
+        radioService.isRadioPlaying().subscribe(value => {
+            //console.log('Radio observed is ' + value);
+            this.onOff = value;
+            this.status =  this.onOff ? 'On' : 'Off';
+        });
     }
 
     status : string = this.onOff ? 'On' : 'Off';
-    
+     
     ngOnInit(): void {
         this.onOff = this.configService.radioOnOff;
         this.status =  this.onOff ? 'On' : 'Off';
@@ -40,17 +48,17 @@ export class RadioComponent implements OnInit {
         
         this.radioService.switchOnOff(flag)
             .subscribe(data => {
-                console.log('Player is actived');
-                this.messageService.display('Player is switched !');
+                console.log('Radio was actived');
+                this.messageService.display('Radio is switched !');
 
             },
             error => {
                 console.log('Error switching the player : ' + error);
-                this.messageService.display('Player error : ' + error);
+                this.messageService.display('Radio error : ' + error);
             });
     }
     
-    // Change the output volume
+    // Changes the output volume
     onChange(value: number): void {
         this.radioService.setVolume(value)
             .subscribe(data => {
