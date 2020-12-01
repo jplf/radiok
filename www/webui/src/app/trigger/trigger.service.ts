@@ -58,10 +58,10 @@ export class TriggerService {
         var work = (): void => {
             this.radio.switchOnOff(true)
                 .subscribe(data => {
-                    console.log('Player is actived');
+                    console.log('Radio is switched on');
                 },
                 error => {
-                    console.log('Error switching the player : ' + error);
+                    console.log('Error switching the radio : ' + error);
                 });
             
             // After a duration given in minutes stop the work
@@ -72,7 +72,7 @@ export class TriggerService {
                         console.log(msg);
                     })
             },
-            this.trigger.duration * 60000, 'Player is desactived');
+            this.trigger.duration * 60000, 'Radio is switched off');
         };
 
         // Every minute starts playing
@@ -85,7 +85,6 @@ export class TriggerService {
             crontab = crontab + ' * * 1-5';
         }
             
-        
         this.scheduler.setJob(crontab, work);
         
         this.scheduler.start();
@@ -94,7 +93,7 @@ export class TriggerService {
     // Disables the trigger.
     disable(): void {
         this.trigger.enabled = false;
-        this.scheduler.stop('Manually disabled');
+        this.scheduler.stop('Trigger manually disabled');
         this.count++;
     }
     
