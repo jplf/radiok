@@ -24,6 +24,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 02 December 2020 | The new version is working as designed |
 | 23 November 2020 | The new version is now almost ready |
 | 22 July 2020 | A big renovation is in progress. It is based on the new [Angular](https://gorrion.io/blog/angularjs-vs-angular) |
 | 10 July 2020| A light renovation is carried out|
@@ -39,6 +40,10 @@ below is a brief summary in english of what is detailed in the full web site.
 | 21 July 2014 | This short README is online. Version 1.1 |
 | 20 July 2014 | Documentation available in french |
 | 15 July 2014 | First usable version 1.0 |
+
+
+## Previous version
+The rest of this page deals with the previous version of this app and must be considered as obsolete. However it is kept online temporarily.
 
 ### Hardware
 
