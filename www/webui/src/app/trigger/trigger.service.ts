@@ -33,10 +33,17 @@ export class TriggerService {
         
         this.trigger.hour = hour;
         this.trigger.minute = minute;
-    };
+        
+        let crontab = this.buildCrontab();           
+        this.scheduler.setCrontab(crontab);
+        
+        if (this.trigger.enabled) {
+           this.scheduler.start(); 
+        }
+   };
 
     // Returns the time to trig.
-    getTime() : any {
+    getTime(): any {
         return {"hour": this.trigger.hour, "minute": this.trigger.minute}; 
     }
 
@@ -75,19 +82,26 @@ export class TriggerService {
             this.trigger.duration * 60000, 'Radio is switched off');
         };
 
-        // Every minute starts playing
-        // var crontab = '0 * * * * *';
-        var crontab = '0 ' + this.trigger.minute + ' ' + this.trigger.hour;
+        let crontab = this.buildCrontab();           
+        this.scheduler.setJob(crontab, work);
+        
+        this.scheduler.start();
+    }
+
+    // Builds the crontab string.
+    // Example : every minute starts playing
+    // var crontab = '0 * * * * *';
+    private buildCrontab(): string {
+        
+        let crontab = '0 ' + this.trigger.minute + ' ' + this.trigger.hour;
         if (this.trigger.weEnabled) {
             crontab = crontab + ' * * *';
         }
         else {
             crontab = crontab + ' * * 1-5';
         }
-            
-        this.scheduler.setJob(crontab, work);
         
-        this.scheduler.start();
+        return crontab;
     }
 
     // Disables the trigger.
