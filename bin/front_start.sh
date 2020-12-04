@@ -52,7 +52,7 @@ fi
 # Launch the frontend server.
 echo "Frontend server is being started !"
 
-cd $RADIOK_HOME/www/webui
+cd $RADIOK_HOME/frontend
 
 ng serve --host $HOSTNAME --port $RADIOK_PORT \
 1>$RADIOK_HOME/run/frontend.log 2>$RADIOK_HOME/run/frontend.err &
