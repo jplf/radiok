@@ -11,11 +11,11 @@ export class MessageService {
 
     message = 'Wake up smoothly with RadioK !';
 
-    display(message: string) {
+    display(message: string): void {
         this.message = message;
     }
 
-    clear() {
+    clear(): void {
         this.message = '';
     }
 }

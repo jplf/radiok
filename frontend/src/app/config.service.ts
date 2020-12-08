@@ -12,24 +12,25 @@ import { environment } from './../environments/environment';
 // stackoverflow.com/questions/43193049/app-settings-the-angular-way
 
 export class ConfigService {
-    
+
     private config: any;
 
     // Whether the radio is on or off
     onOff: boolean;
-    
+
     constructor(private http: HttpClient) {
         this.onOff = false;
     }
 
     // Reads the configuration from the asset directory
-    loadConfig() {
-        
-        var radiokConf = 'radiok-conf.json';
-        if (environment.hasOwnProperty('configFile')) {
-            radiokConf = environment['configFile']; 
+    loadConfig(): void {
+
+        let radiokConf = 'radiok-conf.json';
+        const key = 'configFile';
+        if (environment.hasOwnProperty(key)) {
+            radiokConf = environment[key];
         }
-        
+
         console.log('Configuration found in ' + radiokConf);
 
         return this.http.get('/assets/' + radiokConf)
@@ -38,31 +39,26 @@ export class ConfigService {
                 this.config = data;
             });
     }
-     
+
     // Returns the current version string. Note the typescript syntax
     get version(): string {
         return this.config.version;
     }
-    
+
     // Returns the trigger parameters
     get trigger(): Trigger {
         return this.config.trigger;
     }
-    
+
     // Returns whether the radio is on or off
     get radioOnOff(): boolean {
         return this.onOff;
     }
     // Sets whether the radio is on or off
-    set radioOnOff(flag : boolean)  {
+    set radioOnOff(flag: boolean)  {
         this.onOff = flag;
     }
-     
-    // Returns the volume of the radio
-    get volume(): number {
-        return this.config.volume;
-    }
-    
+
     // Returns the key of the selected station
     get stationKey(): string {
         return this.config.stationKey;
@@ -73,8 +69,13 @@ export class ConfigService {
         this.config.stationKey = key;
     }
 
+    // Returns the volume of the radio
+    get volume(): number {
+        return this.config.volume;
+    }
+
     // Keeps the volume value. Avoids out of bounds value.
-    set volume(value : number) {
+    set volume(value: number): void {
         if (value > 100) {
             value = 100;
         }
@@ -83,7 +84,7 @@ export class ConfigService {
         }
         this.config.volume = value;
     }
-   
+
     // Returns the end point of the backend player
     get playerUrl(): string {
 

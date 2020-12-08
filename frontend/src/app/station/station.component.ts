@@ -10,41 +10,41 @@ import { ConfigService } from '../config.service';
 
 export class StationComponent implements OnInit {
 
+    // The current selected station
+    station: Station;
+
+    // The array of always used stations
+    // For sake of simplicity it is hardcoded here since it never changes
+    readonly stationList: Station[] = [{key: '10', name: 'FIP'},
+                              {key: '11', name: 'France Musique'}
+                             ];
+
     // If the selected station key is invalid an exception is thrown
     constructor(private configService: ConfigService) {
     }
 
     ngOnInit(): void {
-        
-        var key = this.configService.stationKey;
-        
-        var s : Station = this.findStation(key);
-        
+
+        const key = this.configService.stationKey;
+
+        const s: Station = this.findStation(key);
+
         if (s === undefined) {
             throw new Error('Station ' + key + ' not found !' );
         }
         this.station = s;
-        
     }
 
     onSelect(idx: number): void {
-        console.log("Station : " + idx);
+        console.log('Station : ' + idx);
         this.station = this.stationList[idx];
         this.configService.stationKey = this.station.key;
     }
 
-    // The array of always used stations
-    readonly stationList: Station[] = [{"key": "10", "name": 'FIP'},
-                              {"key": "11", "name": 'France Musique'}
-                             ];
-
     // Finds a station knowing the key. Returns undefined if not found.
-    private findStation(key : string) : Station {
+    private findStation(key: string): Station {
         return this.stationList.find(s => s.key === key);
     }
-    
-    // The current selected station
-    station: Station;
 
     // Returns the list of stations
     get stations(): Station[] {
