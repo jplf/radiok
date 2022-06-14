@@ -191,7 +191,7 @@ surnames["w-world"]="Fip monde"
 
 # The root directory of this application.
 if [ -z "$RADIOK_HOME" ]; then
-    export RADIOK_HOME=$HOME/work/git/radiok
+    export RADIOK_HOME=$HOME/work/hub/radiok
     echo "Set RADIOK_HOME=$RADIOK_HOME"
 fi
 
