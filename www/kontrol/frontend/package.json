@@ -7,7 +7,7 @@
     "cron": "^1.8.2",
     "express": "^4.17.1",
     "method-override": "^3.0.0",
-    "moment": "^2.27.0",
+    "moment": "^2.29.4",
     "serve-favicon": "^2.5.0",
     "winston": "^3.3.3"
   },
