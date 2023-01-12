@@ -217,16 +217,9 @@ var setTrigger = function(id, h, m, d, set, station) {
 
     // Make vox.js aware of the new trigger
     vox.setTriggerState(triggerState);
-
-    fs.writeFile(triggerStateFile, JSON.stringify(triggerState, null, 4),
-                 function (err) {
-                     if (err) {
-                         logger.error('Trigger failed saving data');
-                     }
-                     else {
-                         logger.info('Trigger successfully saved.');
-                     }
-    });
+    var wtf = JSON.stringify(triggerState, null, 4);
+    
+    fs.writeFileSync(triggerStateFile, JSON.stringify(triggerState, null, 4));
 
     return true;
 }
