@@ -62,11 +62,17 @@ var stamp = function() {
     var d = new Date();
     return d.getDate() + '/' + (d.getMonth()+1) + ' ' + d.toLocaleTimeString();
 };
-var winston = require('winston');
-var logger  = winston.createLogger({
+
+const { createLogger, format, transports } = require('winston');
+
+var logger  = createLogger({
     level: 'info',
+    format: format.combine(
+        format.splat(),
+        format.simple()
+    ),
     transports: [
-        new (winston.transports.File)({
+        new transports.File({
             timestamp: stamp,
             json: false,
             filename: logfile})
