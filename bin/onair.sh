@@ -1,7 +1,7 @@
 #!/bin/bash
 #______________________________________________________________________________
 
-# Fichier start radio - Jean-Paul Le Fèvre march 2014
+# A script to start the radio - Jean-Paul Le Fèvre march 2014
 
 # Usage onair.sh [-k][-s][-l][-r] [-t time] [station]
 
@@ -160,16 +160,16 @@ declare -A radios
 declare -A surnames
 
 # The key prefix is used to sort the list.
-radios["a-fip"]="http://direct.fipradio.fr/live/fip-midfi.mp3";
+radios["a-fip"]="http://icecast.radiofrance.fr/fip-midfi.mp3";
 surnames["a-fip"]="Fip Radio"
 
-radios["c-musique"]="http://direct.francemusique.fr/live/francemusique-midfi.mp3";
+radios["c-musique"]="http://icecast.radiofrance.fr/francemusique-midfi.mp3";
 surnames["c-musique"]="France Musique"
 
-radios["b-inter"]="http://direct.franceinter.fr/live/franceinter-midfi.mp3";
+radios["b-inter"]="http://icecast.radiofrance.fr/franceinter-midfi.mp3";
 surnames["b-inter"]="France Inter"
 
-radios["d-culture"]="http://direct.franceculture.fr/live/franceculture-midfi.mp3";
+radios["d-culture"]="http://icecast.radiofrance.fr/franceculture-midfi.mp3";
 surnames["d-culture"]="France Culture"
 
 radios["r-chantefr"]="http://stream.chantefrance.com/stream_chante_france.mp3";
