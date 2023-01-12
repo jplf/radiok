@@ -21,10 +21,9 @@ var mainModule = angular.module('main-module',
                                 ['ngRoute', 'ui.bootstrap',
                                  'ui.slider', 'uiSwitch']);
 
-
 mainModule.constant('version', {
-    'release': '5.0',
-    'date':    '20 May 2016'
+    'release': '5.1',
+    'date':    '12 May 2023'
 });
 
 /**
