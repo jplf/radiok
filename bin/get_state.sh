@@ -37,7 +37,6 @@ else
     echo "\"onair\":" "\"empty\",">>$out
 fi
 
-
 # Is it really useful ? 
 echo " " >>$out
 s=`/sbin/iwconfig wlan0 2>/dev/null | fgrep Link | sed 's/^ *//'`
@@ -64,7 +63,7 @@ fi
 echo "\"atq\":" "\"$s\",">>$out
 
 echo " " >>$out
-pid=`/sbin/pidof -s mplayer`
+pid=`/usr/bin/pidof -s mplayer`
 
 if [ -n "$pid" ]; then
     s=`/bin/ps -p $pid --no-headers -o "%U %p %a"`
