@@ -23,7 +23,7 @@ var mainModule = angular.module('main-module',
 
 mainModule.constant('version', {
     'release': '5.1',
-    'date':    '12 May 2023'
+    'date':    '13 January 2023'
 });
 
 /**
