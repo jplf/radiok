@@ -15,6 +15,8 @@
 # Argument station to select the radio station to listen.
 # Volume control: amixer sset 'Master' 60%
 
+# Check the $HOME/.mplayer/config file
+
 #______________________________________________________________________________
 
 # Output something like "a-fip, 2145" (radio key, process id)
@@ -99,17 +101,17 @@ function check_list {
 #______________________________________________________________________________
 
 # Launches mplayer and keeps track of the selected station and the pid.
-# A duration may be specified.
+# A duration may be specified. No longer used options:  -nogui -idle -loop 0
 function start {
 
-    cmd="/usr/bin/mplayer -nogui -msglevel all=2 -vo null -idle -loop 0"
+    cmd="/usr/bin/mplayer -msglevel all=2 -vo null -noconsolecontrols"
     url=${radios[$station]}
 
     # Mplayer demands this option for .m3u uri.
     if [[ $url =~ \.m3u$ ]]; then
         opt="-playlist -af volume=-10"
     else
-        opt="-af volume=-10"
+        opt="-af volume=-1"
     fi
 
     echo $cmd $opt "$url">>$log
