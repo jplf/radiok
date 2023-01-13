@@ -45,6 +45,7 @@ below is a brief summary in english of what is detailed in the full web site.
 
 ## Previous version
 The rest of this page deals with the previous version of this app and must be considered as obsolete. However it is kept online temporarily.
+It is foreseen to put the whole app up to date. 
 
 ### Hardware
 
@@ -92,8 +93,8 @@ The main ones are the following :
 
 #### onair.sh
 
-It is the main script. It encapsulates the call to *mplayer* and
-the management of the radio stations.
+It is the main script. It encapsulates the call to *mplayer(1)* and
+the management of the radio stations. The list of URL must be fixed when necessary. The mplayer configuration has to be updated depending on the OS and the version.
 
 #### offair.sh
 
@@ -101,7 +102,7 @@ This script stops a running *mplayer*.
 
 #### get_volume.sh
 
-This script encapsulates *amixer* to get the value of the audio volume.
+This script encapsulates *amixer* to get the value of the audio volume. It was previously based on Alsa, Pulseaudio in no yet taken into account.
 
 #### set_volume.sh
 
