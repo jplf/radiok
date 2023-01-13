@@ -24,6 +24,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 13 January 2023 | The packages for the original branch have been updated successfully |
 | 02 December 2020 | The new version is working as designed |
 | 23 November 2020 | The new version is now almost ready |
 | 22 July 2020 | A big renovation is in progress. It is based on the new [Angular](https://gorrion.io/blog/angularjs-vs-angular) |
