@@ -85,18 +85,18 @@ var app = express();
 
 app.set('port', port);
 
-app.use(favicon(__dirname + '/client/triskell.ico'));
+app.use(favicon(__dirname + '/wui/triskell.ico'));
 app.use(bodyParser.json());
 app.use(methodOverride());
 
 /**
  * The Radio Box Kontrol server specific modules.
  */
-var box = require('./server/box');
+var box = require('./cmd/box');
 box.init(logger, root);
 box.sender(app);
 
-var vox = require('./server/vox');
+var vox = require('./cmd/vox');
 vox.init(app, logger, root);
 
 /**
@@ -108,14 +108,14 @@ if (! box.trigger(root + '/run/triggers.json')) {
     process.kill();
 }
 
-app.use(express.static(path.join(__dirname, '/client')));
+app.use(express.static(path.join(__dirname, '/wui')));
 
 app.get("/state", function(req, res, next){
-  res.sendFile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/wui/index.html');
 });
 
 app.get("/trigger", function(req, res, next){
-  res.sendFile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/wui/index.html');
 });
 
 /**
