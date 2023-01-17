@@ -20,7 +20,7 @@ fi
 log=$dir/onair.log
 pidfile=$dir/player.pid
 
-echo "Killing onair on `date` ..." >>$log
+echo "Killing onair on `date` by `whoami` ..." >>$log
 
 if [ -f $pidfile ]; then
     cat $pidfile
