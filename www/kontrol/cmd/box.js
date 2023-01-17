@@ -44,7 +44,7 @@ var triggerState = {
         hour:     "6",
         minute:   "59",
         day:      "*",
-        duration: "20",
+        duration: "10",
         set:      "false",
         station:  "b-inter"
     },
@@ -52,7 +52,7 @@ var triggerState = {
         hour:     "16",
         minute:   "0",
         day:      "*",
-        duration: "20",
+        duration: "10",
         set:      "false",
         station:  "a-fip"
     }
@@ -169,7 +169,7 @@ var setTrigger = function(id, h, m, d, set, station) {
         triggered = true;
     }
 
-    var dt  = '20';
+    var dt  = '10';
     var key = station;
 
     if (id == 'wakeup') {
