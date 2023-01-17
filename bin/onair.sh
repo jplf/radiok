@@ -112,9 +112,9 @@ function start {
     opt="-nogui -idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols"
     # Mplayer demands thess options for .m3u uri.
     if [[ $url =~ \.m3u$ ]]; then
-        opt="-playlist -af volume=-10"
+        opt="$opt -playlist -af volume=-10"
     else
-        opt="-af volume=-1"
+        opt="$opt -af volume=-1"
     fi
 
     echo $cmd $opt "$url">>$log
