@@ -22,8 +22,8 @@ var mainModule = angular.module('main-module',
                                  'ui.slider', 'uiSwitch']);
 
 mainModule.constant('version', {
-    'release': '5.1',
-    'date':    '13 January 2023'
+    'release': '5.2',
+    'date':    '17 January 2023'
 });
 
 /**
