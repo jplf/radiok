@@ -70,7 +70,7 @@ if [ -n "$pid" ]; then
 else
     s=""
 fi
-echo "\"mplayer\":" "\"$s\"">>$out
+echo "\"player\":" "\"$s\"">>$out
 echo "}" >>$out
 
 cat $out
