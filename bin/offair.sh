@@ -18,7 +18,7 @@ if [ ! -d "$dir" ]; then
 fi
 
 log=$dir/onair.log
-pidfile=$dir/mplayer.pid
+pidfile=$dir/player.pid
 
 echo "Killing onair on `date` ..." >>$log
 
@@ -29,7 +29,7 @@ else
 fi
 
 # These commands may fail gently.
-/bin/killall -q -u $USER mplayer >>$log
+/bin/killall -q mplayer >>$log
 /bin/rm -f $pidfile
 
 #______________________________________________________________________________

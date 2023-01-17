@@ -101,13 +101,16 @@ function check_list {
 #______________________________________________________________________________
 
 # Launches mplayer and keeps track of the selected station and the pid.
-# A duration may be specified. No longer used options:  -nogui -idle -loop 0
+# A duration may be specified.
+# No longer used options:
+# -nogui -idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols
 function start {
 
-    cmd="/usr/bin/mplayer -msglevel all=2 -vo null -noconsolecontrols"
+    cmd="/usr/bin/mplayer"
     url=${radios[$station]}
 
-    # Mplayer demands this option for .m3u uri.
+    opt="-nogui -idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols"
+    # Mplayer demands thess options for .m3u uri.
     if [[ $url =~ \.m3u$ ]]; then
         opt="-playlist -af volume=-10"
     else
@@ -127,7 +130,7 @@ function start {
     $cmd $opt $url 1>$RADIOK_HOME/run/mp.log 2>>$log &
 
     # Store pid and station into files.
-    echo $! > $pidfile
+    pgrep mplayer > $pidfile
     echo $station > $keyfile
 
     if [ -n "$time" ]; then
@@ -143,7 +146,7 @@ function start {
         echo "Playing onair.sh for ever ..." >>$log
     fi
 
-    echo "Script onair.sh $station started !" >>$log
+    echo "Script onair.sh $station completed !" >>$log
     get_status
 }
 #______________________________________________________________________________
@@ -225,7 +228,7 @@ else
 fi
 
 # The file keeping the mplayer pid
-pidfile=$dir/mplayer.pid
+pidfile=$dir/player.pid
 
 while [ -n "$1" ]
 do
