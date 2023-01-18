@@ -22,6 +22,8 @@
           bibliothèques logicielles utilisée à l'époque ont beaucoup évolué
           depuis cette date. Il est probable que certains informations
           données ici ne soient plus pertinentes.
+          <p>
+            Une mise à jour a été effectuée début 2023, a priori avec succès.
           
           <h3>Linux</h3>
           <p>
@@ -64,7 +66,8 @@
           </p>
           <p>
             Tout ceci étant dit, l'application doit pourvoir tourner
-            sur toutes les distributions linux.
+            sur toutes les distributions linux. Le portage a été fait
+            sur Ubuntu 20.4 sans trop de souci.
           </p>
 
           <h3>Mplayer</h3>
@@ -75,7 +78,8 @@
             est disponible dans toutes les distributions linux.
             <br>
             Naturellement on peut également utiliser n'importe quel
-            programme capable de traiter des flux audio en continu.
+            programme capable de traiter des flux audio en continu,
+            par exemple <a href="https://www.mpg123.de/"><b>mpg123</b></a>.
           </p>
 
           <h3>Bash</h3>
@@ -133,6 +137,10 @@
               <li><code>express, http, path, fs, winston</code></li>
               <li><code>exec-sync, moment</code></li>
             </ul>
+            Normalement <code>npm install</code> devrait faire le
+            job. Le fichier <i>package.json</i> fournit la liste des
+            dépendances.
+            
           </p> 
           <p>
             Les modules javascript implémentant les fonctionnalités de
@@ -205,8 +213,17 @@
                 d'environnement <code>RADIOK_HOME</code> comme le
                 chemin vers le répertoire où le logiciel a été
                 copié. On peut aussi
-                ajouter <code>$RADIOK_HOME/bin</code> dans son <code>PATH</code>.
-              </li> 
+                ajouter <code>$RADIOK_HOME/bin</code>
+                dans son <code>PATH</code>.
+              </li>
+              <li>
+                Définir la variable <code>RADIOK_PLAYER</code> pour
+                sélectionner soit <i>mplayer</i> soit <i>mpg123</i>.
+              </li>
+              <li>
+                Ajouter en plus ces 2 définitions dans
+                le <i>crontab</i> courant.
+              </li>
               <li>
                  Télécharger et installer les composants tiers
                  mentionnés plus haut : <code>NodeJs</code>,
