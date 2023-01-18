@@ -1,7 +1,7 @@
 #!/bin/bash
 #______________________________________________________________________________
 
-# A script to start the radio - Jean-Paul Le Fèvre march 2014
+# A script to start the radio - Jean-Paul Le Fèvre - march 2014, january 2023
 
 # Usage onair.sh [-k][-s][-l][-r] [-t time] [station]
 
@@ -16,6 +16,7 @@
 # Volume control: amixer sset 'Master' 60%
 
 # Check the $HOME/.mplayer/config file
+# and RADIOK_HOME RADIOK_PLAYER environment variables.
 
 #______________________________________________________________________________
 
@@ -100,22 +101,22 @@ function check_list {
 }
 #______________________________________________________________________________
 
-# Launches mplayer and keeps track of the selected station and the pid.
+# Launches the player and keeps track of the selected station and the pid.
 # A duration may be specified.
 # No longer used options:
 # -nogui -idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols
 function start {
 
-    cmd="/usr/bin/mplayer"
-    url=${radios[$station]}
-
-    opt="-nogui -idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols"
-    # Mplayer demands thess options for .m3u uri.
-    if [[ $url =~ \.m3u$ ]]; then
-        opt="$opt -playlist -af volume=-10"
-    else
-        opt="$opt -af volume=-1"
+    if [ -z "$RADIOK_PLAYER" ]; then
+        export RADIOK_PLAYER=mplayer
     fi
+    
+    if [ "$RADIOK_PLAYER" = "mplayer" ]; then
+        opt="-idle -loop 0 -msglevel all=2 -vo null -noconsolecontrols"
+    fi
+
+    cmd=/bin/$RADIOK_PLAYER
+    url=${radios[$station]}
 
     echo $cmd $opt "$url">>$log
 
@@ -130,7 +131,7 @@ function start {
     $cmd $opt $url 1>$RADIOK_HOME/run/mp.log 2>>$log &
 
     # Store pid and station into files.
-    pgrep mplayer > $pidfile
+    pgrep $RADIOK_PLAYER > $pidfile
     echo $station > $keyfile
 
     if [ -n "$time" ]; then
@@ -197,7 +198,14 @@ surnames["w-world"]="Fip monde"
 # The root directory of this application.
 if [ -z "$RADIOK_HOME" ]; then
     export RADIOK_HOME=$HOME/work/hub/radiok
-    echo "Set RADIOK_HOME=$RADIOK_HOME"
+    echo "Please export RADIOK_HOME=$RADIOK_HOME"
+    echo "Exiting ..."
+    exit 1
+fi
+
+# The player may be mpg123 or mplayer
+if [ -z "$RADIOK_PLAYER" ]; then
+    export RADIOK_PLAYER=mplayer
 fi
 
 # The directory storing runtime parameters.
@@ -227,7 +235,7 @@ else
     station="a-fip"
 fi
 
-# The file keeping the mplayer pid
+# The file keeping the player pid
 pidfile=$dir/player.pid
 
 while [ -n "$1" ]
@@ -281,9 +289,9 @@ if [ -n "$time" ]; then
 fi
 
 # Check if radio is already playing
-# May try also /sbin/pidof -s mplayer ?
+# May try also /sbin/pidof -s $RADIOK_PLAYER ?
 if [ -f $pidfile ]; then
-    echo "Mplayer is already running ! " >>$log
+    echo "The player is already running ! " >>$log
     exit 1
 fi
 
