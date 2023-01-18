@@ -12,7 +12,7 @@ if [ -z "$phrase" ]; then
     phrase="quoi encore ?"
 fi
 
-cmd="/usr/bin/mplayer -ao alsa -really-quiet -noconsolecontrols -volume 95"
+cmd="$RADIOK_PLAYER"
 what="http://translate.google.com/translate_tts?ie=UTF-8&tl=fr&q="
 
 $cmd $what"$phrase"
