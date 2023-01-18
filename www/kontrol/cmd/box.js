@@ -1,6 +1,6 @@
 //__________________________________________________________________________
 /**
- * Fonteny javascript library - March 2014 - May 2016
+ * Fonteny javascript library - March 2014 - May 2016 - January 2023
 
  * This software is governed by the
  * Gnu general public license (http://www.gnu.org/licenses/gpl.html)
@@ -13,6 +13,7 @@
  * It has been partly rewritten in April 2016. This new version do not use
  * the cronjob module which is buggy.
  * It simply use the crontab(1) unix command.
+ * The crontab must define RADIOK_HOME and RADIOK_PLAYER
  *
  * @author Jean-Paul Le Fèvre <lefevre@fonteny.org>
  */
@@ -70,7 +71,7 @@ var triggerStateFile;
 
 //__________________________________________________________________________
 /**
- * Update the crontab.
+ * Updates the crontab.
  * Parameters are the following :
  * id identifies the job. (ID in crontab(1))
  * spec gives the time and the command.
@@ -133,6 +134,7 @@ var updateCrontab = function(id, spec, set) {
 //__________________________________________________________________________
 /**
  * Initializes the cron job.
+ *
  * id identifies the job. See crontab(1)
  * h & m give the hour and minutes.
  * d specifies the days.
