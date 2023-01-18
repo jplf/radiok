@@ -10,9 +10,9 @@ to control vocally the Rpi thanks either
 to the [Jasper](http://jasperproject.github.io/) library or
 to the Google speech recognition API.
 
-
 The first version was delivered by February 2015 and was usable (but not by the wimps). It has been in service without interruption since this date.
-As of mid 2020 a complete new version was rebuilt.
+As of mid 2020 a complete new version was rebuilt. In 2023 the work is still in progress.
+The audio management shoulb be updated as well.
 
 The full documentation is available in french from 
 the [RadioK](http://www.fonteny.org/radiok) dedicated web site:
@@ -24,6 +24,7 @@ below is a brief summary in english of what is detailed in the full web site.
 ### Changelog
 | Date         | Changes |
 |--------------|---------|
+| 18 January 2023 | The player can be defined in the environment |
 | 13 January 2023 | The packages for the original branch have been updated successfully |
 | 02 December 2020 | The new version is working as designed |
 | 23 November 2020 | The new version is now almost ready |
@@ -59,6 +60,8 @@ The program *mplayer* is at the heart of the application. It is managed by
 a bunch of small shell scripts. These scripts themselves are run thru a
 web server. A client can send http requests to the web frontend server to trigger
 the scripts.
+As of January 2023 the program can be either *mplayer* or *mpg123* depending on the content of the RADIOK_PLAYER environment variable.
+This last one is much simpler to configure.
 
 A dedicated program is used to implement the voice control. Each time it
 understands something said by a user it sends a http request containing
@@ -84,17 +87,18 @@ This app is being slightly modified in July 2020. To make sure that it still wor
 1. `onair.sh`
 1. `offair.sh`
 
-Guess the name of the soundcard with `amixer scontrols`.
+Guess the name of the soundcard with `amixer scontrols`. It is foreseen to base the audio component on *pulseaudio* instead of *alsa*.
 
 ### The bash scripts
 
 The next layer above the standard unix programs consists of bash scripts.
-The main ones are the following :
+The player program is defined in RADIOK_PLAYER : *mplayer* or *mpg123*.
+The main scripts are the following :
 
 #### onair.sh
 
 It is the main script. It encapsulates the call to *mplayer(1)* and
-the management of the radio stations. The list of URL must be fixed when necessary. The mplayer configuration has to be updated depending on the OS and the version.
+the management of the radio stations. The list of URL must be fixed when necessary. The mplayer configuration has to be updated depending on the OS and the version. 
 
 #### offair.sh
 
@@ -167,7 +171,7 @@ This application can run on any computer running the linux operating system.
 It is primarily intended to be installed on a raspberry pi box.
 
 The linux distribution must have the program *mplayer* available, a working
-audio configuration and an internet connection.
+audio configuration and an internet connection. It is also possible to use *mpg123*
 
 The first step consists of launching the command line scripts to make sure
 that the basic commands work as expected.
@@ -188,7 +192,11 @@ crontab modules which were proven to be buggy. Alarms are now triggered by the
 standard *crontab(1)* unix command. To allow *mplayer* to output sound when
 started from *cron* you must belong to the *audio* group.
 
+The crontab must define 2 variables RADIOK_HOME and RADIOK_PLAYER.
+
 ### Voice control
+
+This functionnality has been disabled. It must be redesigned and recoded.
 
 Commands spoken by the user are grouped into lists of synomyms. Two versions
 of the vocabulary are currently available : one in english
@@ -238,4 +246,4 @@ This version looks more reliable but seems to be a bit slower.
 * **vox**  voice recognition programs. Local, english version in **ps**,
 Remote, french version in **fr**
 * **www**  web stuff. Documentation in **doc**, web application in **kontrol**
-in which **backend** and **frontend** have the related components.
+in which **wui** and **cmd** have the related components.
