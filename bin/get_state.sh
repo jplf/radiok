@@ -14,6 +14,8 @@
 if [ -z "$RADIOK_HOME" ]; then
     echo "RADIOK_HOME undefined !"
     exit 1
+elif [ -z "$RADIOK_PLAYER" ]; then
+    export RADIOK_PLAYER=mplayer
 fi
 
 dir=$RADIOK_HOME/run
@@ -42,7 +44,6 @@ echo " " >>$out
 s=`/sbin/iwconfig wlan0 2>/dev/null | fgrep Link | sed 's/^ *//'`
 echo "\"wifi\":" "\"$s\",">>$out
 
-
 echo " " >>$out
 s=`/usr/bin/crontab -l | fgrep "ID=wakeup"`
 echo "\"wakeup\":" "\"$s\",">>$out
@@ -63,7 +64,7 @@ fi
 echo "\"atq\":" "\"$s\",">>$out
 
 echo " " >>$out
-pid=`/usr/bin/pidof -s mplayer`
+pid=`/usr/bin/pidof -s $RADIOK_PLAYER`
 
 if [ -n "$pid" ]; then
     s=`/bin/ps -p $pid --no-headers -o "%U %p %a"`
