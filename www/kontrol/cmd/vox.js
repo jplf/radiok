@@ -66,8 +66,8 @@ var triggerState;
  */
 var setStation = function(index) {
 
-    // Check if mplayer is running or not
-    var playing = execSync('/sbin/pidof -s mplayer');
+    // Check if the player is running or not
+    var playing = execSync('/sbin/pidof -s $RADIOK_PLAYER');
     if (playing == undefined || (!playing)) {
         // Not playing so do nothing
         execSync(tell + "\"la radio n'est pas en marche actuellement\"");
