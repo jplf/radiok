@@ -9,6 +9,8 @@
 if [ -z "$RADIOK_HOME" ]; then
     echo "RADIOK_HOME undefined !"
     exit 1
+elif [ -z "$RADIOK_PLAYER" ]; then
+    export RADIOK_PLAYER=mplayer
 fi
 
 dir=$RADIOK_HOME/run
@@ -29,7 +31,7 @@ else
 fi
 
 # These commands may fail gently.
-/bin/killall -q mplayer >>$log
+/bin/killall -q $RADIOK_PLAYER >>$log
 /bin/rm -f $pidfile
 
 #______________________________________________________________________________
